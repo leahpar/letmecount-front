@@ -10,6 +10,13 @@ const router = createRouter({
   routes: [
     {
       path: '/',
+      redirect: () => {
+        const isAuthenticated = localStorage.getItem('jwt_token')
+        return isAuthenticated ? '/home' : '/login'
+      }
+    },
+    {
+      path: '/home',
       name: 'home',
       component: HomeView,
     },
