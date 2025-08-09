@@ -28,7 +28,12 @@
         </div>
         <div class="expense-details">
           <span class="expense-date">{{ formatDate(expense.date) }}</span>
-          <span class="expense-payer">Payé par {{ getPayer(expense) }}</span>
+          <span class="expense-payer">
+            Payé par {{ getPayer(expense) }}
+            <span :class="['balance-impact', { 'positive': calculateBalanceImpact(expense) > 0, 'negative': calculateBalanceImpact(expense) < 0 }]">
+              ({{ formatImpact(calculateBalanceImpact(expense)) }})
+            </span>
+          </span>
           <span v-if="!props.tagId && expense.tag" class="expense-tag">
             #{{ getTagName(expense.tag) }}
           </span>
@@ -107,7 +112,7 @@ const loading = ref(false)
 const error = ref('')
 const expandedExpenses = ref<Set<string>>(new Set())
 
-const { getUsernameByIri, fetchUsers } = useUsers()
+const { getUsernameByIri, fetchUsers, me, fetchMe } = useUsers()
 const { getTagByIri, fetchTags } = useTags()
 
 const formatAmount = (amount: number): string => {
@@ -123,6 +128,32 @@ const formatDate = (dateString: string): string => {
     hour: '2-digit',
     minute: '2-digit'
   })
+}
+
+const formatImpact = (impact: number): string => {
+  if (impact === 0) {
+    return '0.00€'
+  }
+  const sign = impact > 0 ? '+' : ''
+  return `${sign}${impact.toFixed(2)}€`
+}
+
+const calculateBalanceImpact = (expense: Expense): number => {
+  if (!me.value) {
+    return 0
+  }
+
+  let impact = 0
+  if (expense.payePar === me.value['@id']) {
+    impact += expense.montant
+  }
+
+  const userDetail = expense.details?.find(d => d.user === me.value?.['@id'])
+  if (userDetail) {
+    impact -= userDetail.montant
+  }
+
+  return impact
 }
 
 const getUserName = (userIri: string): string => {
@@ -180,6 +211,7 @@ const fetchExpenses = async () => {
 }
 
 onMounted(async () => {
+  await fetchMe()
   await fetchUsers()
   await fetchTags()
   fetchExpenses()
@@ -284,6 +316,19 @@ onMounted(async () => {
   padding: 0.2rem 0.4rem;
   border-radius: 4px;
   font-size: 0.8rem;
+}
+
+.balance-impact {
+  font-weight: bold;
+  margin-left: 0.5rem;
+}
+
+.balance-impact.positive {
+  color: #28a745;
+}
+
+.balance-impact.negative {
+  color: #dc3545;
 }
 
 .expand-indicator {

@@ -9,6 +9,7 @@ interface User {
 }
 
 const users = ref<User[]>([])
+const me = ref<User | null>(null)
 const loading = ref(false)
 const error = ref<string | null>(null)
 const lastFetch = ref<number>(0)
@@ -72,8 +73,26 @@ export function useUsers() {
 
   const refreshUsers = () => fetchUsers(true)
 
+  const fetchMe = async () => {
+    if (me.value) {
+      return
+    }
+    loading.value = true
+    error.value = null
+    try {
+      const response = await axios.get('/users/me')
+      me.value = response.data
+    } catch (err) {
+      console.error('Erreur lors du chargement de l\'utilisateur courant:', err)
+      error.value = 'Erreur lors du chargement de l\'utilisateur courant'
+    } finally {
+      loading.value = false
+    }
+  }
+
   return {
     users: computed(() => users.value),
+    me: computed(() => me.value),
     loading: computed(() => loading.value),
     error: computed(() => error.value),
     usersMap,
@@ -81,6 +100,7 @@ export function useUsers() {
     getUsernameById,
     getUsernameByIri,
     fetchUsers,
-    refreshUsers
+    refreshUsers,
+    fetchMe
   }
 }
