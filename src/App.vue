@@ -12,19 +12,17 @@ const handleLogout = () => {
 
 <template>
   <header>
-    <img alt="Vue logo" class="logo" src="@/assets/logo.svg" width="125" height="125" />
+    <h1>LetMeCount</h1>
 
     <div class="wrapper">
 
       <nav>
         <template v-if="isAuthenticated">
-          <RouterLink to="/">Home</RouterLink>
-          <RouterLink to="/profile">Profil</RouterLink>
+          <RouterLink to="/profile">Mon compte</RouterLink>
           <a href="#" @click.prevent="handleLogout">Déconnexion</a>
         </template>
         <template v-else>
-          <RouterLink to="/">Home</RouterLink>
-          <RouterLink to="/login">Connexion</RouterLink>
+          <!-- Maybe add a link to register in the future -->
         </template>
       </nav>
     </div>

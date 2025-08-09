@@ -1,8 +1,8 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import { authGuard } from './authGuard'
+import { useAuth } from '@/composables/useAuth'
 
 // Pages
-import HomeView from '../views/HomeView.vue'
 import LoginView from '../views/LoginView.vue'
 import ProfileView from "@/views/ProfileView.vue";
 
@@ -12,7 +12,10 @@ const router = createRouter({
     {
       path: '/',
       name: 'home',
-      component: HomeView,
+      redirect: () => {
+        const { isAuthenticated } = useAuth()
+        return isAuthenticated.value ? { name: 'profile' } : { name: 'login' }
+      }
     },
     {
       path: '/profile',

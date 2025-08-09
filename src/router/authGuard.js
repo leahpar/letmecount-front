@@ -7,7 +7,7 @@ export const authGuard = (to, from, next) => {
   if (!isPublicRoute && !isAuthenticated) {
     next({ name: 'login' })
   } else if (to.name === 'login' && isAuthenticated) {
-    next({ name: 'home' })
+    next({ name: 'profile' })
   } else {
     next()
   }

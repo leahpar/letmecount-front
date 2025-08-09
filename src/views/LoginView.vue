@@ -72,7 +72,7 @@ const handleLogin = async () => {
 
     if (response.data.token) {
       login(response.data.token, response.data.refresh_token)
-      router.push({ name: 'home' })
+      router.push({ name: 'profile' })
     } else {
       error.value = 'Erreur de connexion'
     }

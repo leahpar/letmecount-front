@@ -1,7 +1,7 @@
 <template>
   <div class="user-profile">
-    <h2>Profil Utilisateur</h2>
-    
+    <h2>Mon compte</h2>
+
     <div v-if="loading" class="loading">
       Chargement...
     </div>
@@ -11,11 +11,6 @@
     </div>
 
     <div v-else-if="user" class="profile-info">
-      <div class="profile-item">
-        <label>Username :</label>
-        <span>{{ user.username }}</span>
-      </div>
-      
       <div class="profile-item">
         <label>Solde :</label>
         <span class="solde" :class="{ negative: user.solde < 0 }">
