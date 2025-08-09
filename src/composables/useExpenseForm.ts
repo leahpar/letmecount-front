@@ -47,6 +47,8 @@ export function useExpenseForm() {
       if (participantData.value[userId]) {
         participantData.value[userId].parts = 0
         participantData.value[userId].montant = 0
+        // Quand on décoche, retirer le flag manuel
+        participantData.value[userId].manualMontant = false
       }
     }
     updateFormDetails()
@@ -82,13 +84,13 @@ export function useExpenseForm() {
     
     if (formData.value.partage === 'montants') {
       if (montant === 0) {
-        // Montant à 0 : décocher le participant
+        // Montant à 0 : décocher le participant et retirer le flag manuel
         participantCheckboxes.value[userId] = false
-      } else {
-        // Montant > 0 : cocher le participant
-        participantCheckboxes.value[userId] = true
-        // Pour l'instant, pas de gestion manuelle, on recalcule équitablement
         participantData.value[userId].manualMontant = false
+      } else {
+        // Montant > 0 : cocher le participant et marquer comme manuel
+        participantCheckboxes.value[userId] = true
+        participantData.value[userId].manualMontant = true
       }
     } else {
       // En mode parts, on garde la logique manuelle
@@ -136,22 +138,40 @@ export function useExpenseForm() {
         userId => participantCheckboxes.value[userId]
       )
       
-      // Mettre les montants à 0 et parts à 0 pour tous les participants d'abord
+      // Séparer les participants manuels des automatiques
+      const manualParticipants = checkedParticipants.filter(
+        userId => participantData.value[userId]?.manualMontant
+      )
+      
+      const autoParticipants = checkedParticipants.filter(
+        userId => !participantData.value[userId]?.manualMontant
+      )
+      
+      // Mettre les parts à 0 pour tous les participants
       Object.keys(participantData.value).forEach(userId => {
         participantData.value[userId].parts = 0
+        // Remettre à 0 les montants des participants non cochés (y compris manuels)
         if (!participantCheckboxes.value[userId]) {
           participantData.value[userId].montant = 0
+          participantData.value[userId].manualMontant = false
         }
       })
       
-      // Répartition équitable pour tous les participants cochés
-      if (checkedParticipants.length > 0) {
-        const equalShare = Number((formData.value.montant / checkedParticipants.length).toFixed(2))
+      // Calculer le montant total des participants manuels
+      const totalManualMontant = manualParticipants.reduce(
+        (sum, userId) => sum + (participantData.value[userId]?.montant || 0), 0
+      )
+      
+      // Répartir le reste équitablement sur les participants automatiques
+      const remainingMontant = formData.value.montant - totalManualMontant
+      
+      if (autoParticipants.length > 0 && remainingMontant >= 0) {
+        const equalShare = Number((remainingMontant / autoParticipants.length).toFixed(2))
         let totalDistributed = 0
         
-        checkedParticipants.forEach((userId, index) => {
-          if (index === checkedParticipants.length - 1) {
-            const lastShare = Number((formData.value.montant - totalDistributed).toFixed(2))
+        autoParticipants.forEach((userId, index) => {
+          if (index === autoParticipants.length - 1) {
+            const lastShare = Number((remainingMontant - totalDistributed).toFixed(2))
             participantData.value[userId].montant = lastShare
           } else {
             participantData.value[userId].montant = equalShare
@@ -178,8 +198,14 @@ export function useExpenseForm() {
       // Si on passe en mode 'parts', initialiser les parts à 1 pour les participants cochés
       if (formData.value.partage === 'parts' && participantCheckboxes.value[userId]) {
         participantData.value[userId].parts = 1
+      } else if (formData.value.partage === 'montants') {
+        // Si on passe en mode 'montants', remettre les parts à 0
+        participantData.value[userId].parts = 0
       }
     })
+    
+    // Mettre à jour formData.details avec les nouvelles parts avant de recalculer
+    updateFormDetails()
     calculateAmounts()
   }
 
