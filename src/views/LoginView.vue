@@ -70,6 +70,8 @@ const handleLogin = async () => {
 
     if (response.data.token) {
       localStorage.setItem('jwt_token', response.data.token)
+      localStorage.setItem('refresh_token', response.data.refresh_token)
+
       router.push({ name: 'home' })
     } else {
       error.value = 'Erreur de connexion'
