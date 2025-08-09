@@ -5,7 +5,7 @@ const instance = axios.create({
   baseURL: 'http://127.0.0.1:8888/',
 });
 
-// Intercepteur de REQUÊTE : ajoute le token JWT à chaque requête
+// Intercepteur de REQUÊTE : ajoute le token JWT et configure le Content-Type
 instance.interceptors.request.use(
   (config) => {
     const { getToken } = useAuth();
@@ -13,6 +13,12 @@ instance.interceptors.request.use(
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
+    
+    // Utiliser JSON-LD pour les requêtes POST/PUT/PATCH avec du contenu
+    if (['post', 'put', 'patch'].includes(config.method?.toLowerCase()) && config.data) {
+      config.headers['Content-Type'] = 'application/ld+json';
+    }
+    
     return config;
   },
   (error) => {
