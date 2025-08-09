@@ -28,6 +28,7 @@
         </div>
         <div class="expense-details">
           <span class="expense-date">{{ formatDate(expense.date) }}</span>
+          <span class="expense-payer">Payé par {{ getPayer(expense) }}</span>
           <span 
             v-if="expense.details && expense.details.length > 0" 
             class="expand-indicator"
@@ -80,6 +81,7 @@ interface Expense {
   montant: number
   date: string
   partage: 'parts' | 'montants'
+  payePar: string
   details?: ExpenseDetail[]
 }
 
@@ -116,6 +118,10 @@ const formatDate = (dateString: string): string => {
 
 const getUserName = (userIri: string): string => {
   return `Utilisateur ${userIri.split('/').pop()}`
+}
+
+const getPayer = (expense: Expense): string => {
+  return getUserName(expense.payePar)
 }
 
 const toggleExpanded = (expenseId: string) => {
@@ -245,6 +251,12 @@ onMounted(() => {
   margin-bottom: 0.5rem;
   font-size: 0.9rem;
   color: #666;
+  gap: 1rem;
+}
+
+.expense-payer {
+  font-style: italic;
+  color: #555;
 }
 
 .expand-indicator {
@@ -305,8 +317,13 @@ onMounted(() => {
     gap: 0.25rem;
   }
 
+  .expense-payer {
+    order: 2;
+  }
+
   .expand-indicator {
     align-self: flex-end;
+    order: 3;
   }
 
   .participants-table {
