@@ -19,6 +19,8 @@
         v-for="expense in expenses" 
         :key="expense['@id']" 
         class="expense-item"
+        :class="{ 'clickable': expense.details && expense.details.length > 0 }"
+        @click="expense.details && expense.details.length > 0 ? toggleExpanded(expense['@id']) : null"
       >
         <div class="expense-header">
           <h4 class="expense-title">{{ expense.titre }}</h4>
@@ -26,19 +28,36 @@
         </div>
         <div class="expense-details">
           <span class="expense-date">{{ formatDate(expense.date) }}</span>
-          <span class="expense-sharing">Partage: {{ expense.partage === 'parts' ? 'Par parts' : 'Par montants' }}</span>
+          <span 
+            v-if="expense.details && expense.details.length > 0" 
+            class="expand-indicator"
+          >
+            {{ isExpanded(expense['@id']) ? '▼' : '▶' }}
+          </span>
         </div>
-        <div v-if="expense.details && expense.details.length > 0" class="expense-participants">
-          <span class="participants-label">Participants:</span>
-          <div class="participants-list">
-            <span 
-              v-for="detail in expense.details" 
-              :key="detail.user" 
-              class="participant"
-            >
-              {{ getUserName(detail.user) }} ({{ formatAmount(detail.montant) }} €)
-            </span>
-          </div>
+        <div 
+          v-if="expense.details && expense.details.length > 0 && isExpanded(expense['@id'])" 
+          class="expense-participants"
+        >
+          <table class="participants-table">
+            <thead>
+              <tr>
+                <th>Utilisateur</th>
+                <th v-if="expense.partage === 'parts'">Parts</th>
+                <th>Montant</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr 
+                v-for="detail in expense.details" 
+                :key="detail.user"
+              >
+                <td>{{ getUserName(detail.user) }}</td>
+                <td v-if="expense.partage === 'parts'">{{ detail.parts }}</td>
+                <td class="amount">{{ formatAmount(detail.montant) }} €</td>
+              </tr>
+            </tbody>
+          </table>
         </div>
       </div>
     </div>
@@ -78,6 +97,7 @@ const props = withDefaults(defineProps<Props>(), {
 const expenses = ref<Expense[]>([])
 const loading = ref(false)
 const error = ref('')
+const expandedExpenses = ref<Set<string>>(new Set())
 
 const formatAmount = (amount: number): string => {
   return amount.toFixed(2)
@@ -96,6 +116,18 @@ const formatDate = (dateString: string): string => {
 
 const getUserName = (userIri: string): string => {
   return `Utilisateur ${userIri.split('/').pop()}`
+}
+
+const toggleExpanded = (expenseId: string) => {
+  if (expandedExpenses.value.has(expenseId)) {
+    expandedExpenses.value.delete(expenseId)
+  } else {
+    expandedExpenses.value.add(expenseId)
+  }
+}
+
+const isExpanded = (expenseId: string): boolean => {
+  return expandedExpenses.value.has(expenseId)
 }
 
 const fetchExpenses = async () => {
@@ -179,6 +211,14 @@ onMounted(() => {
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
+.expense-item.clickable {
+  cursor: pointer;
+}
+
+.expense-item.clickable:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
 .expense-header {
   display: flex;
   justify-content: space-between;
@@ -201,9 +241,17 @@ onMounted(() => {
 .expense-details {
   display: flex;
   justify-content: space-between;
+  align-items: center;
   margin-bottom: 0.5rem;
   font-size: 0.9rem;
   color: #666;
+}
+
+.expand-indicator {
+  color: #007bff;
+  font-size: 0.8rem;
+  font-weight: bold;
+  margin-left: auto;
 }
 
 .expense-participants {
@@ -212,25 +260,36 @@ onMounted(() => {
   padding-top: 0.5rem;
 }
 
-.participants-label {
-  font-weight: 500;
-  color: #555;
-  display: block;
-  margin-bottom: 0.25rem;
+.participants-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9rem;
 }
 
-.participants-list {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.5rem;
-}
-
-.participant {
+.participants-table th {
   background-color: #f8f9fa;
-  padding: 0.25rem 0.5rem;
-  border-radius: 4px;
+  padding: 0.5rem 0.75rem;
+  text-align: left;
+  font-weight: 600;
+  color: #555;
+  border-bottom: 2px solid #dee2e6;
   font-size: 0.85rem;
+}
+
+.participants-table td {
+  padding: 0.5rem 0.75rem;
+  border-bottom: 1px solid #eee;
   color: #495057;
+}
+
+.participants-table .amount {
+  font-weight: 500;
+  color: #007bff;
+  text-align: right;
+}
+
+.participants-table tbody tr:hover {
+  background-color: #f8f9fa;
 }
 
 @media (max-width: 768px) {
@@ -242,12 +301,21 @@ onMounted(() => {
 
   .expense-details {
     flex-direction: column;
+    align-items: flex-start;
     gap: 0.25rem;
   }
 
-  .participants-list {
-    flex-direction: column;
-    gap: 0.25rem;
+  .expand-indicator {
+    align-self: flex-end;
+  }
+
+  .participants-table {
+    font-size: 0.85rem;
+  }
+
+  .participants-table th,
+  .participants-table td {
+    padding: 0.4rem 0.5rem;
   }
 }
 </style>
