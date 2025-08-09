@@ -5,6 +5,7 @@ import { useAuth } from '@/composables/useAuth'
 // Pages
 import LoginView from '../views/LoginView.vue'
 import ProfileView from "@/views/ProfileView.vue";
+import CreateExpenseView from "@/views/CreateExpenseView.vue";
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -21,6 +22,11 @@ const router = createRouter({
       path: '/profile',
       name: 'profile',
       component: ProfileView,
+    },
+    {
+      path: '/expenses/create',
+      name: 'create-expense',
+      component: CreateExpenseView,
     },
     {
       path: '/login',

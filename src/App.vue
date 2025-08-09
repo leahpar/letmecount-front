@@ -19,6 +19,7 @@ const handleLogout = () => {
       <nav>
         <template v-if="isAuthenticated">
           <RouterLink to="/profile">Mon compte</RouterLink>
+          <RouterLink to="/expenses/create">Créer une dépense</RouterLink>
           <a href="#" @click.prevent="handleLogout">Déconnexion</a>
         </template>
         <template v-else>

@@ -1,0 +1,90 @@
+import { ref, computed } from 'vue'
+import axios from '@/plugins/axios'
+
+interface ExpenseDetail {
+  user: string
+  parts: number
+  montant: number
+}
+
+interface Expense {
+  '@id': string
+  id?: number
+  titre: string
+  montant: number
+  date: string
+  partage: 'parts' | 'montants'
+  payePar: string
+  details?: ExpenseDetail[]
+  tag?: string
+}
+
+interface CreateExpenseData {
+  details: ExpenseDetail[]
+  date: string
+  montant: number
+  titre: string
+  partage: 'parts' | 'montants'
+  tag?: string
+  payePar: string
+}
+
+const loading = ref(false)
+const error = ref<string | null>(null)
+
+export function useExpenses() {
+  const createExpense = async (expenseData: CreateExpenseData): Promise<Expense | null> => {
+    loading.value = true
+    error.value = null
+
+    try {
+      const response = await axios.post('/depenses', expenseData)
+      return response.data
+    } catch (err: unknown) {
+      console.error('Erreur lors de la création de la dépense:', err)
+      if (err && typeof err === 'object' && 'response' in err) {
+        const axiosError = err as { response?: { data?: { message?: string } } }
+        error.value = axiosError.response?.data?.message || 'Erreur lors de la création de la dépense'
+      } else {
+        error.value = 'Erreur lors de la création de la dépense'
+      }
+      return null
+    } finally {
+      loading.value = false
+    }
+  }
+
+  const fetchExpenses = async (params: { limit?: number; tagId?: string } = {}): Promise<Expense[]> => {
+    loading.value = true
+    error.value = null
+
+    try {
+      let url = `/depenses?page=1&itemsPerPage=${params.limit || 10}`
+      
+      if (params.tagId) {
+        url += `&tags.id=${params.tagId}`
+      }
+
+      const response = await axios.get(url)
+      return response.data.member || []
+    } catch (err: unknown) {
+      console.error('Erreur lors du chargement des dépenses:', err)
+      if (err && typeof err === 'object' && 'response' in err) {
+        const axiosError = err as { response?: { data?: { message?: string } } }
+        error.value = axiosError.response?.data?.message || 'Erreur lors du chargement des dépenses'
+      } else {
+        error.value = 'Erreur lors du chargement des dépenses'
+      }
+      return []
+    } finally {
+      loading.value = false
+    }
+  }
+
+  return {
+    loading: computed(() => loading.value),
+    error: computed(() => error.value),
+    createExpense,
+    fetchExpenses
+  }
+}
