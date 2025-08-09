@@ -1,4 +1,4 @@
-import { ref, watch } from 'vue'
+import { ref, watch, computed } from 'vue'
 
 interface ExpenseDetail {
   user: string
@@ -209,6 +209,55 @@ export function useExpenseForm() {
     calculateAmounts()
   }
 
+  // Computed - Vérification de la validité du formulaire
+  const isFormValid = computed(() => {
+    return (
+      formData.value.titre.trim() !== '' &&
+      formData.value.montant > 0 &&
+      formData.value.date !== '' &&
+      formData.value.payePar !== '' &&
+      formData.value.tag !== ''
+    )
+  })
+
+  // Computed - Vérification de conformité de la répartition
+  const isValidRepartition = computed(() => {
+    if (formData.value.montant <= 0 || formData.value.details.length === 0) {
+      return false
+    }
+    
+    const totalMontants = formData.value.details.reduce((sum, detail) => sum + detail.montant, 0)
+    // Tolérance de 0.01 pour les arrondis
+    return Math.abs(totalMontants - formData.value.montant) <= 0.01
+  })
+
+  // Computed - Le formulaire complet est-il valide et prêt pour soumission
+  const canSubmit = computed(() => {
+    return isFormValid.value && isValidRepartition.value
+  })
+
+  const repartitionStatus = computed(() => {
+    if (formData.value.montant <= 0) {
+      return { valid: false, message: 'Veuillez saisir un montant' }
+    }
+    
+    if (formData.value.details.length === 0) {
+      return { valid: false, message: 'Veuillez sélectionner au moins un participant' }
+    }
+    
+    const totalMontants = formData.value.details.reduce((sum, detail) => sum + detail.montant, 0)
+    const difference = Math.abs(totalMontants - formData.value.montant)
+    
+    if (difference > 0.01) {
+      return { 
+        valid: false, 
+        message: `Écart de ${difference.toFixed(2)}€ (total: ${totalMontants.toFixed(2)}€, attendu: ${formData.value.montant.toFixed(2)}€)` 
+      }
+    }
+    
+    return { valid: true, message: 'Répartition conforme' }
+  })
+
   // Watchers
   watch(() => formData.value.montant, calculateAmounts)
   watch(() => formData.value.partage, resetManualMontants)
@@ -222,6 +271,10 @@ export function useExpenseForm() {
     updateParticipantMontant,
     calculateAmounts,
     initializeParticipants,
-    resetManualMontants
+    resetManualMontants,
+    isFormValid,
+    isValidRepartition,
+    canSubmit,
+    repartitionStatus
   }
 }

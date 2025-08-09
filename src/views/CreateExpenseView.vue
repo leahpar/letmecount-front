@@ -24,6 +24,11 @@
           @update-participant-montant="updateParticipantMontant"
         />
 
+        <div class="repartition-status" :class="{ 'valid': repartitionStatus.valid, 'invalid': !repartitionStatus.valid }">
+          <span class="status-icon">{{ repartitionStatus.valid ? '✓' : '⚠' }}</span>
+          {{ repartitionStatus.message }}
+        </div>
+
         <div v-if="error" class="error-message">
           {{ error }}
         </div>
@@ -32,7 +37,7 @@
           <button type="button" @click="goBack" class="cancel-btn">
             Annuler
           </button>
-          <button type="submit" :disabled="loading" class="submit-btn">
+          <button type="submit" :disabled="loading || !canSubmit" class="submit-btn">
             {{ loading ? 'Création...' : 'Créer la dépense' }}
           </button>
         </div>
@@ -64,7 +69,11 @@ const {
   updateParticipant,
   updateParticipantParts,
   updateParticipantMontant,
-  initializeParticipants
+  initializeParticipants,
+  isFormValid,
+  isValidRepartition,
+  canSubmit,
+  repartitionStatus
 } = useExpenseForm()
 
 const basicFields = computed({
@@ -85,17 +94,9 @@ const basicFields = computed({
 })
 
 const handleCreateExpense = async () => {
-  if (formData.value.details.length === 0) {
-    alert('Vous devez ajouter au moins un participant')
+  // La validation est maintenant gérée par canSubmit
+  if (!canSubmit.value) {
     return
-  }
-
-  if (formData.value.partage === 'montants') {
-    const totalMontants = formData.value.details.reduce((sum, detail) => sum + detail.montant, 0)
-    if (Math.abs(totalMontants - formData.value.montant) > 0.01) {
-      alert('La somme des montants des participants doit être égale au montant total')
-      return
-    }
   }
 
   const expenseData = {
@@ -200,5 +201,32 @@ onMounted(async () => {
 .submit-btn:disabled {
   background-color: #6c757d;
   cursor: not-allowed;
+}
+
+.repartition-status {
+  padding: 0.75rem;
+  border-radius: 4px;
+  margin-bottom: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-weight: 500;
+}
+
+.repartition-status.valid {
+  background-color: #d4edda;
+  color: #155724;
+  border: 1px solid #c3e6cb;
+}
+
+.repartition-status.invalid {
+  background-color: #f8d7da;
+  color: #721c24;
+  border: 1px solid #f5c6cb;
+}
+
+.status-icon {
+  font-weight: bold;
+  font-size: 1.1rem;
 }
 </style>
