@@ -21,18 +21,16 @@
         </label>
 
         <input
-          v-if="partageMode === 'parts' && participantCheckboxes[user['@id']]"
+          v-if="partageMode === 'parts'"
           :value="getParticipantData(user['@id']).parts"
-          @input="updateParticipantParts(user['@id'], parseInt(($event.target as HTMLInputElement).value) || 1)"
+          @input="updateParticipantParts(user['@id'], parseInt(($event.target as HTMLInputElement).value) || 0)"
           type="number"
-          min="1"
+          min="0"
           step="1"
           placeholder="Parts"
-          required
         >
 
         <input
-          v-if="participantCheckboxes[user['@id']]"
           :value="getParticipantData(user['@id']).montant"
           @input="updateParticipantMontant(user['@id'], parseFloat(($event.target as HTMLInputElement).value) || 0)"
           type="number"

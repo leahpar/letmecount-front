@@ -32,20 +32,37 @@ export function useExpenseForm() {
     if (checked) {
       if (!participantData.value[userId]) {
         participantData.value[userId] = { parts: 1, montant: 0, manualMontant: false }
+      } else {
+        participantData.value[userId].parts = 1
       }
     } else {
-      delete participantData.value[userId]
+      if (participantData.value[userId]) {
+        participantData.value[userId].parts = 0
+        participantData.value[userId].montant = 0
+      }
     }
     updateFormDetails()
     calculateAmounts()
   }
 
   const updateParticipantParts = (userId: string, parts: number) => {
-    if (participantData.value[userId]) {
-      participantData.value[userId].parts = parts
-      updateFormDetails()
-      calculateAmounts()
+    if (!participantData.value[userId]) {
+      participantData.value[userId] = { parts: 0, montant: 0, manualMontant: false }
     }
+    
+    participantData.value[userId].parts = parts
+    
+    // Si les parts sont mises à 0, décocher le participant et mettre le montant à 0
+    if (parts === 0) {
+      participantCheckboxes.value[userId] = false
+      participantData.value[userId].montant = 0
+    } else {
+      // Si les parts sont > 0, cocher le participant
+      participantCheckboxes.value[userId] = true
+    }
+    
+    updateFormDetails()
+    calculateAmounts()
   }
 
   const updateParticipantMontant = (userId: string, montant: number) => {
@@ -130,6 +147,7 @@ export function useExpenseForm() {
   const initializeParticipants = (users: { '@id': string }[]) => {
     users.forEach(user => {
       participantCheckboxes.value[user['@id']] = false
+      participantData.value[user['@id']] = { parts: 0, montant: 0, manualMontant: false }
     })
   }
 
