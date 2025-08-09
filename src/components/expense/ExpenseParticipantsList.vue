@@ -29,6 +29,17 @@
           step="1"
           placeholder="Parts"
         >
+        
+        <input
+          v-if="partageMode === 'montants'"
+          :value="0"
+          type="number"
+          min="0"
+          step="1"
+          placeholder="Parts"
+          disabled
+          class="disabled-input"
+        >
 
         <input
           :value="getParticipantData(user['@id']).montant"
@@ -191,5 +202,11 @@ const getParticipantData = (userId: string): ParticipantData => {
   background-color: #e8f5e8;
   border-color: #28a745;
   color: #155724;
+}
+
+.participant-row input[type="number"].disabled-input {
+  background-color: #f8f9fa;
+  color: #6c757d;
+  cursor: not-allowed;
 }
 </style>

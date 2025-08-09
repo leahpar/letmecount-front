@@ -31,9 +31,17 @@ export function useExpenseForm() {
     
     if (checked) {
       if (!participantData.value[userId]) {
-        participantData.value[userId] = { parts: 1, montant: 0, manualMontant: false }
+        if (formData.value.partage === 'parts') {
+          participantData.value[userId] = { parts: 1, montant: 0, manualMontant: false }
+        } else {
+          participantData.value[userId] = { parts: 0, montant: 0, manualMontant: false }
+        }
       } else {
-        participantData.value[userId].parts = 1
+        if (formData.value.partage === 'parts') {
+          participantData.value[userId].parts = 1
+        } else {
+          participantData.value[userId].parts = 0
+        }
       }
     } else {
       if (participantData.value[userId]) {
@@ -66,12 +74,29 @@ export function useExpenseForm() {
   }
 
   const updateParticipantMontant = (userId: string, montant: number) => {
-    if (participantData.value[userId]) {
-      participantData.value[userId].montant = montant
-      participantData.value[userId].manualMontant = true
-      updateFormDetails()
-      calculateAmounts()
+    if (!participantData.value[userId]) {
+      participantData.value[userId] = { parts: 0, montant: 0, manualMontant: false }
     }
+    
+    participantData.value[userId].montant = montant
+    
+    if (formData.value.partage === 'montants') {
+      if (montant === 0) {
+        // Montant à 0 : décocher le participant
+        participantCheckboxes.value[userId] = false
+      } else {
+        // Montant > 0 : cocher le participant
+        participantCheckboxes.value[userId] = true
+        // Pour l'instant, pas de gestion manuelle, on recalcule équitablement
+        participantData.value[userId].manualMontant = false
+      }
+    } else {
+      // En mode parts, on garde la logique manuelle
+      participantData.value[userId].manualMontant = true
+    }
+    
+    updateFormDetails()
+    calculateAmounts()
   }
 
   const updateFormDetails = () => {
@@ -111,27 +136,22 @@ export function useExpenseForm() {
         userId => participantCheckboxes.value[userId]
       )
       
-      const manualParticipants = checkedParticipants.filter(
-        userId => participantData.value[userId]?.manualMontant
-      )
+      // Mettre les montants à 0 et parts à 0 pour tous les participants d'abord
+      Object.keys(participantData.value).forEach(userId => {
+        participantData.value[userId].parts = 0
+        if (!participantCheckboxes.value[userId]) {
+          participantData.value[userId].montant = 0
+        }
+      })
       
-      const autoParticipants = checkedParticipants.filter(
-        userId => !participantData.value[userId]?.manualMontant
-      )
-      
-      const totalManualMontant = manualParticipants.reduce(
-        (sum, userId) => sum + (participantData.value[userId]?.montant || 0), 0
-      )
-      
-      const remainingMontant = formData.value.montant - totalManualMontant
-      
-      if (autoParticipants.length > 0 && remainingMontant >= 0) {
-        const equalShare = Number((remainingMontant / autoParticipants.length).toFixed(2))
+      // Répartition équitable pour tous les participants cochés
+      if (checkedParticipants.length > 0) {
+        const equalShare = Number((formData.value.montant / checkedParticipants.length).toFixed(2))
         let totalDistributed = 0
         
-        autoParticipants.forEach((userId, index) => {
-          if (index === autoParticipants.length - 1) {
-            const lastShare = Number((remainingMontant - totalDistributed).toFixed(2))
+        checkedParticipants.forEach((userId, index) => {
+          if (index === checkedParticipants.length - 1) {
+            const lastShare = Number((formData.value.montant - totalDistributed).toFixed(2))
             participantData.value[userId].montant = lastShare
           } else {
             participantData.value[userId].montant = equalShare
@@ -154,12 +174,17 @@ export function useExpenseForm() {
   const resetManualMontants = () => {
     Object.keys(participantData.value).forEach(userId => {
       participantData.value[userId].manualMontant = false
+      
+      // Si on passe en mode 'parts', initialiser les parts à 1 pour les participants cochés
+      if (formData.value.partage === 'parts' && participantCheckboxes.value[userId]) {
+        participantData.value[userId].parts = 1
+      }
     })
     calculateAmounts()
   }
 
   // Watchers
-  watch([() => formData.value.montant, () => formData.value.details], calculateAmounts, { deep: true })
+  watch(() => formData.value.montant, calculateAmounts)
   watch(() => formData.value.partage, resetManualMontants)
 
   return {
