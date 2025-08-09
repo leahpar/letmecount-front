@@ -100,12 +100,6 @@ onMounted(() => {
   text-align: center;
 }
 
-.profile-info {
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-}
-
 .profile-item {
   display: flex;
   justify-content: space-between;
@@ -134,5 +128,11 @@ onMounted(() => {
 
 .solde:not(.negative) {
   color: #28a745;
+}
+
+.profile-info {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
 }
 </style>
