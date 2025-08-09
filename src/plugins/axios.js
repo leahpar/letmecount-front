@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { useAuth } from '@/composables/useAuth';
 
 const instance = axios.create({
   baseURL: 'http://127.0.0.1:8888/',
@@ -7,7 +8,8 @@ const instance = axios.create({
 // Intercepteur de REQUÊTE : ajoute le token JWT à chaque requête
 instance.interceptors.request.use(
   (config) => {
-    const token = localStorage.getItem('jwt_token');
+    const { getToken } = useAuth();
+    const token = getToken();
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
@@ -29,7 +31,9 @@ instance.interceptors.response.use(
     if (error.response.status === 401 && !originalRequest._retry) {
       originalRequest._retry = true; // On marque la requête pour éviter une boucle infinie
 
-      const refreshToken = localStorage.getItem('refresh_token');
+      const { getRefreshToken, setTokens, clearTokens, redirectToLogin } = useAuth();
+      const refreshToken = getRefreshToken();
+      
       if (refreshToken) {
         try {
           // Appel à l'API pour rafraîchir le token
@@ -37,9 +41,8 @@ instance.interceptors.response.use(
             refresh_token: refreshToken
           });
 
-          // Stocke le nouveau token et le nouveau refresh token
-          localStorage.setItem('jwt_token', data.token);
-          localStorage.setItem('refresh_token', data.refresh_token);
+          // Stocke le nouveau token et le nouveau refresh token via useAuth
+          setTokens(data.token, data.refresh_token);
 
           // Met à jour l'en-tête de la requête originale avec le nouveau token
           originalRequest.headers.Authorization = `Bearer ${data.token}`;
@@ -48,15 +51,14 @@ instance.interceptors.response.use(
           return instance(originalRequest);
         } catch (refreshError) {
           // Si le refresh échoue (token invalide ou expiré), déconnecte l'utilisateur
-          localStorage.removeItem('jwt_token');
-          localStorage.removeItem('refresh_token');
-          window.location.href = '/login'; // Redirige vers la page de login
+          clearTokens();
+          redirectToLogin();
           return Promise.reject(refreshError);
         }
       } else {
         // Pas de refresh token, on redirige vers le login
-        localStorage.removeItem('jwt_token');
-        window.location.href = '/login';
+        clearTokens();
+        redirectToLogin();
       }
     }
     return Promise.reject(error);

@@ -6,7 +6,7 @@ const refreshToken = ref<string | null>(localStorage.getItem('refresh_token'))
 export function useAuth() {
   const isAuthenticated = computed(() => !!token.value)
 
-  const login = (newToken: string, newRefreshToken?: string) => {
+  const setTokens = (newToken: string, newRefreshToken?: string) => {
     token.value = newToken
     localStorage.setItem('jwt_token', newToken)
     
@@ -16,6 +16,10 @@ export function useAuth() {
     }
   }
 
+  const login = (newToken: string, newRefreshToken?: string) => {
+    setTokens(newToken, newRefreshToken)
+  }
+
   const logout = () => {
     token.value = null
     refreshToken.value = null
@@ -23,14 +27,25 @@ export function useAuth() {
     localStorage.removeItem('refresh_token')
   }
 
+  const clearTokens = () => {
+    logout()
+  }
+
   const getToken = () => token.value
   const getRefreshToken = () => refreshToken.value
+
+  const redirectToLogin = () => {
+    window.location.href = '/login'
+  }
 
   return {
     isAuthenticated,
     login,
     logout,
     getToken,
-    getRefreshToken
+    getRefreshToken,
+    setTokens,
+    clearTokens,
+    redirectToLogin
   }
 }
