@@ -68,6 +68,7 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
 import axios from '@/plugins/axios'
+import { useUsers } from '@/composables/useUsers'
 
 interface ExpenseDetail {
   user: string
@@ -101,6 +102,8 @@ const loading = ref(false)
 const error = ref('')
 const expandedExpenses = ref<Set<string>>(new Set())
 
+const { getUsernameByIri, fetchUsers } = useUsers()
+
 const formatAmount = (amount: number): string => {
   return amount.toFixed(2)
 }
@@ -117,7 +120,7 @@ const formatDate = (dateString: string): string => {
 }
 
 const getUserName = (userIri: string): string => {
-  return `Utilisateur ${userIri.split('/').pop()}`
+  return getUsernameByIri(userIri)
 }
 
 const getPayer = (expense: Expense): string => {
@@ -162,7 +165,8 @@ const fetchExpenses = async () => {
   }
 }
 
-onMounted(() => {
+onMounted(async () => {
+  await fetchUsers()
   fetchExpenses()
 })
 </script>
