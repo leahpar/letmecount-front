@@ -82,6 +82,9 @@ export function useUsers() {
     try {
       const response = await axios.get('/users/me')
       me.value = response.data
+      if (me.value && me.value['@id'] === '/users/me' && me.value.id) {
+        me.value['@id'] = `/users/${me.value.id}`
+      }
     } catch (err) {
       console.error('Erreur lors du chargement de l\'utilisateur courant:', err)
       error.value = 'Erreur lors du chargement de l\'utilisateur courant'

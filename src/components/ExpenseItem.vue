@@ -12,8 +12,8 @@
       <span class="expense-date">{{ formatDate(expense.date) }}</span>
       <span class="expense-payer">
         Payé par {{ getPayer(expense) }}
-        <span :class="['balance-impact', { 'positive': calculateBalanceImpact(expense) > 0, 'negative': calculateBalanceImpact(expense) < 0 }]">
-          ({{ formatImpact(calculateBalanceImpact(expense)) }})
+        <span :class="['balance-impact', { 'positive': balanceImpact > 0, 'negative': balanceImpact < 0 }]">
+          ({{ formatImpact(balanceImpact) }})
         </span>
       </span>
       <span v-if="!tagId && expense.tag" class="expense-tag">
@@ -54,7 +54,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
 import { useUsers } from '@/composables/useUsers'
 import { useTags } from '@/composables/useTags'
 
@@ -110,23 +110,23 @@ const formatImpact = (impact: number): string => {
   return `${sign}${impact.toFixed(2)}€`
 }
 
-const calculateBalanceImpact = (expense: Expense): number => {
+const balanceImpact = computed((): number => {
   if (!me.value) {
     return 0
   }
-
+  const expense = props.expense
   let impact = 0
   if (expense.payePar === me.value['@id']) {
     impact += expense.montant
   }
 
-  const userDetail = expense.details?.find(d => d.user === me.value?.['@id'])
+  const userDetail = expense.details.find(d => d.user === me.value['@id'])
   if (userDetail) {
     impact -= userDetail.montant
   }
 
   return impact
-}
+})
 
 const getUserName = (userIri: string): string => {
   return getUsernameByIri(userIri)
