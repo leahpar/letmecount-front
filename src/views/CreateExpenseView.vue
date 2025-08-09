@@ -23,7 +23,7 @@
             v-model.number="formData.montant"
             type="number"
             step="0.01"
-            min="0"
+            min="1"
             required
             placeholder="0.00"
           >
@@ -34,7 +34,7 @@
           <input
             id="date"
             v-model="formData.date"
-            type="datetime-local"
+            type="date"
             required
           >
         </div>
@@ -58,24 +58,27 @@
         </div>
 
         <div class="form-group">
-          <label for="partage">Type de partage :</label>
-          <select
-            id="partage"
-            v-model="formData.partage"
-            required
-          >
-            <option value="parts">Par parts</option>
-            <option value="montants">Par montants exacts</option>
-          </select>
+          <label for="partage">Type de partage</label>
+          <div class="toggle-container" @click="togglePartage">
+            <span :class="{ active: formData.partage === 'parts' }">Par parts</span>
+            <button
+              type="button"
+              class="toggle-switch"
+              :class="{ active: formData.partage === 'montants' }">
+              <span class="toggle-slider"></span>
+            </button>
+            <span :class="{ active: formData.partage === 'montants' }">Par montants</span>
+          </div>
         </div>
 
         <div class="form-group">
-          <label for="tag">Tag (optionnel) :</label>
+          <label for="tag">Tag</label>
           <select
             id="tag"
             v-model="formData.tag"
+            required
           >
-            <option value="">-- Aucun tag --</option>
+            <option value="">-- Choisir un tag --</option>
             <option
               v-for="tag in tags"
               :key="tag['@id']"
@@ -186,12 +189,16 @@ interface ExpenseDetail {
 const formData = ref({
   titre: '',
   montant: 0,
-  date: new Date().toISOString().slice(0, 16),
+  date: new Date().toISOString().slice(0, 10),
   payePar: '',
   partage: 'parts' as 'parts' | 'montants',
   tag: '',
   details: [] as ExpenseDetail[]
 })
+
+const togglePartage = () => {
+  formData.value.partage = formData.value.partage === 'parts' ? 'montants' : 'parts'
+}
 
 const addParticipant = () => {
   formData.value.details.push({
@@ -250,7 +257,7 @@ const handleCreateExpense = async () => {
     payePar: formData.value.payePar,
     partage: formData.value.partage,
     details: formData.value.details,
-    ...(formData.value.tag && { tag: formData.value.tag })
+    tag: formData.value.tag
   }
 
   const createdExpense = await createExpense(expenseData)
@@ -435,5 +442,53 @@ onMounted(async () => {
 .submit-btn:disabled {
   background-color: #6c757d;
   cursor: not-allowed;
+}
+
+.toggle-container {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.toggle-container span {
+  font-size: 0.9rem;
+  color: #666;
+  transition: color 0.2s;
+}
+
+.toggle-container span.active {
+  color: #007bff;
+  font-weight: 600;
+}
+
+.toggle-switch {
+  position: relative;
+  width: 50px;
+  height: 24px;
+  background-color: #ddd;
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.toggle-switch.active {
+  background-color: #007bff;
+}
+
+.toggle-slider {
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 20px;
+  height: 20px;
+  background-color: white;
+  border-radius: 50%;
+  transition: transform 0.2s;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+}
+
+.toggle-switch.active .toggle-slider {
+  transform: translateX(26px);
 }
 </style>
