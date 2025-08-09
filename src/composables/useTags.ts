@@ -4,8 +4,7 @@ import axios from '@/plugins/axios'
 interface Tag {
   '@id': string
   id: number
-  name: string
-  color: string
+  libelle: string
 }
 
 const tags = ref<Tag[]>([])

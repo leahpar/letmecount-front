@@ -29,6 +29,9 @@
         <div class="expense-details">
           <span class="expense-date">{{ formatDate(expense.date) }}</span>
           <span class="expense-payer">Payé par {{ getPayer(expense) }}</span>
+          <span v-if="!props.tagId && expense.tag" class="expense-tag">
+            #{{ getTagName(expense.tag) }}
+          </span>
           <span 
             v-if="expense.details && expense.details.length > 0" 
             class="expand-indicator"
@@ -69,6 +72,7 @@
 import { ref, onMounted } from 'vue'
 import axios from '@/plugins/axios'
 import { useUsers } from '@/composables/useUsers'
+import { useTags } from '@/composables/useTags'
 
 interface ExpenseDetail {
   user: string
@@ -84,12 +88,13 @@ interface Expense {
   partage: 'parts' | 'montants'
   payePar: string
   details?: ExpenseDetail[]
+  tag?: string
 }
 
 interface Props {
   title?: string
   limit?: number
-  userId?: string
+  tagId?: string
 }
 
 const props = withDefaults(defineProps<Props>(), {
@@ -103,6 +108,7 @@ const error = ref('')
 const expandedExpenses = ref<Set<string>>(new Set())
 
 const { getUsernameByIri, fetchUsers } = useUsers()
+const { getTagByIri, fetchTags } = useTags()
 
 const formatAmount = (amount: number): string => {
   return amount.toFixed(2)
@@ -127,6 +133,14 @@ const getPayer = (expense: Expense): string => {
   return getUserName(expense.payePar)
 }
 
+const getTagName = (tagIri: string | undefined): string => {
+  if (!tagIri) {
+    return ''
+  }
+  const tag = getTagByIri(tagIri)
+  return tag?.libelle || ''
+}
+
 const toggleExpanded = (expenseId: string) => {
   if (expandedExpenses.value.has(expenseId)) {
     expandedExpenses.value.delete(expenseId)
@@ -146,8 +160,8 @@ const fetchExpenses = async () => {
   try {
     let url = `/depenses?page=1&itemsPerPage=${props.limit}`
     
-    if (props.userId) {
-      url += `&details.user=${props.userId}`
+    if (props.tagId) {
+      url += `&tags.id=${props.tagId}`
     }
 
     const response = await axios.get(url)
@@ -167,6 +181,7 @@ const fetchExpenses = async () => {
 
 onMounted(async () => {
   await fetchUsers()
+  await fetchTags()
   fetchExpenses()
 })
 </script>
@@ -261,6 +276,14 @@ onMounted(async () => {
 .expense-payer {
   font-style: italic;
   color: #555;
+}
+
+.expense-tag {
+  background-color: #eee;
+  color: #333;
+  padding: 0.2rem 0.4rem;
+  border-radius: 4px;
+  font-size: 0.8rem;
 }
 
 .expand-indicator {
