@@ -1,5 +1,13 @@
 <script setup lang="ts">
 import { RouterLink, RouterView } from 'vue-router'
+import { useAuth } from '@/composables/useAuth'
+
+const { isAuthenticated, logout } = useAuth()
+
+const handleLogout = () => {
+  logout()
+  window.location.href = '/login'
+}
 </script>
 
 <template>
@@ -9,8 +17,15 @@ import { RouterLink, RouterView } from 'vue-router'
     <div class="wrapper">
 
       <nav>
-        <RouterLink to="/home">Home</RouterLink>
-        <RouterLink to="/login">Connexion</RouterLink>
+        <template v-if="isAuthenticated">
+          <RouterLink to="/">Home</RouterLink>
+          <RouterLink to="/profile">Profil</RouterLink>
+          <a href="#" @click.prevent="handleLogout">Déconnexion</a>
+        </template>
+        <template v-else>
+          <RouterLink to="/">Home</RouterLink>
+          <RouterLink to="/login">Connexion</RouterLink>
+        </template>
       </nav>
     </div>
   </header>
