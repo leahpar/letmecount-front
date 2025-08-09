@@ -27,45 +27,17 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
-import axios from '@/plugins/axios'
+import { onMounted } from 'vue'
+import { useUsers } from '@/composables/useUsers'
 
-interface User {
-  id: number
-  username: string
-  solde: number
-}
-
-const user = ref<User | null>(null)
-const loading = ref(false)
-const error = ref('')
+const { me: user, loading, error, fetchMe } = useUsers()
 
 const formatMoney = (amount: number): string => {
   return amount.toFixed(2)
 }
 
-const fetchUserProfile = async () => {
-  loading.value = true
-  error.value = ''
-
-  try {
-    const response = await axios.get('/users/me')
-    user.value = response.data
-  } catch (err: unknown) {
-    console.error('Erreur lors de la récupération du profil:', err)
-    if (err && typeof err === 'object' && 'response' in err) {
-      const axiosError = err as { response?: { data?: { message?: string } } }
-      error.value = axiosError.response?.data?.message || 'Erreur de chargement du profil'
-    } else {
-      error.value = 'Erreur de chargement du profil'
-    }
-  } finally {
-    loading.value = false
-  }
-}
-
 onMounted(() => {
-  fetchUserProfile()
+  fetchMe()
 })
 </script>
 
