@@ -14,9 +14,13 @@ instance.interceptors.request.use(
       config.headers.Authorization = `Bearer ${token}`;
     }
     
-    // Utiliser JSON-LD pour les requêtes POST/PUT/PATCH avec du contenu
-    if (['post', 'put', 'patch'].includes(config.method?.toLowerCase()) && config.data) {
-      config.headers['Content-Type'] = 'application/ld+json';
+    // Utiliser JSON-LD pour les requêtes POST/PUT et JSON MERGE PATCH pour les requêtes PATCH
+    if (config.data) {
+      if (config.method?.toLowerCase() === 'patch') {
+        config.headers['Content-Type'] = 'application/merge-patch+json';
+      } else if (['post', 'put'].includes(config.method?.toLowerCase())) {
+        config.headers['Content-Type'] = 'application/ld+json';
+      }
     }
     
     return config;

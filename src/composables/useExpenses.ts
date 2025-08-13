@@ -59,7 +59,7 @@ export function useExpenses() {
     error.value = null
 
     try {
-      const response = await axios.put(`/depenses/${id}`, expenseData)
+      const response = await axios.patch(`/depenses/${id}`, expenseData)
       return response.data
     } catch (err: unknown) {
       console.error('Erreur lors de la mise à jour de la dépense:', err)

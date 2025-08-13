@@ -60,7 +60,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted, ref } from 'vue'
+import { computed, onMounted } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { useUsers } from '@/composables/useUsers'
 import { useTags } from '@/composables/useTags'
@@ -96,8 +96,6 @@ const {
   updateParticipantMontant,
   initializeParticipants,
   updateFormDetails,
-  isFormValid,
-  isValidRepartition,
   canSubmit,
   repartitionStatus
 } = useExpenseForm()
