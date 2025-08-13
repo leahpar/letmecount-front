@@ -2,7 +2,7 @@ import axios from 'axios';
 import { useAuth } from '@/composables/useAuth';
 
 const instance = axios.create({
-  baseURL: 'http://127.0.0.1:8888/',
+  baseURL: 'http://127.0.0.1:8888',
 });
 
 // Intercepteur de REQUÊTE : ajoute le token JWT et configure le Content-Type
@@ -13,7 +13,7 @@ instance.interceptors.request.use(
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
-    
+
     // Utiliser JSON-LD pour les requêtes POST/PUT et JSON MERGE PATCH pour les requêtes PATCH
     if (config.data) {
       if (config.method?.toLowerCase() === 'patch') {
@@ -22,7 +22,7 @@ instance.interceptors.request.use(
         config.headers['Content-Type'] = 'application/ld+json';
       }
     }
-    
+
     return config;
   },
   (error) => {
@@ -43,11 +43,11 @@ instance.interceptors.response.use(
 
       const { getRefreshToken, setTokens, clearTokens, redirectToLogin } = useAuth();
       const refreshToken = getRefreshToken();
-      
+
       if (refreshToken) {
         try {
           // Appel à l'API pour rafraîchir le token
-          const { data } = await axios.post('/auth/refresh', {
+          const { data } = await axios.post(instance.defaults.baseURL + '/auth/refresh', {
             refresh_token: refreshToken
           });
 
