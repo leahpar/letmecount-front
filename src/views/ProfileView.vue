@@ -37,14 +37,14 @@ onMounted(() => {
 </script>
 
 <template>
-  <div class="py-8 px-4 sm:px-6 lg:px-8">
-    <div class="max-w-7xl mx-auto">
+  <div class="py-8">
+    <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
       <div class="lg:grid lg:grid-cols-12 lg:gap-8">
         <div class="lg:col-span-4">
           <UserProfile :key="`profile-${refreshKey}`" />
         </div>
         <div class="mt-8 lg:mt-0 lg:col-span-8">
-          <div class="bg-white shadow rounded-lg">
+          <div class="bg-white shadow sm:rounded-lg">
             <div class="p-6">
               <ExpenseList
                 :key="`expenses-${refreshKey}`"

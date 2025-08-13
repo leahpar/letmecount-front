@@ -1,5 +1,5 @@
 <template>
-  <div class="bg-white shadow rounded-lg">
+  <div class="bg-white shadow sm:rounded-lg">
     <div class="p-6">
       <h2 class="text-xl font-semibold text-gray-900 text-center mb-4">Mon compte</h2>
 

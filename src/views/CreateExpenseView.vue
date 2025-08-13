@@ -1,7 +1,7 @@
 <template>
-  <div class="py-8 px-4 sm:px-6 lg:px-8">
-    <div class="max-w-3xl mx-auto">
-      <div class="bg-white shadow rounded-lg">
+  <div class="py-8">
+    <div class="max-w-3xl mx-auto sm:px-6 lg:px-8">
+      <div class="bg-white shadow sm:rounded-lg">
         <div class="p-6">
           <h1 class="text-2xl font-semibold text-gray-900 text-center">{{ pageTitle }}</h1>
 
