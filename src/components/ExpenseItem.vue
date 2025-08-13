@@ -1,15 +1,15 @@
 <template>
   <div
-    class="expense-item"
-    :class="{ 'clickable': expense.details && expense.details.length > 0 }"
+    class="bg-white shadow-sm rounded-lg p-4 transition-shadow duration-200 hover:shadow-md"
+    :class="{ 'cursor-pointer': expense.details && expense.details.length > 0 }"
     @click="expense.details && expense.details.length > 0 ? toggleExpanded() : null"
   >
-    <div class="expense-header">
-      <h4 class="expense-title">{{ expense.titre }}</h4>
-      <div class="expense-header-right">
-        <span class="expense-amount">{{ formatAmount(expense.montant) }} €</span>
-        <button 
-          class="edit-btn"
+    <div class="flex flex-col sm:flex-row justify-between sm:items-center gap-2 mb-2">
+      <h4 class="text-lg font-semibold text-gray-800">{{ expense.titre }}</h4>
+      <div class="flex items-center gap-3 self-end sm:self-center">
+        <span class="text-xl font-bold text-blue-600">{{ formatAmount(expense.montant) }} €</span>
+        <button
+          class="p-1 border border-gray-300 rounded-md text-sm hover:bg-gray-100 hover:border-blue-500 transition-all duration-200"
           @click.stop="handleEdit"
           title="Modifier la dépense"
         >
@@ -17,44 +17,45 @@
         </button>
       </div>
     </div>
-    <div class="expense-details">
-      <span class="expense-date">{{ formatDate(expense.date) }}</span>
-      <span class="expense-payer">
+    <div class="flex flex-col sm:flex-row justify-between sm:items-center text-sm text-gray-600 gap-x-4 gap-y-1">
+      <span class="text-xs text-gray-500">{{ formatDate(expense.date) }}</span>
+      <span class="italic">
         Payé par {{ getPayer(expense) }}
-        <span :class="['balance-impact', { 'positive': balanceImpact > 0, 'negative': balanceImpact < 0 }]">
+        <span class="font-bold ml-1" :class="{ 'text-green-600': balanceImpact > 0, 'text-red-600': balanceImpact < 0 }">
           ({{ formatImpact(balanceImpact) }})
         </span>
       </span>
-      <span v-if="!tagId && expense.tag" class="expense-tag">
+      <span v-if="!tagId && expense.tag" class="text-xs bg-gray-200 text-gray-800 px-2 py-1 rounded-full">
         #{{ getTagName(expense.tag) }}
       </span>
       <span
         v-if="expense.details && expense.details.length > 0"
-        class="expand-indicator"
+        class="text-blue-600 text-xs font-bold ml-auto"
       >
         {{ isExpanded() ? '▼' : '▶' }}
       </span>
     </div>
     <div
       v-if="expense.details && expense.details.length > 0 && isExpanded()"
-      class="expense-participants"
+      class="mt-3 pt-3 border-t border-gray-200"
     >
-      <table class="participants-table">
-        <thead>
+      <table class="w-full text-sm">
+        <thead class="bg-gray-50">
           <tr>
-            <th>Utilisateur</th>
-            <th v-if="expense.partage === 'parts'">Parts</th>
-            <th>Montant</th>
+            <th class="px-4 py-2 text-left font-medium text-gray-500">Utilisateur</th>
+            <th v-if="expense.partage === 'parts'" class="px-4 py-2 text-left font-medium text-gray-500">Parts</th>
+            <th class="px-4 py-2 text-right font-medium text-gray-500">Montant</th>
           </tr>
         </thead>
-        <tbody>
+        <tbody class="divide-y divide-gray-200">
           <tr
             v-for="detail in expense.details"
             :key="detail.user"
+            class="hover:bg-gray-50"
           >
-            <td>{{ getUserName(detail.user) }}</td>
-            <td v-if="expense.partage === 'parts'">{{ detail.parts }}</td>
-            <td class="amount">{{ formatAmount(detail.montant) }} €</td>
+            <td class="px-4 py-2">{{ getUserName(detail.user) }}</td>
+            <td v-if="expense.partage === 'parts'" class="px-4 py-2">{{ detail.parts }}</td>
+            <td class="px-4 py-2 text-right font-medium text-blue-600">{{ formatAmount(detail.montant) }} €</td>
           </tr>
         </tbody>
       </table>
@@ -169,196 +170,3 @@ const handleEdit = () => {
   emit('edit', props.expense)
 }
 </script>
-
-<style scoped>
-.expense-item {
-  background: white;
-  border: 1px solid #ddd;
-  border-radius: 8px;
-  padding: 1rem;
-  transition: box-shadow 0.2s;
-}
-
-.expense-item:hover {
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-}
-
-.expense-item.clickable {
-  cursor: pointer;
-}
-
-.expense-item.clickable:hover {
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-}
-
-.expense-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 0.5rem;
-}
-
-.expense-header-right {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-}
-
-.expense-title {
-  margin: 0;
-  color: #333;
-  font-size: 1.1rem;
-}
-
-.expense-amount {
-  font-weight: bold;
-  color: #007bff;
-  font-size: 1.2rem;
-}
-
-.edit-btn {
-  background: none;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-  padding: 0.25rem 0.5rem;
-  cursor: pointer;
-  font-size: 1rem;
-  transition: all 0.2s;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.edit-btn:hover {
-  background-color: #f8f9fa;
-  border-color: #007bff;
-  transform: scale(1.05);
-}
-
-.edit-btn:active {
-  transform: scale(0.95);
-}
-
-.expense-details {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 0.5rem;
-  font-size: 0.9rem;
-  color: #666;
-  gap: 1rem;
-}
-
-.expense-payer {
-  font-style: italic;
-  color: #555;
-}
-
-.expense-tag {
-  background-color: #eee;
-  color: #333;
-  padding: 0.2rem 0.4rem;
-  border-radius: 4px;
-  font-size: 0.8rem;
-}
-
-.balance-impact {
-  font-weight: bold;
-  margin-left: 0.5rem;
-}
-
-.balance-impact.positive {
-  color: #28a745;
-}
-
-.balance-impact.negative {
-  color: #dc3545;
-}
-
-.expand-indicator {
-  color: #007bff;
-  font-size: 0.8rem;
-  font-weight: bold;
-  margin-left: auto;
-}
-
-.expense-participants {
-  margin-top: 0.5rem;
-  border-top: 1px solid #eee;
-  padding-top: 0.5rem;
-}
-
-.participants-table {
-  width: 100%;
-  border-collapse: collapse;
-  font-size: 0.9rem;
-}
-
-.participants-table th {
-  background-color: #f8f9fa;
-  padding: 0.5rem 0.75rem;
-  text-align: left;
-  font-weight: 600;
-  color: #555;
-  border-bottom: 2px solid #dee2e6;
-  font-size: 0.85rem;
-}
-
-.participants-table td {
-  padding: 0.5rem 0.75rem;
-  border-bottom: 1px solid #eee;
-  color: #495057;
-}
-
-.participants-table .amount {
-  font-weight: 500;
-  color: #007bff;
-  text-align: right;
-}
-
-.participants-table tbody tr:hover {
-  background-color: #f8f9fa;
-}
-
-@media (max-width: 768px) {
-  .expense-header {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 0.5rem;
-  }
-  
-  .expense-header-right {
-    align-self: flex-end;
-    gap: 0.5rem;
-  }
-  
-  .edit-btn {
-    padding: 0.2rem 0.4rem;
-    font-size: 0.9rem;
-  }
-
-  .expense-details {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 0.25rem;
-  }
-
-  .expense-payer {
-    order: 2;
-  }
-
-  .expand-indicator {
-    align-self: flex-end;
-    order: 3;
-  }
-
-  .participants-table {
-    font-size: 0.85rem;
-  }
-
-  .participants-table th,
-  .participants-table td {
-    padding: 0.4rem 0.5rem;
-  }
-}
-</style>

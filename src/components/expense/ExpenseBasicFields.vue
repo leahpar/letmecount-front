@@ -1,79 +1,97 @@
 <template>
-  <div>
-    <div class="form-group">
-      <label for="titre">Titre</label>
-      <input
-        id="titre"
-        :value="modelValue.titre"
-        @input="updateField('titre', ($event.target as HTMLInputElement).value)"
-        type="text"
-        required
-        placeholder="Repas, Courses..."
-        maxlength="255"
-      >
-    </div>
-
-    <div class="form-group">
-      <label for="montant">Montant</label>
-      <input
-        id="montant"
-        :value="modelValue.montant"
-        @input="updateField('montant', parseFloat(($event.target as HTMLInputElement).value) || 0)"
-        type="number"
-        step="0.01"
-        min="1"
-        required
-        placeholder="0.00"
-      >
-    </div>
-
-    <div class="form-group">
-      <label for="date">Date</label>
-      <input
-        id="date"
-        :value="modelValue.date"
-        @input="updateField('date', ($event.target as HTMLInputElement).value)"
-        type="date"
-        required
-      >
-    </div>
-
-    <div class="form-group">
-      <label for="payePar">Payé par</label>
-      <select
-        id="payePar"
-        :value="modelValue.payePar"
-        @change="updateField('payePar', ($event.target as HTMLSelectElement).value)"
-        required
-      >
-        <option value="">-- Choisir qui a payé --</option>
-        <option
-          v-for="user in users"
-          :key="user['@id']"
-          :value="user['@id']"
+  <div class="space-y-6">
+    <div>
+      <label for="titre" class="block text-sm font-medium text-gray-700">Titre</label>
+      <div class="mt-1">
+        <input
+          id="titre"
+          :value="modelValue.titre"
+          @input="updateField('titre', ($event.target as HTMLInputElement).value)"
+          type="text"
+          required
+          placeholder="Repas, Courses..."
+          maxlength="255"
+          class="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
         >
-          {{ user.username }}
-        </option>
-      </select>
+      </div>
     </div>
 
-    <div class="form-group">
-      <label for="tag">Tag</label>
-      <select
-        id="tag"
-        :value="modelValue.tag"
-        @change="updateField('tag', ($event.target as HTMLSelectElement).value)"
-        required
-      >
-        <option value="">-- Choisir un tag --</option>
-        <option
-          v-for="tag in tags"
-          :key="tag['@id']"
-          :value="tag['@id']"
+    <div>
+      <label for="montant" class="block text-sm font-medium text-gray-700">Montant</label>
+      <div class="mt-1 relative rounded-md shadow-sm">
+        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+          <span class="text-gray-500 sm:text-sm">€</span>
+        </div>
+        <input
+          id="montant"
+          :value="modelValue.montant"
+          @input="updateField('montant', parseFloat(($event.target as HTMLInputElement).value) || 0)"
+          type="number"
+          step="0.01"
+          min="1"
+          required
+          placeholder="0.00"
+          class="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm pl-7"
         >
-          {{ tag.libelle }}
-        </option>
-      </select>
+      </div>
+    </div>
+
+    <div>
+      <label for="date" class="block text-sm font-medium text-gray-700">Date</label>
+      <div class="mt-1">
+        <input
+          id="date"
+          :value="modelValue.date"
+          @input="updateField('date', ($event.target as HTMLInputElement).value)"
+          type="date"
+          required
+          class="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+        >
+      </div>
+    </div>
+
+    <div>
+      <label for="payePar" class="block text-sm font-medium text-gray-700">Payé par</label>
+      <div class="mt-1">
+        <select
+          id="payePar"
+          :value="modelValue.payePar"
+          @change="updateField('payePar', ($event.target as HTMLSelectElement).value)"
+          required
+          class="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+        >
+          <option value="">-- Choisir qui a payé --</option>
+          <option
+            v-for="user in users"
+            :key="user['@id']"
+            :value="user['@id']"
+          >
+            {{ user.username }}
+          </option>
+        </select>
+      </div>
+    </div>
+
+    <div>
+      <label for="tag" class="block text-sm font-medium text-gray-700">Tag</label>
+      <div class="mt-1">
+        <select
+          id="tag"
+          :value="modelValue.tag"
+          @change="updateField('tag', ($event.target as HTMLSelectElement).value)"
+          required
+          class="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+        >
+          <option value="">-- Choisir un tag --</option>
+          <option
+            v-for="tag in tags"
+            :key="tag['@id']"
+            :value="tag['@id']"
+          >
+            {{ tag.libelle }}
+          </option>
+        </select>
+      </div>
     </div>
   </div>
 </template>
@@ -114,33 +132,3 @@ const updateField = (field: keyof FormData, value: string | number) => {
   })
 }
 </script>
-
-<style scoped>
-.form-group {
-  margin-bottom: 1.5rem;
-}
-
-.form-group label {
-  display: block;
-  margin-bottom: 0.5rem;
-  font-weight: 500;
-  color: #555;
-}
-
-.form-group input,
-.form-group select {
-  width: 100%;
-  padding: 0.75rem;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-  font-size: 1rem;
-  box-sizing: border-box;
-}
-
-.form-group input:focus,
-.form-group select:focus {
-  outline: none;
-  border-color: #007bff;
-  box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
-}
-</style>

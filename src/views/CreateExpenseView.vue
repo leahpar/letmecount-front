@@ -1,60 +1,70 @@
 <template>
-  <div class="create-expense-container">
-    <div class="create-expense-form">
-      <h1>{{ pageTitle }}</h1>
+  <div class="py-8 px-4 sm:px-6 lg:px-8">
+    <div class="max-w-3xl mx-auto">
+      <div class="bg-white shadow rounded-lg">
+        <div class="p-6">
+          <h1 class="text-2xl font-semibold text-gray-900 text-center">{{ pageTitle }}</h1>
 
-      <form @submit.prevent="handleSubmit">
-        <ExpenseBasicFields
-          v-model="basicFields"
-          :users="users"
-          :tags="tags"
-        />
+          <form @submit.prevent="handleSubmit" class="mt-8 space-y-6">
+            <ExpenseBasicFields
+              v-model="basicFields"
+              :users="users"
+              :tags="tags"
+            />
 
-        <ExpensePartageToggle
-          v-model="formData.partage"
-        />
+            <ExpensePartageToggle
+              v-model="formData.partage"
+            />
 
-        <ExpenseParticipantsList
-          :users="users"
-          :participant-checkboxes="participantCheckboxes"
-          :participant-data="participantData"
-          :partage-mode="formData.partage"
-          @update-participant="updateParticipant"
-          @update-participant-parts="updateParticipantParts"
-          @update-participant-montant="updateParticipantMontant"
-        />
+            <ExpenseParticipantsList
+              :users="users"
+              :participant-checkboxes="participantCheckboxes"
+              :participant-data="participantData"
+              :partage-mode="formData.partage"
+              @update-participant="updateParticipant"
+              @update-participant-parts="updateParticipantParts"
+              @update-participant-montant="updateParticipantMontant"
+            />
 
-        <div class="repartition-status" :class="{ 'valid': repartitionStatus.valid, 'invalid': !repartitionStatus.valid }">
-          <span class="status-icon">{{ repartitionStatus.valid ? '✓' : '⚠' }}</span>
-          {{ repartitionStatus.message }}
-        </div>
-
-        <div v-if="error" class="error-message">
-          {{ error }}
-        </div>
-
-        <div class="form-actions">
-          <div class="form-actions-left">
-            <button
-              v-if="isEditMode"
-              type="button"
-              @click="handleDelete"
-              :disabled="loading"
-              class="delete-btn"
+            <div
+              class="p-3 rounded-md flex items-center gap-x-3"
+              :class="{
+                'bg-green-100 border border-green-400 text-green-700': repartitionStatus.valid,
+                'bg-red-100 border border-red-400 text-red-700': !repartitionStatus.valid
+              }"
             >
-              {{ loading ? 'Suppression...' : 'Supprimer' }}
-            </button>
-          </div>
-          <div class="form-actions-right">
-            <button type="button" @click="goBack" class="cancel-btn">
-              Annuler
-            </button>
-            <button type="submit" :disabled="loading || !canSubmit" class="submit-btn">
-              {{ submitButtonText }}
-            </button>
-          </div>
+              <span class="font-bold text-lg">{{ repartitionStatus.valid ? '✓' : '⚠' }}</span>
+              <span>{{ repartitionStatus.message }}</span>
+            </div>
+
+            <div v-if="error" class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">
+              <span class="block sm:inline">{{ error }}</span>
+            </div>
+
+            <div class="flex flex-col-reverse sm:flex-row sm:justify-between items-center pt-6 border-t border-gray-200">
+              <div class="mt-4 sm:mt-0">
+                <button
+                  v-if="isEditMode"
+                  type="button"
+                  @click="handleDelete"
+                  :disabled="loading"
+                  class="w-full sm:w-auto inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-red-600 text-base font-medium text-white hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 disabled:bg-gray-400"
+                >
+                  {{ loading ? 'Suppression...' : 'Supprimer' }}
+                </button>
+              </div>
+              <div class="flex flex-col-reverse sm:flex-row sm:justify-end gap-3 w-full sm:w-auto">
+                <button type="button" @click="goBack" class="w-full sm:w-auto inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                  Annuler
+                </button>
+                <button type="submit" :disabled="loading || !canSubmit" class="w-full sm:w-auto inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-blue-600 text-base font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:bg-gray-400">
+                  {{ submitButtonText }}
+                </button>
+              </div>
+            </div>
+          </form>
         </div>
-      </form>
+      </div>
     </div>
   </div>
 </template>
@@ -214,154 +224,3 @@ onMounted(async () => {
   }
 })
 </script>
-
-<style scoped>
-.create-expense-container {
-  display: flex;
-  justify-content: center;
-  padding: 2rem;
-  min-height: 80vh;
-}
-
-.create-expense-form {
-  background: white;
-  padding: 2rem;
-  border-radius: 8px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-  width: 100%;
-  max-width: 800px;
-}
-
-.create-expense-form h1 {
-  text-align: center;
-  margin-bottom: 2rem;
-  color: #333;
-}
-
-.error-message {
-  background-color: #f8d7da;
-  color: #721c24;
-  padding: 0.75rem;
-  border: 1px solid #f5c6cb;
-  border-radius: 4px;
-  margin-bottom: 1rem;
-  text-align: center;
-}
-
-.form-actions {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-top: 2rem;
-}
-
-.form-actions-left {
-  display: flex;
-  gap: 1rem;
-}
-
-.form-actions-right {
-  display: flex;
-  gap: 1rem;
-}
-
-.cancel-btn {
-  padding: 0.75rem 1.5rem;
-  background-color: #6c757d;
-  color: white;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  font-size: 1rem;
-}
-
-.cancel-btn:hover {
-  background-color: #5a6268;
-}
-
-.delete-btn {
-  padding: 0.75rem 1.5rem;
-  background-color: #dc3545;
-  color: white;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  font-size: 1rem;
-}
-
-.delete-btn:hover:not(:disabled) {
-  background-color: #c82333;
-}
-
-.delete-btn:disabled {
-  background-color: #6c757d;
-  cursor: not-allowed;
-}
-
-.submit-btn {
-  padding: 0.75rem 1.5rem;
-  background-color: #007bff;
-  color: white;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  font-size: 1rem;
-}
-
-.submit-btn:hover:not(:disabled) {
-  background-color: #0056b3;
-}
-
-.submit-btn:disabled {
-  background-color: #6c757d;
-  cursor: not-allowed;
-}
-
-.repartition-status {
-  padding: 0.75rem;
-  border-radius: 4px;
-  margin-bottom: 1rem;
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  font-weight: 500;
-}
-
-.repartition-status.valid {
-  background-color: #d4edda;
-  color: #155724;
-  border: 1px solid #c3e6cb;
-}
-
-.repartition-status.invalid {
-  background-color: #f8d7da;
-  color: #721c24;
-  border: 1px solid #f5c6cb;
-}
-
-.status-icon {
-  font-weight: bold;
-  font-size: 1.1rem;
-}
-
-@media (max-width: 768px) {
-  .form-actions {
-    flex-direction: column;
-    gap: 1rem;
-    align-items: stretch;
-  }
-
-  .form-actions-left,
-  .form-actions-right {
-    justify-content: center;
-  }
-
-  .form-actions-left {
-    order: 2;
-  }
-
-  .form-actions-right {
-    order: 1;
-  }
-}
-</style>

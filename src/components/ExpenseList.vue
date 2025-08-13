@@ -1,20 +1,20 @@
 <template>
-  <div class="expense-list">
-    <h3>{{ title }}</h3>
-    
-    <div v-if="loading" class="loading">
+  <div class="w-full">
+    <h3 class="text-xl font-semibold text-gray-900 mb-4">{{ title }}</h3>
+
+    <div v-if="loading" class="text-center py-8 text-gray-500">
       Chargement des dépenses...
     </div>
 
-    <div v-else-if="error" class="error-message">
-      {{ error }}
+    <div v-else-if="error" class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">
+      <span class="block sm:inline">{{ error }}</span>
     </div>
 
-    <div v-else-if="expenses.length === 0" class="empty-state">
+    <div v-else-if="expenses.length === 0" class="text-center py-8 text-gray-500 italic">
       Aucune dépense trouvée
     </div>
 
-    <div v-else class="expenses">
+    <div v-else class="space-y-4">
       <ExpenseItem
         v-for="expense in expenses"
         :key="expense['@id']"
@@ -109,42 +109,3 @@ onMounted(async () => {
   fetchExpenses()
 })
 </script>
-
-<style scoped>
-.expense-list {
-  width: 100%;
-}
-
-.expense-list h3 {
-  margin-bottom: 1rem;
-  color: #333;
-}
-
-.loading {
-  text-align: center;
-  padding: 2rem;
-  color: #666;
-}
-
-.error-message {
-  background-color: #f8d7da;
-  color: #721c24;
-  padding: 0.75rem;
-  border: 1px solid #f5c6cb;
-  border-radius: 4px;
-  margin-bottom: 1rem;
-}
-
-.empty-.state {
-  text-align: center;
-  padding: 2rem;
-  color: #666;
-  font-style: italic;
-}
-
-.expenses {
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-}
-</style>

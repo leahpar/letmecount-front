@@ -1,57 +1,71 @@
 <template>
-  <div class="form-section">
-    <h3>Participants</h3>
-    <div class="participants">
+  <div class="space-y-4">
+    <h3 class="text-lg font-medium text-gray-900">Participants</h3>
+    <div class="space-y-2">
       <div
         v-for="user in users"
         :key="user['@id']"
-        class="participant-row"
+        class="flex items-center gap-x-4 p-3 border border-gray-200 rounded-md"
       >
-        <div class="participant-name">
-          {{ user.username }}
+        <div class="flex-1 min-w-0">
+          <p class="text-sm font-medium text-gray-900 truncate">{{ user.username }}</p>
         </div>
 
-        <label class="checkbox-container">
+        <div class="flex items-center">
           <input
+            :id="`participant-${user['@id']}`"
             type="checkbox"
             :checked="participantCheckboxes[user['@id']]"
             @change="updateParticipant(user['@id'], ($event.target as HTMLInputElement).checked)"
+            class="h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
           >
-          <span class="checkmark"></span>
-        </label>
+        </div>
 
-        <input
-          v-if="partageMode === 'parts'"
-          :value="getParticipantData(user['@id']).parts"
-          @input="updateParticipantParts(user['@id'], parseInt(($event.target as HTMLInputElement).value) || 0)"
-          type="number"
-          min="0"
-          step="1"
-          placeholder="Parts"
-        >
-        
-        <input
-          v-if="partageMode === 'montants'"
-          :value="0"
-          type="number"
-          min="0"
-          step="1"
-          placeholder="Parts"
-          disabled
-          class="disabled-input"
-        >
+        <div class="w-24">
+          <label :for="`parts-${user['@id']}`" class="sr-only">Parts</label>
+          <input
+            :id="`parts-${user['@id']}`"
+            v-if="partageMode === 'parts'"
+            :value="getParticipantData(user['@id']).parts"
+            @input="updateParticipantParts(user['@id'], parseInt(($event.target as HTMLInputElement).value) || 0)"
+            type="number"
+            min="0"
+            step="1"
+            placeholder="Parts"
+            class="appearance-none block w-full px-2 py-1 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+            :disabled="!participantCheckboxes[user['@id']]"
+          >
+          <input
+            v-if="partageMode === 'montants'"
+            type="number"
+            placeholder="Parts"
+            disabled
+            class="appearance-none block w-full px-2 py-1 border border-gray-300 rounded-md shadow-sm bg-gray-100 sm:text-sm"
+          >
+        </div>
 
-        <input
-          :value="getParticipantData(user['@id']).montant"
-          @input="updateParticipantMontant(user['@id'], parseFloat(($event.target as HTMLInputElement).value) || 0)"
-          type="number"
-          min="0"
-          step="0.01"
-          placeholder="Montant"
-          :required="partageMode === 'montants'"
-          :readonly="partageMode === 'parts'"
-          :class="{ 'manual-montant': getParticipantData(user['@id']).manualMontant }"
-        >
+        <div class="w-32">
+          <label :for="`montant-${user['@id']}`" class="sr-only">Montant</label>
+          <div class="relative rounded-md shadow-sm">
+            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+              <span class="text-gray-500 sm:text-sm">€</span>
+            </div>
+            <input
+              :id="`montant-${user['@id']}`"
+              :value="getParticipantData(user['@id']).montant"
+              @input="updateParticipantMontant(user['@id'], parseFloat(($event.target as HTMLInputElement).value) || 0)"
+              type="number"
+              min="0"
+              step="0.01"
+              placeholder="Montant"
+              class="appearance-none block w-full px-2 py-1 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm pl-7"
+              :class="{ 'bg-green-50 border-green-500': getParticipantData(user['@id']).manualMontant && partageMode === 'montants' }"
+              :required="partageMode === 'montants'"
+              :readonly="partageMode === 'parts'"
+              :disabled="!participantCheckboxes[user['@id']]"
+            >
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -98,115 +112,3 @@ const getParticipantData = (userId: string): ParticipantData => {
   return props.participantData[userId] || { parts: 1, montant: 0, manualMontant: false }
 }
 </script>
-
-<style scoped>
-.form-section {
-  margin-bottom: 2rem;
-  padding: 1rem;
-  background-color: #f8f9fa;
-  border-radius: 4px;
-}
-
-.form-section h3 {
-  margin: 0 0 1rem 0;
-  color: #333;
-}
-
-.participants {
-  margin-bottom: 1rem;
-}
-
-.participant-row {
-  display: flex;
-  gap: 0.5rem;
-  margin-bottom: 0.5rem;
-  align-items: center;
-  padding: 0.5rem;
-  border: 1px solid #eee;
-  border-radius: 4px;
-}
-
-.participant-name {
-  flex: 2;
-  font-weight: 500;
-  color: #333;
-}
-
-.checkbox-container {
-  display: flex;
-  align-items: center;
-  position: relative;
-  cursor: pointer;
-}
-
-.checkbox-container input[type="checkbox"] {
-  opacity: 0;
-  position: absolute;
-  width: 20px;
-  height: 20px;
-  margin: 0;
-}
-
-.checkmark {
-  height: 20px;
-  width: 20px;
-  background-color: #eee;
-  border: 2px solid #ddd;
-  border-radius: 3px;
-  display: inline-block;
-  position: relative;
-}
-
-.checkbox-container input:checked ~ .checkmark {
-  background-color: #007bff;
-  border-color: #007bff;
-}
-
-.checkmark:after {
-  content: "";
-  position: absolute;
-  display: none;
-}
-
-.checkbox-container input:checked ~ .checkmark:after {
-  display: block;
-}
-
-.checkbox-container .checkmark:after {
-  left: 6px;
-  top: 2px;
-  width: 5px;
-  height: 10px;
-  border: solid white;
-  border-width: 0 3px 3px 0;
-  transform: rotate(45deg);
-}
-
-.participant-row input[type="number"] {
-  flex: 1;
-  margin: 0;
-  padding: 0.5rem;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-  font-size: 1rem;
-  box-sizing: border-box;
-}
-
-.participant-row input[type="number"]:focus {
-  outline: none;
-  border-color: #007bff;
-  box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
-}
-
-.participant-row input[type="number"].manual-montant {
-  background-color: #e8f5e8;
-  border-color: #28a745;
-  color: #155724;
-}
-
-.participant-row input[type="number"].disabled-input {
-  background-color: #f8f9fa;
-  color: #6c757d;
-  cursor: not-allowed;
-}
-</style>

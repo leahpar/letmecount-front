@@ -1,16 +1,24 @@
 <template>
-  <div class="form-group">
-    <label for="partage">Type de partage</label>
-    <div class="toggle-container" @click="togglePartage">
-      <span :class="{ active: modelValue === 'parts' }">Par parts</span>
+  <div>
+    <label for="partage" class="block text-sm font-medium text-gray-700">Type de partage</label>
+    <div class="mt-2 flex items-center cursor-pointer" @click="togglePartage">
+      <span :class="['text-sm font-medium', modelValue === 'parts' ? 'text-blue-600' : 'text-gray-500']">
+        Par parts
+      </span>
       <button
         type="button"
-        class="toggle-switch"
-        :class="{ active: modelValue === 'montants' }"
+        class="relative inline-flex flex-shrink-0 h-6 w-11 border-2 border-transparent rounded-full cursor-pointer transition-colors ease-in-out duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 mx-4"
+        :class="modelValue === 'montants' ? 'bg-blue-600' : 'bg-gray-200'"
       >
-        <span class="toggle-slider"></span>
+        <span
+          aria-hidden="true"
+          class="pointer-events-none inline-block h-5 w-5 rounded-full bg-white shadow transform ring-0 transition ease-in-out duration-200"
+          :class="{ 'translate-x-5': modelValue === 'montants', 'translate-x-0': modelValue === 'parts' }"
+        ></span>
       </button>
-      <span :class="{ active: modelValue === 'montants' }">Par montants</span>
+      <span :class="['text-sm font-medium', modelValue === 'montants' ? 'text-blue-600' : 'text-gray-500']">
+        Par montants
+      </span>
     </div>
   </div>
 </template>
@@ -28,64 +36,3 @@ const togglePartage = () => {
   emit('update:modelValue', props.modelValue === 'parts' ? 'montants' : 'parts')
 }
 </script>
-
-<style scoped>
-.form-group {
-  margin-bottom: 1.5rem;
-}
-
-.form-group label {
-  display: block;
-  margin-bottom: 0.5rem;
-  font-weight: 500;
-  color: #555;
-}
-
-.toggle-container {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-}
-
-.toggle-container span {
-  font-size: 0.9rem;
-  color: #666;
-  transition: color 0.2s;
-}
-
-.toggle-container span.active {
-  color: #007bff;
-  font-weight: 600;
-}
-
-.toggle-switch {
-  position: relative;
-  width: 50px;
-  height: 24px;
-  background-color: #ddd;
-  border: none;
-  border-radius: 12px;
-  cursor: pointer;
-  transition: background-color 0.2s;
-}
-
-.toggle-switch.active {
-  background-color: #007bff;
-}
-
-.toggle-slider {
-  position: absolute;
-  top: 2px;
-  left: 2px;
-  width: 20px;
-  height: 20px;
-  background-color: white;
-  border-radius: 50%;
-  transition: transform 0.2s;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
-}
-
-.toggle-switch.active .toggle-slider {
-  transform: translateX(26px);
-}
-</style>

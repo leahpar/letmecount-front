@@ -1,8 +1,9 @@
+<template>
+  <div class="py-8 px-4 sm:px-6 lg:px-8">
+    <h1 class="text-2xl font-semibold text-gray-900">Accueil</h1>
+    <p class="mt-2 text-gray-600">Bienvenue sur LetMeCount !</p>
+  </div>
+</template>
+
 <script setup lang="ts">
 </script>
-
-<template>
-  <main>
-    Hello world!
-  </main>
-</template>
