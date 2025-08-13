@@ -2,7 +2,7 @@ import axios from 'axios';
 import { useAuth } from '@/composables/useAuth';
 
 const instance = axios.create({
-  baseURL: 'http://127.0.0.1:8888',
+  baseURL: import.meta.env.VITE_API_URL,
 });
 
 // Intercepteur de REQUÊTE : ajoute le token JWT et configure le Content-Type
