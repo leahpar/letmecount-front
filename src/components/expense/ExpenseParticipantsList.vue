@@ -5,12 +5,8 @@
       <div
         v-for="user in users"
         :key="user['@id']"
-        class="flex items-center gap-x-4 p-3 border border-gray-200 rounded-md"
+        class="flex items-center gap-x-4 py-2 border-b border-gray-100"
       >
-        <div class="flex-1 min-w-0">
-          <p class="text-sm font-medium text-gray-900 truncate">{{ user.username }}</p>
-        </div>
-
         <div class="flex items-center">
           <input
             :id="`participant-${user['@id']}`"
@@ -21,33 +17,46 @@
           >
         </div>
 
-        <div class="w-24">
-          <label :for="`parts-${user['@id']}`" class="sr-only">Parts</label>
-          <input
-            :id="`parts-${user['@id']}`"
-            v-if="partageMode === 'parts'"
-            :value="getParticipantData(user['@id']).parts"
-            @input="updateParticipantParts(user['@id'], parseInt(($event.target as HTMLInputElement).value) || 0)"
-            type="number"
-            min="0"
-            step="1"
-            placeholder="Parts"
-            class="appearance-none block w-full px-2 py-1 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-            :disabled="!participantCheckboxes[user['@id']]"
-          >
-          <input
-            v-if="partageMode === 'montants'"
-            type="number"
-            placeholder="Parts"
-            disabled
-            class="appearance-none block w-full px-2 py-1 border border-gray-300 rounded-md shadow-sm bg-gray-100 sm:text-sm"
-          >
+        <div class="flex-1 min-w-0">
+          <p class="text-sm font-medium text-gray-900 truncate">{{ user.username }}</p>
         </div>
 
-        <div class="w-32">
+        <div class="w-auto">
+          <div v-if="partageMode === 'parts'" class="flex items-center">
+            <button
+              type="button"
+              @click="decrementParts(user['@id'])"
+              :disabled="!participantCheckboxes[user['@id']] || getParticipantData(user['@id']).parts <= 0"
+              class="px-2 py-1 border border-gray-300 rounded-l-md bg-gray-50 hover:bg-gray-100 disabled:opacity-50"
+            >
+              -
+            </button>
+            <input
+              :id="`parts-${user['@id']}`"
+              :value="getParticipantData(user['@id']).parts"
+              @input="updateParticipantParts(user['@id'], parseInt(($event.target as HTMLInputElement).value) || 0)"
+              type="number"
+              min="0"
+              step="1"
+              class="appearance-none block w-12 px-1 py-1 border-t border-b border-gray-300 placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm text-center"
+              :disabled="!participantCheckboxes[user['@id']]"
+            >
+            <button
+              type="button"
+              @click="incrementParts(user['@id'])"
+              :disabled="!participantCheckboxes[user['@id']]"
+              class="px-2 py-1 border border-gray-300 rounded-r-md bg-gray-50 hover:bg-gray-100 disabled:opacity-50"
+            >
+              +
+            </button>
+          </div>
+          
+        </div>
+
+        <div class="w-24">
           <label :for="`montant-${user['@id']}`" class="sr-only">Montant</label>
           <div class="relative rounded-md shadow-sm">
-            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+            <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
               <span class="text-gray-500 sm:text-sm">€</span>
             </div>
             <input
@@ -58,7 +67,7 @@
               min="0"
               step="0.01"
               placeholder="Montant"
-              class="appearance-none block w-full px-2 py-1 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm pl-7"
+              class="appearance-none block w-full px-2 py-1 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm pr-7"
               :class="{ 'bg-green-50 border-green-500': getParticipantData(user['@id']).manualMontant && partageMode === 'montants' }"
               :required="partageMode === 'montants'"
               :readonly="partageMode === 'parts'"
@@ -110,5 +119,17 @@ const updateParticipantMontant = (userId: string, montant: number) => {
 
 const getParticipantData = (userId: string): ParticipantData => {
   return props.participantData[userId] || { parts: 1, montant: 0, manualMontant: false }
+}
+
+const incrementParts = (userId: string) => {
+  const currentParts = props.participantData[userId]?.parts || 0
+  emit('updateParticipantParts', userId, currentParts + 1)
+}
+
+const decrementParts = (userId: string) => {
+  const currentParts = props.participantData[userId]?.parts || 0
+  if (currentParts > 0) {
+    emit('updateParticipantParts', userId, currentParts - 1)
+  }
 }
 </script>
