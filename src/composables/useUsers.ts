@@ -73,8 +73,8 @@ export function useUsers() {
 
   const refreshUsers = () => fetchUsers(true)
 
-  const fetchMe = async () => {
-    if (me.value) {
+  const fetchMe = async (force = false) => {
+    if (me.value && !force) {
       return
     }
     loading.value = true

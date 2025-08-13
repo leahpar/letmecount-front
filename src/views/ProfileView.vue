@@ -1,24 +1,49 @@
 <script setup lang="ts">
-import { computed } from 'vue'
-import { useRoute } from 'vue-router'
+import { ref, watch, onMounted } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
+import { useUsers } from '@/composables/useUsers'
 import UserProfile from '@/components/UserProfile.vue'
 import ExpenseList from '@/components/ExpenseList.vue'
 
 const route = useRoute()
+const router = useRouter()
+const { fetchMe } = useUsers()
 
-// Utiliser le paramètre refresh pour forcer le rechargement des composants
-const refresh = computed(() => route.query.refresh || false)
-// TODO: reactualiser l'user courant si true
+const refreshKey = ref(0)
+
+const handleRefresh = async () => {
+  if (route.query.refresh) {
+    await fetchMe(true) // Forcer le rafraîchissement
+    refreshKey.value++
+    // Supprimer le paramètre de la requête pour éviter les rafraîchissements répétés
+    await router.replace({ query: { ...route.query, refresh: undefined } })
+  }
+}
+
+watch(() => route.query.refresh,
+  (newVal) => {
+    if (newVal) {
+      handleRefresh()
+    }
+  },
+  { immediate: true }
+)
+
+onMounted(() => {
+  if (!route.query.refresh) {
+    fetchMe()
+  }
+})
 </script>
 
 <template>
   <main class="profile-page">
     <div class="profile-container">
-      <UserProfile :key="`profile`" />
+      <UserProfile :key="`profile-${refreshKey}`" />
 
       <div class="expenses-container">
         <ExpenseList
-          :key="`expenses`"
+          :key="`expenses-${refreshKey}`"
           title="Mes 10 dernières dépenses"
           :limit="10"
         />
