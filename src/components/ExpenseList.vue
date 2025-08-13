@@ -20,6 +20,7 @@
         :key="expense['@id']"
         :expense="expense"
         :tag-id="props.tagId"
+        @edit="handleEdit"
       />
     </div>
   </div>
@@ -27,6 +28,7 @@
 
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
+import { useRouter } from 'vue-router'
 import axios from '@/plugins/axios'
 import { useUsers } from '@/composables/useUsers'
 import { useTags } from '@/composables/useTags'
@@ -64,6 +66,7 @@ const expenses = ref<Expense[]>([])
 const loading = ref(false)
 const error = ref('')
 
+const router = useRouter()
 const { fetchUsers, fetchMe } = useUsers()
 const { fetchTags } = useTags()
 
@@ -91,6 +94,12 @@ const fetchExpenses = async () => {
   } finally {
     loading.value = false
   }
+}
+
+const handleEdit = (expense: Expense) => {
+  // Extraire l'ID de l'IRI (ex: "/api/depenses/123" -> "123")
+  const id = expense['@id'].split('/').pop()
+  router.push({ name: 'edit-expense', params: { id } })
 }
 
 onMounted(async () => {

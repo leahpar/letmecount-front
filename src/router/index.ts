@@ -29,6 +29,11 @@ const router = createRouter({
       component: CreateExpenseView,
     },
     {
+      path: '/expenses/:id/edit',
+      name: 'edit-expense',
+      component: CreateExpenseView,
+    },
+    {
       path: '/login',
       name: 'login',
       component: LoginView,

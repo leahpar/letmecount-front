@@ -272,6 +272,7 @@ export function useExpenseForm() {
     calculateAmounts,
     initializeParticipants,
     resetManualMontants,
+    updateFormDetails,
     isFormValid,
     isValidRepartition,
     canSubmit,

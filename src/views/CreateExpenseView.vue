@@ -1,9 +1,9 @@
 <template>
   <div class="create-expense-container">
     <div class="create-expense-form">
-      <h1>Créer une dépense</h1>
+      <h1>{{ pageTitle }}</h1>
 
-      <form @submit.prevent="handleCreateExpense">
+      <form @submit.prevent="handleSubmit">
         <ExpenseBasicFields
           v-model="basicFields"
           :users="users"
@@ -34,12 +34,25 @@
         </div>
 
         <div class="form-actions">
-          <button type="button" @click="goBack" class="cancel-btn">
-            Annuler
-          </button>
-          <button type="submit" :disabled="loading || !canSubmit" class="submit-btn">
-            {{ loading ? 'Création...' : 'Créer la dépense' }}
-          </button>
+          <div class="form-actions-left">
+            <button
+              v-if="isEditMode"
+              type="button"
+              @click="handleDelete"
+              :disabled="loading"
+              class="delete-btn"
+            >
+              {{ loading ? 'Suppression...' : 'Supprimer' }}
+            </button>
+          </div>
+          <div class="form-actions-right">
+            <button type="button" @click="goBack" class="cancel-btn">
+              Annuler
+            </button>
+            <button type="submit" :disabled="loading || !canSubmit" class="submit-btn">
+              {{ submitButtonText }}
+            </button>
+          </div>
         </div>
       </form>
     </div>
@@ -47,8 +60,8 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted } from 'vue'
-import { useRouter } from 'vue-router'
+import { computed, onMounted, ref } from 'vue'
+import { useRouter, useRoute } from 'vue-router'
 import { useUsers } from '@/composables/useUsers'
 import { useTags } from '@/composables/useTags'
 import { useExpenses } from '@/composables/useExpenses'
@@ -58,9 +71,21 @@ import ExpensePartageToggle from '@/components/expense/ExpensePartageToggle.vue'
 import ExpenseParticipantsList from '@/components/expense/ExpenseParticipantsList.vue'
 
 const router = useRouter()
+const route = useRoute()
 const { users, fetchUsers, me, fetchMe } = useUsers()
 const { tags, fetchTags } = useTags()
-const { createExpense, loading, error } = useExpenses()
+const { createExpense, updateExpense, fetchExpenseById, deleteExpense, loading, error } = useExpenses()
+
+// Détection du mode édition
+const expenseId = computed(() => route.params.id as string)
+const isEditMode = computed(() => !!expenseId.value)
+const pageTitle = computed(() => isEditMode.value ? 'Modifier la dépense' : 'Créer une dépense')
+const submitButtonText = computed(() => {
+  if (loading.value) {
+    return isEditMode.value ? 'Modification...' : 'Création...'
+  }
+  return isEditMode.value ? 'Modifier la dépense' : 'Créer la dépense'
+})
 
 const {
   formData,
@@ -70,6 +95,7 @@ const {
   updateParticipantParts,
   updateParticipantMontant,
   initializeParticipants,
+  updateFormDetails,
   isFormValid,
   isValidRepartition,
   canSubmit,
@@ -93,7 +119,39 @@ const basicFields = computed({
   }
 })
 
-const handleCreateExpense = async () => {
+const loadExpenseForEdit = async () => {
+  if (!isEditMode.value) return
+
+  const expense = await fetchExpenseById(expenseId.value)
+  if (!expense) {
+    router.push({ name: 'profile' })
+    return
+  }
+
+  // Remplir le formulaire avec les données de la dépense
+  formData.value.titre = expense.titre
+  formData.value.montant = expense.montant
+  formData.value.date = expense.date.split('T')[0] // Convertir au format date HTML
+  formData.value.payePar = expense.payePar
+  formData.value.partage = expense.partage
+  formData.value.tag = expense.tag || ''
+
+  // Initialiser les participants avec les données de la dépense
+  if (expense.details) {
+    expense.details.forEach(detail => {
+      participantCheckboxes.value[detail.user] = true
+      participantData.value[detail.user] = {
+        parts: detail.parts,
+        montant: detail.montant,
+        manualMontant: formData.value.partage === 'montants' // Considérer comme manuel en mode montants
+      }
+    })
+    // Mettre à jour formData.details avec les données chargées
+    updateFormDetails()
+  }
+}
+
+const handleSubmit = async () => {
   // La validation est maintenant gérée par canSubmit
   if (!canSubmit.value) {
     return
@@ -109,9 +167,32 @@ const handleCreateExpense = async () => {
     tag: formData.value.tag
   }
 
-  const createdExpense = await createExpense(expenseData)
-  if (createdExpense) {
-    router.push({ name: 'profile' })
+  let result
+  if (isEditMode.value) {
+    result = await updateExpense(expenseId.value, expenseData)
+  } else {
+    result = await createExpense(expenseData)
+  }
+
+  if (result) {
+    // Forcer le refresh du profil avec un paramètre
+    router.push({ name: 'profile', query: { refresh: true } })
+  }
+}
+
+const handleDelete = async () => {
+  if (!isEditMode.value) return
+
+  const confirmed = confirm(
+    `Êtes-vous sûr de vouloir supprimer la dépense "${formData.value.titre}" ?\n\nCette action est irréversible.`
+  )
+
+  if (confirmed) {
+    const success = await deleteExpense(expenseId.value)
+    if (success) {
+      // Forcer le refresh du profil avec un paramètre
+      router.push({ name: 'profile', query: { refresh: true } })
+    }
   }
 }
 
@@ -122,11 +203,17 @@ const goBack = () => {
 onMounted(async () => {
   await Promise.all([fetchUsers(), fetchTags(), fetchMe()])
 
-  if (me.value) {
-    formData.value.payePar = me.value['@id']
-  }
-
   initializeParticipants(users.value)
+
+  if (isEditMode.value) {
+    // En mode édition, charger les données existantes
+    await loadExpenseForEdit()
+  } else {
+    // En mode création, définir l'utilisateur connecté comme payeur par défaut
+    if (me.value) {
+      formData.value.payePar = me.value['@id']
+    }
+  }
 })
 </script>
 
@@ -165,9 +252,19 @@ onMounted(async () => {
 
 .form-actions {
   display: flex;
-  gap: 1rem;
-  justify-content: flex-end;
+  justify-content: space-between;
+  align-items: center;
   margin-top: 2rem;
+}
+
+.form-actions-left {
+  display: flex;
+  gap: 1rem;
+}
+
+.form-actions-right {
+  display: flex;
+  gap: 1rem;
 }
 
 .cancel-btn {
@@ -182,6 +279,25 @@ onMounted(async () => {
 
 .cancel-btn:hover {
   background-color: #5a6268;
+}
+
+.delete-btn {
+  padding: 0.75rem 1.5rem;
+  background-color: #dc3545;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 1rem;
+}
+
+.delete-btn:hover:not(:disabled) {
+  background-color: #c82333;
+}
+
+.delete-btn:disabled {
+  background-color: #6c757d;
+  cursor: not-allowed;
 }
 
 .submit-btn {
@@ -228,5 +344,26 @@ onMounted(async () => {
 .status-icon {
   font-weight: bold;
   font-size: 1.1rem;
+}
+
+@media (max-width: 768px) {
+  .form-actions {
+    flex-direction: column;
+    gap: 1rem;
+    align-items: stretch;
+  }
+
+  .form-actions-left,
+  .form-actions-right {
+    justify-content: center;
+  }
+
+  .form-actions-left {
+    order: 2;
+  }
+
+  .form-actions-right {
+    order: 1;
+  }
 }
 </style>

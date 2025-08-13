@@ -1,15 +1,24 @@
 <script setup lang="ts">
+import { computed } from 'vue'
+import { useRoute } from 'vue-router'
 import UserProfile from '@/components/UserProfile.vue'
 import ExpenseList from '@/components/ExpenseList.vue'
+
+const route = useRoute()
+
+// Utiliser le paramètre refresh pour forcer le rechargement des composants
+const refresh = computed(() => route.query.refresh || false)
+// TODO: reactualiser l'user courant si true
 </script>
 
 <template>
   <main class="profile-page">
     <div class="profile-container">
-      <UserProfile />
-      
+      <UserProfile :key="`profile`" />
+
       <div class="expenses-container">
-        <ExpenseList 
+        <ExpenseList
+          :key="`expenses`"
           title="Mes 10 dernières dépenses"
           :limit="10"
         />

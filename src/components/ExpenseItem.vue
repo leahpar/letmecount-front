@@ -6,7 +6,16 @@
   >
     <div class="expense-header">
       <h4 class="expense-title">{{ expense.titre }}</h4>
-      <span class="expense-amount">{{ formatAmount(expense.montant) }} €</span>
+      <div class="expense-header-right">
+        <span class="expense-amount">{{ formatAmount(expense.montant) }} €</span>
+        <button 
+          class="edit-btn"
+          @click.stop="handleEdit"
+          title="Modifier la dépense"
+        >
+          ✏️
+        </button>
+      </div>
     </div>
     <div class="expense-details">
       <span class="expense-date">{{ formatDate(expense.date) }}</span>
@@ -82,6 +91,10 @@ interface Props {
 
 const props = defineProps<Props>()
 
+const emit = defineEmits<{
+  edit: [expense: Expense]
+}>()
+
 const expanded = ref(false)
 
 const { getUsernameByIri, me } = useUsers()
@@ -151,6 +164,10 @@ const toggleExpanded = () => {
 const isExpanded = (): boolean => {
   return expanded.value
 }
+
+const handleEdit = () => {
+  emit('edit', props.expense)
+}
 </script>
 
 <style scoped>
@@ -181,6 +198,12 @@ const isExpanded = (): boolean => {
   margin-bottom: 0.5rem;
 }
 
+.expense-header-right {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
 .expense-title {
   margin: 0;
   color: #333;
@@ -191,6 +214,29 @@ const isExpanded = (): boolean => {
   font-weight: bold;
   color: #007bff;
   font-size: 1.2rem;
+}
+
+.edit-btn {
+  background: none;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  padding: 0.25rem 0.5rem;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.edit-btn:hover {
+  background-color: #f8f9fa;
+  border-color: #007bff;
+  transform: scale(1.05);
+}
+
+.edit-btn:active {
+  transform: scale(0.95);
 }
 
 .expense-details {
@@ -279,6 +325,16 @@ const isExpanded = (): boolean => {
     flex-direction: column;
     align-items: flex-start;
     gap: 0.5rem;
+  }
+  
+  .expense-header-right {
+    align-self: flex-end;
+    gap: 0.5rem;
+  }
+  
+  .edit-btn {
+    padding: 0.2rem 0.4rem;
+    font-size: 0.9rem;
   }
 
   .expense-details {
