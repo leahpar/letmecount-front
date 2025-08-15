@@ -1,8 +1,6 @@
 <template>
   <div class="bg-white border border-gray-200 sm:rounded-lg">
-    <div class="p-6">
-      <h2 class="text-xl font-semibold text-gray-900 text-center mb-4">Mon compte</h2>
-
+    <div class="p-6 text-center">
       <div v-if="loading" class="text-center py-8 text-gray-500">
         Chargement...
       </div>
@@ -11,11 +9,11 @@
         <span class="block sm:inline">{{ error }}</span>
       </div>
 
-      <div v-else-if="user" class="space-y-4">
-        <div class="flex justify-between items-center py-2 border-b border-gray-200">
-          <span class="font-medium text-gray-600">Solde :</span>
+      <div v-else-if="user" class="space-y-2">
+        <span class="font-medium text-xl text-gray-600">Mon solde</span>
+        <div>
           <span
-            class="font-bold text-lg"
+            class="font-bold text-5xl"
             :class="{ 'text-red-600': user.solde < 0, 'text-green-600': user.solde >= 0 }"
           >
             {{ formatMoney(user.solde) }} €

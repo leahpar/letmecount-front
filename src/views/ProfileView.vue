@@ -48,7 +48,7 @@ onMounted(() => {
             <div class="p-6">
               <ExpenseList
                 :key="`expenses-${refreshKey}`"
-                title="Mes 10 dernières dépenses"
+                title="Mes dépenses"
                 :limit="10"
               />
             </div>
