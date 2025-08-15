@@ -27,7 +27,6 @@
           ({{ formatImpact(balanceImpact) }})
         </span>
       </span>
-      <span class="text-xs text-gray-500 ml-auto">{{ formatDate(expense.date) }}</span>
     </div>
     <div
       v-if="expense.details && expense.details.length > 0 && isExpanded()"
@@ -97,15 +96,6 @@ const { getTagByIri } = useTags()
 
 const formatAmount = (amount: number): string => {
   return amount.toFixed(2)
-}
-
-const formatDate = (dateString: string): string => {
-  const date = new Date(dateString)
-  return date.toLocaleDateString('fr-FR', {
-    year: 'numeric',
-    month: 'short',
-    day: 'numeric'
-  })
 }
 
 const formatImpact = (impact: number): string => {

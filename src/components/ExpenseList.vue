@@ -14,20 +14,25 @@
       Aucune dépense trouvée
     </div>
 
-    <div v-else class="space-y-4">
-      <ExpenseItem
-        v-for="expense in expenses"
-        :key="expense['@id']"
-        :expense="expense"
-        :tag-id="props.tagId"
-        @edit="handleEdit"
-      />
+    <div v-else>
+      <div v-for="(group, date) in groupedExpenses" :key="date" class="mb-6">
+        <h4 class="text-lg font-medium text-gray-800 mb-2 sticky top-0 bg-gray-100 py-2 px-4 -mx-4">{{ date }}</h4>
+        <div class="space-y-4">
+          <ExpenseItem
+            v-for="expense in group"
+            :key="expense['@id']"
+            :expense="expense"
+            :tag-id="props.tagId"
+            @edit="handleEdit"
+          />
+        </div>
+      </div>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, computed } from 'vue'
 import { useRouter } from 'vue-router'
 import axios from '@/plugins/axios'
 import { useUsers } from '@/composables/useUsers'
@@ -69,6 +74,22 @@ const error = ref('')
 const router = useRouter()
 const { fetchUsers, fetchMe } = useUsers()
 const { fetchTags } = useTags()
+
+const groupedExpenses = computed(() => {
+  const groups: { [key: string]: Expense[] } = {}
+  for (const expense of expenses.value) {
+    const date = new Date(expense.date).toLocaleDateString('fr-FR', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric'
+    })
+    if (!groups[date]) {
+      groups[date] = []
+    }
+    groups[date].push(expense)
+  }
+  return groups
+})
 
 const fetchExpenses = async () => {
   loading.value = true
