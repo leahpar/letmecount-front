@@ -12,7 +12,7 @@ const handleLogout = () => {
 
 <template>
   <div class="flex flex-col min-h-screen bg-gray-100 font-sans">
-    <header class="bg-white shadow-md">
+    <header class="bg-white border-b border-gray-200">
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="flex justify-between items-center h-16">
           <div class="flex-shrink-0">

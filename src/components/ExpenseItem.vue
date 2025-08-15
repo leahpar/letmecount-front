@@ -1,6 +1,6 @@
 <template>
   <div
-    class="bg-white shadow-sm rounded-lg p-4 transition-shadow duration-200 hover:shadow-md"
+    class="bg-white border-b border-gray-200 p-4"
     :class="{ 'cursor-pointer': expense.details && expense.details.length > 0 }"
     @click="expense.details && expense.details.length > 0 ? toggleExpanded() : null"
   >

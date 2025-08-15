@@ -44,7 +44,7 @@ onMounted(() => {
           <UserProfile :key="`profile-${refreshKey}`" />
         </div>
         <div class="mt-8 lg:mt-0 lg:col-span-8">
-          <div class="bg-white shadow sm:rounded-lg">
+          <div class="bg-white border border-gray-200 sm:rounded-lg">
             <div class="p-6">
               <ExpenseList
                 :key="`expenses-${refreshKey}`"
@@ -59,7 +59,7 @@ onMounted(() => {
   </div>
   <router-link
     :to="{ name: 'create-expense' }"
-    class="fixed bottom-8 right-8 bg-blue-500 hover:bg-blue-700 text-white font-bold w-16 h-16 rounded-full shadow-md/50 z-10 flex items-center justify-center"
+    class="fixed bottom-8 right-8 bg-blue-500 hover:bg-blue-700 text-white font-bold w-16 h-16 rounded-full z-10 flex items-center justify-center"
     aria-label="Ajouter une dépense"
   >
     <svg

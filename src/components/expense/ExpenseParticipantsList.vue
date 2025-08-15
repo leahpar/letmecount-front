@@ -11,7 +11,7 @@
             type="checkbox"
             :checked="participantCheckboxes[user['@id']]"
             @change="updateParticipant(user['@id'], ($event.target as HTMLInputElement).checked)"
-            class="h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+            class="h-4 w-4 text-blue-600 border-gray-300 rounded focus:outline-none focus:border-blue-500"
           >
         </div>
 
@@ -36,7 +36,7 @@
               type="number"
               min="0"
               step="1"
-              class="appearance-none block w-12 px-1 py-1 border-t border-b border-gray-300 placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm text-center"
+              class="appearance-none block w-12 px-1 py-1 border-t border-b border-gray-300 placeholder-gray-400 focus:outline-none focus:outline-none focus:border-indigo-500 focus:border-indigo-500 sm:text-sm text-center"
               :disabled="!participantCheckboxes[user['@id']]"
             >
             <button
@@ -65,7 +65,7 @@
               min="0"
               step="0.01"
               placeholder="Montant"
-              class="appearance-none block w-full px-2 py-1 border border-gray-300 rounded-md  placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm pr-7"
+              class="appearance-none block w-full px-2 py-1 border border-gray-300 rounded-md  placeholder-gray-400 focus:outline-none focus:outline-none focus:border-indigo-500 focus:border-indigo-500 sm:text-sm pr-7"
               
               :required="partageMode === 'montants'"
               :readonly="partageMode === 'parts'"
