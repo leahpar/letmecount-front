@@ -4,10 +4,10 @@
     :class="{ 'cursor-pointer': expense.details && expense.details.length > 0 }"
     @click="expense.details && expense.details.length > 0 ? toggleExpanded() : null"
   >
-    <div class="flex flex-col sm:flex-row justify-between sm:items-center gap-2 mb-2">
-      <h4 class="text-lg font-semibold text-gray-800">{{ expense.titre }}</h4>
-      <div class="flex items-center gap-3 self-end sm:self-center">
-        <span class="text-xl font-bold text-blue-600">{{ formatAmount(expense.montant) }} €</span>
+    <div class="flex justify-between items-center gap-2">
+      <h4 class="text-lg font-semibold text-gray-800 truncate pr-4">{{ expense.titre }}</h4>
+      <div class="flex items-center gap-3">
+        <span class="text-xl font-bold text-blue-600 text-nowrap">{{ formatAmount(expense.montant) }} €</span>
         <button
           class="p-1 border border-gray-300 rounded-md text-sm hover:bg-gray-100 hover:border-blue-500 transition-all duration-200"
           @click.stop="handleEdit"
@@ -17,23 +17,17 @@
         </button>
       </div>
     </div>
-    <div class="flex flex-col sm:flex-row justify-between sm:items-center text-sm text-gray-600 gap-x-4 gap-y-1">
-      <span class="text-xs text-gray-500">{{ formatDate(expense.date) }}</span>
+    <div class="flex items-center text-sm text-gray-600 gap-x-4 gap-y-1 mt-2">
+      <span v-if="!tagId && expense.tag" class="text-xs bg-gray-200 text-gray-800 px-2 py-1 rounded-full">
+        #{{ getTagName(expense.tag) }}
+      </span>
       <span class="italic">
         Payé par {{ getPayer(expense) }}
         <span class="font-bold ml-1" :class="{ 'text-green-600': balanceImpact > 0, 'text-red-600': balanceImpact < 0 }">
           ({{ formatImpact(balanceImpact) }})
         </span>
       </span>
-      <span v-if="!tagId && expense.tag" class="text-xs bg-gray-200 text-gray-800 px-2 py-1 rounded-full">
-        #{{ getTagName(expense.tag) }}
-      </span>
-      <span
-        v-if="expense.details && expense.details.length > 0"
-        class="text-blue-600 text-xs font-bold ml-auto"
-      >
-        {{ isExpanded() ? '▼' : '▶' }}
-      </span>
+      <span class="text-xs text-gray-500 ml-auto">{{ formatDate(expense.date) }}</span>
     </div>
     <div
       v-if="expense.details && expense.details.length > 0 && isExpanded()"
@@ -110,9 +104,7 @@ const formatDate = (dateString: string): string => {
   return date.toLocaleDateString('fr-FR', {
     year: 'numeric',
     month: 'short',
-    day: 'numeric',
-    hour: '2-digit',
-    minute: '2-digit'
+    day: 'numeric'
   })
 }
 
