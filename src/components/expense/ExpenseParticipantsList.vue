@@ -66,7 +66,7 @@
               step="0.01"
               placeholder="Montant"
               class="appearance-none block w-full px-2 py-1 border border-gray-300 rounded-md  placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm pr-7"
-              :class="{ 'bg-green-50 border-green-500': getParticipantData(user['@id']).manualMontant && partageMode === 'montants' }"
+              
               :required="partageMode === 'montants'"
               :readonly="partageMode === 'parts'"
               :disabled="partageMode === 'parts' && !participantCheckboxes[user['@id']]"

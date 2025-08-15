@@ -3,13 +3,13 @@
     <div class="max-w-3xl mx-auto sm:px-6 lg:px-8">
       <div class="bg-white shadow sm:rounded-lg">
         <div class="p-6">
-          <h1 class="text-2xl font-semibold text-gray-900 text-center mb-8">{{ pageTitle }}</h1>
 
           <form @submit.prevent="handleSubmit" class="space-y-6">
             <ExpenseBasicFields
               v-model="basicFields"
               :users="users"
               :tags="tags"
+              :submitted="submitted"
             />
 
             <div class="flex items-center justify-between">
@@ -29,39 +29,30 @@
               @update-participant-montant="updateParticipantMontant"
             />
 
-            <div
-              class="p-3 rounded-md flex items-center gap-x-3"
-              :class="{
-                'bg-green-100 border border-green-400 text-green-700': repartitionStatus.valid,
-                'bg-red-100 border border-red-400 text-red-700': !repartitionStatus.valid
-              }"
-            >
-              <span class="font-bold text-lg">{{ repartitionStatus.valid ? '✓' : '⚠' }}</span>
-              <span>{{ repartitionStatus.message }}</span>
-            </div>
+
 
             <div v-if="error" class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">
               <span class="block sm:inline">{{ error }}</span>
             </div>
 
-            <div class="flex flex-col-reverse sm:flex-row sm:justify-between items-center pt-6 border-t border-gray-200">
-              <div class="mt-4 sm:mt-0">
+            <div class="flex flex-col items-stretch pt-6 border-t border-gray-200 gap-4">
+              <div class="flex justify-end gap-3">
+                <button type="button" @click="goBack" class="w-full sm:w-auto inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                  Annuler
+                </button>
+                <button type="submit" :disabled="loading || !canSubmit" class="w-full sm:w-auto inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-blue-600 text-base font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:bg-gray-400">
+                  Enregistrer
+                </button>
+              </div>
+              <div class="text-center">
                 <button
                   v-if="isEditMode"
                   type="button"
                   @click="handleDelete"
                   :disabled="loading"
-                  class="w-full sm:w-auto inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-red-600 text-base font-medium text-white hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 disabled:bg-gray-400"
+                  class="text-red-600 hover:text-red-800 underline disabled:text-gray-400"
                 >
-                  {{ loading ? 'Suppression...' : 'Supprimer' }}
-                </button>
-              </div>
-              <div class="flex flex-col-reverse sm:flex-row sm:justify-end gap-3 w-full sm:w-auto">
-                <button type="button" @click="goBack" class="w-full sm:w-auto inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
-                  Annuler
-                </button>
-                <button type="submit" :disabled="loading || !canSubmit" class="w-full sm:w-auto inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-blue-600 text-base font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 disabled:bg-gray-400">
-                  {{ submitButtonText }}
+                  Supprimer
                 </button>
               </div>
             </div>
@@ -73,7 +64,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted } from 'vue'
+import { computed, onMounted, ref } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { useUsers } from '@/composables/useUsers'
 import { useTags } from '@/composables/useTags'
@@ -88,17 +79,11 @@ const route = useRoute()
 const { users, fetchUsers, me, fetchMe } = useUsers()
 const { tags, fetchTags } = useTags()
 const { createExpense, updateExpense, fetchExpenseById, deleteExpense, loading, error } = useExpenses()
+const submitted = ref(false)
 
 // Détection du mode édition
 const expenseId = computed(() => route.params.id as string)
 const isEditMode = computed(() => !!expenseId.value)
-const pageTitle = computed(() => isEditMode.value ? 'Modifier la dépense' : 'Créer une dépense')
-const submitButtonText = computed(() => {
-  if (loading.value) {
-    return isEditMode.value ? 'Modification...' : 'Création...'
-  }
-  return isEditMode.value ? 'Modifier la dépense' : 'Créer la dépense'
-})
 
 const {
   formData,
@@ -109,8 +94,7 @@ const {
   updateParticipantMontant,
   initializeParticipants,
   updateFormDetails,
-  canSubmit,
-  repartitionStatus
+  canSubmit
 } = useExpenseForm()
 
 const basicFields = computed({
@@ -163,6 +147,7 @@ const loadExpenseForEdit = async () => {
 }
 
 const handleSubmit = async () => {
+  submitted.value = true
   // La validation est maintenant gérée par canSubmit
   if (!canSubmit.value) {
     return

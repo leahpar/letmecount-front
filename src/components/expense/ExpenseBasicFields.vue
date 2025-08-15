@@ -12,6 +12,7 @@
           placeholder="Repas, Courses..."
           maxlength="255"
           class="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+          :class="{ 'border-red-500': submitted && !isTitreValid }"
         >
       </div>
     </div>
@@ -33,6 +34,7 @@
             required
             placeholder="0.00"
             class="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm pr-7"
+            :class="{ 'border-red-500': submitted && !isMontantValid }"
           >
         </div>
       </div>
@@ -84,6 +86,7 @@
             @change="updateField('tag', ($event.target as HTMLSelectElement).value)"
             required
             class="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+            :class="{ 'border-red-500': submitted && !isTagValid }"
           >
             <option value="">-- Choisir un tag --</option>
             <option
@@ -101,6 +104,8 @@
 </template>
 
 <script setup lang="ts">
+import { computed } from 'vue'
+
 interface User {
   '@id': string
   username: string
@@ -123,11 +128,16 @@ const props = defineProps<{
   modelValue: FormData
   users: User[]
   tags: Tag[]
+  submitted: boolean
 }>()
 
 const emit = defineEmits<{
   'update:modelValue': [value: FormData]
 }>()
+
+const isTitreValid = computed(() => props.modelValue.titre.trim() !== '')
+const isMontantValid = computed(() => props.modelValue.montant > 0)
+const isTagValid = computed(() => props.modelValue.tag !== '')
 
 const updateField = (field: keyof FormData, value: string | number) => {
   emit('update:modelValue', {
