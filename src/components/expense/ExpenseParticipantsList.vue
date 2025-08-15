@@ -18,7 +18,7 @@
         </div>
 
         <div class="flex-1 min-w-0">
-          <p class="text-sm font-medium text-gray-900 truncate">{{ user.username }}</p>
+          <label :for="`participant-${user['@id']}`" class="text-sm font-medium text-gray-900 truncate cursor-pointer">{{ user.username }}</label>
         </div>
 
         <div class="w-auto">
