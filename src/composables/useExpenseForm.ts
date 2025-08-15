@@ -18,7 +18,7 @@ export function useExpenseForm() {
     montant: 0,
     date: new Date().toISOString().slice(0, 10),
     payePar: '',
-    partage: 'parts' as 'parts' | 'montants',
+    partage: 'montants' as 'parts' | 'montants',
     tag: '',
     details: [] as ExpenseDetail[]
   })

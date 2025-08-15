@@ -11,86 +11,90 @@
           required
           placeholder="Repas, Courses..."
           maxlength="255"
-          class="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+          class="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
         >
       </div>
     </div>
 
-    <div>
-      <label for="montant" class="block text-sm font-medium text-gray-700">Montant</label>
-      <div class="mt-1 relative rounded-md shadow-sm">
-        <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
-          <span class="text-gray-500 sm:text-sm">€</span>
+    <div class="grid grid-cols-2 gap-6">
+      <div>
+        <label for="montant" class="block text-sm font-medium text-gray-700">Montant</label>
+        <div class="mt-1 relative rounded-md">
+          <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
+            <span class="text-gray-500 sm:text-sm">€</span>
+          </div>
+          <input
+            id="montant"
+            :value="modelValue.montant"
+            @input="updateField('montant', parseFloat(($event.target as HTMLInputElement).value) || 0)"
+            type="number"
+            step="0.01"
+            min="1"
+            required
+            placeholder="0.00"
+            class="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm pr-7"
+          >
         </div>
-        <input
-          id="montant"
-          :value="modelValue.montant"
-          @input="updateField('montant', parseFloat(($event.target as HTMLInputElement).value) || 0)"
-          type="number"
-          step="0.01"
-          min="1"
-          required
-          placeholder="0.00"
-          class="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm pr-7"
-        >
       </div>
-    </div>
 
-    <div>
-      <label for="date" class="block text-sm font-medium text-gray-700">Date</label>
-      <div class="mt-1">
-        <input
-          id="date"
-          :value="modelValue.date"
-          @input="updateField('date', ($event.target as HTMLInputElement).value)"
-          type="date"
-          required
-          class="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-        >
-      </div>
-    </div>
-
-    <div>
-      <label for="payePar" class="block text-sm font-medium text-gray-700">Payé par</label>
-      <div class="mt-1">
-        <select
-          id="payePar"
-          :value="modelValue.payePar"
-          @change="updateField('payePar', ($event.target as HTMLSelectElement).value)"
-          required
-          class="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-        >
-          <option value="">-- Choisir qui a payé --</option>
-          <option
-            v-for="user in users"
-            :key="user['@id']"
-            :value="user['@id']"
+      <div>
+        <label for="date" class="block text-sm font-medium text-gray-700">Date</label>
+        <div class="mt-1">
+          <input
+            id="date"
+            :value="modelValue.date"
+            @input="updateField('date', ($event.target as HTMLInputElement).value)"
+            type="date"
+            required
+            class="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
           >
-            {{ user.username }}
-          </option>
-        </select>
+        </div>
       </div>
     </div>
 
-    <div>
-      <label for="tag" class="block text-sm font-medium text-gray-700">Tag</label>
-      <div class="mt-1">
-        <select
-          id="tag"
-          :value="modelValue.tag"
-          @change="updateField('tag', ($event.target as HTMLSelectElement).value)"
-          required
-          class="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
-        >
-          <option value="">-- Choisir un tag --</option>
-          <option
-            v-for="tag in tags"
-            :key="tag['@id']"
-            :value="tag['@id']"
+    <div class="grid grid-cols-2 gap-6">
+      <div>
+        <label for="payePar" class="block text-sm font-medium text-gray-700">Payé par</label>
+        <div class="mt-1">
+          <select
+            id="payePar"
+            :value="modelValue.payePar"
+            @change="updateField('payePar', ($event.target as HTMLSelectElement).value)"
+            required
+            class="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
           >
-            {{ tag.libelle }}
-          </option>
-        </select>
+            <option value="">-- Choisir qui a payé --</option>
+            <option
+              v-for="user in users"
+              :key="user['@id']"
+              :value="user['@id']"
+            >
+              {{ user.username }}
+            </option>
+          </select>
+        </div>
+      </div>
+
+      <div>
+        <label for="tag" class="block text-sm font-medium text-gray-700">Tag</label>
+        <div class="mt-1">
+          <select
+            id="tag"
+            :value="modelValue.tag"
+            @change="updateField('tag', ($event.target as HTMLSelectElement).value)"
+            required
+            class="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+          >
+            <option value="">-- Choisir un tag --</option>
+            <option
+              v-for="tag in tags"
+              :key="tag['@id']"
+              :value="tag['@id']"
+            >
+              {{ tag.libelle }}
+            </option>
+          </select>
+        </div>
       </div>
     </div>
   </div>

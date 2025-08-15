@@ -3,18 +3,20 @@
     <div class="max-w-3xl mx-auto sm:px-6 lg:px-8">
       <div class="bg-white shadow sm:rounded-lg">
         <div class="p-6">
-          <h1 class="text-2xl font-semibold text-gray-900 text-center">{{ pageTitle }}</h1>
 
-          <form @submit.prevent="handleSubmit" class="mt-8 space-y-6">
+          <form @submit.prevent="handleSubmit" class="space-y-6">
             <ExpenseBasicFields
               v-model="basicFields"
               :users="users"
               :tags="tags"
             />
 
-            <ExpensePartageToggle
-              v-model="formData.partage"
-            />
+            <div class="flex items-center justify-between">
+              <div class="text-lg font-medium text-gray-900">Participants</div>
+              <ExpensePartageToggle
+                v-model="formData.partage"
+              />
+            </div>
 
             <ExpenseParticipantsList
               :users="users"

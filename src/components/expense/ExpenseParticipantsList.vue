@@ -1,11 +1,9 @@
 <template>
-  <div class="space-y-4">
-    <h3 class="text-lg font-medium text-gray-900">Participants</h3>
-    <div class="space-y-2">
+  <div>
       <div
         v-for="user in users"
         :key="user['@id']"
-        class="flex items-center gap-x-4 py-2 border-b border-gray-100"
+        class="flex items-center gap-x-4 py-1 border-b border-gray-100"
       >
         <div class="flex items-center">
           <input
@@ -55,7 +53,7 @@
 
         <div class="w-24">
           <label :for="`montant-${user['@id']}`" class="sr-only">Montant</label>
-          <div class="relative rounded-md shadow-sm">
+          <div class="relative rounded-md ">
             <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
               <span class="text-gray-500 sm:text-sm">€</span>
             </div>
@@ -67,7 +65,7 @@
               min="0"
               step="0.01"
               placeholder="Montant"
-              class="appearance-none block w-full px-2 py-1 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm pr-7"
+              class="appearance-none block w-full px-2 py-1 border border-gray-300 rounded-md  placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm pr-7"
               :class="{ 'bg-green-50 border-green-500': getParticipantData(user['@id']).manualMontant && partageMode === 'montants' }"
               :required="partageMode === 'montants'"
               :readonly="partageMode === 'parts'"
@@ -77,7 +75,6 @@
         </div>
       </div>
     </div>
-  </div>
 </template>
 
 <script setup lang="ts">
