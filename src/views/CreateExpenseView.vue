@@ -3,6 +3,7 @@
     <div class="max-w-3xl mx-auto sm:px-6 lg:px-8">
       <div class="bg-white shadow sm:rounded-lg">
         <div class="p-6">
+          <h1 class="text-2xl font-semibold text-gray-900 text-center mb-8">{{ pageTitle }}</h1>
 
           <form @submit.prevent="handleSubmit" class="space-y-6">
             <ExpenseBasicFields

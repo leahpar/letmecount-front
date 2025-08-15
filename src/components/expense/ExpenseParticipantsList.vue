@@ -69,7 +69,7 @@
               :class="{ 'bg-green-50 border-green-500': getParticipantData(user['@id']).manualMontant && partageMode === 'montants' }"
               :required="partageMode === 'montants'"
               :readonly="partageMode === 'parts'"
-              :disabled="!participantCheckboxes[user['@id']]"
+              :disabled="partageMode === 'parts' && !participantCheckboxes[user['@id']]"
             >
           </div>
         </div>
