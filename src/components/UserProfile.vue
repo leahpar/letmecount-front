@@ -13,7 +13,7 @@
         <span class="font-medium text-xl text-gray-600">Mon solde</span>
         <div>
           <span
-            class="font-bold text-5xl"
+            class="font-bold text-6xl"
             :class="{ 'text-red-600': user.solde < 0, 'text-green-600': user.solde >= 0 }"
           >
             {{ formatMoney(user.solde) }} €

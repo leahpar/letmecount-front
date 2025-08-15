@@ -1,6 +1,6 @@
 <template>
   <div
-    class="bg-white border-b border-gray-200 p-4"
+    class="bg-white border-gray-200 px-1 py-2"
     :class="{ 'cursor-pointer': expense.details && expense.details.length > 0 }"
     @click="expense.details && expense.details.length > 0 ? toggleExpanded() : null"
   >
@@ -17,11 +17,11 @@
         </button>
       </div>
     </div>
-    <div class="flex items-center text-sm text-gray-600 gap-x-4 gap-y-1 mt-2">
+    <div class="flex items-center text-sm text-gray-600 gap-x-4 gap-y-1">
       <span v-if="!tagId && expense.tag" class="text-xs bg-gray-200 text-gray-800 px-2 py-1 rounded-full">
         #{{ getTagName(expense.tag) }}
       </span>
-      <span class="italic">
+      <span class="italic ml-auto">
         Payé par {{ getPayer(expense) }}
         <span class="font-bold ml-1" :class="{ 'text-green-600': balanceImpact > 0, 'text-red-600': balanceImpact < 0 }">
           ({{ formatImpact(balanceImpact) }})

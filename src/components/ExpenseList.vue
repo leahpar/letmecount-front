@@ -15,9 +15,9 @@
     </div>
 
     <div v-else>
-      <div v-for="(group, date) in groupedExpenses" :key="date" class="mb-6">
-        <h4 class="text-lg font-medium text-gray-800 mb-2 sticky top-0 bg-gray-100 py-2 px-4 -mx-4">{{ date }}</h4>
-        <div class="space-y-4">
+      <div v-for="(group, date) in groupedExpenses" :key="date" class="mb-2">
+        <h4 class="text-lg text-center font-medium text-gray-800 mb-2 sticky top-0 py-2 px-4 -mx-4 border-t border-t-gray-400">{{ date }}</h4>
+        <div class="divide-y divide-gray-200">
           <ExpenseItem
             v-for="expense in group"
             :key="expense['@id']"
@@ -97,7 +97,7 @@ const fetchExpenses = async () => {
 
   try {
     let url = `/depenses?page=1&itemsPerPage=${props.limit}`
-    
+
     if (props.tagId) {
       url += `&tags.id=${props.tagId}`
     }
