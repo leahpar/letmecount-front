@@ -14,7 +14,8 @@
     <div class="grid grid-cols-2 gap-6">
       <BaseInput
         id="montant"
-        v-model="formData.montant"
+        :model-value="formData.montant"
+        @update:model-value="updateMontant"
         label="Montant"
         type="number"
         step="0.01"
@@ -121,4 +122,11 @@ const selectedTagLabel = computed(() => {
   const selectedTag = props.tags.find(tag => tag['@id'] === props.modelValue.tag)
   return selectedTag?.libelle || ''
 })
+
+const updateMontant = (value: string | number) => {
+  emit('update:modelValue', {
+    ...props.modelValue,
+    montant: typeof value === 'string' ? parseFloat(value) || 0 : value
+  })
+}
 </script>

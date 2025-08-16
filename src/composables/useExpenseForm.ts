@@ -121,6 +121,8 @@ export function useExpenseForm() {
             totalDistributed += calculatedMontant
           }
         })
+        // Synchroniser les montants calculés vers formData.details
+        updateFormDetails()
       }
     } else if (formData.value.partage === 'montants') {
       const checkedParticipants = Object.keys(participantData.value).filter(
