@@ -35,17 +35,17 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted, computed } from 'vue'
+import { onMounted, onUnmounted, computed } from 'vue'
 import { useRouter } from 'vue-router'
-import axios from '@/plugins/axios'
 import { useUsers } from '@/composables/useUsers'
 import { useTags } from '@/composables/useTags'
+import { useExpenseCache } from '@/composables/useExpenseCache'
 import ExpenseItem from './ExpenseItem.vue'
 
 interface ExpenseDetail {
-  user: string
-  parts: number
-  montant: number
+  user: string;
+  parts: number;
+  montant: number;
 }
 
 interface Expense {
@@ -70,16 +70,19 @@ const props = withDefaults(defineProps<Props>(), {
   limit: 10
 })
 
-const expenses = ref<Expense[]>([])
-const loading = ref(false)
-const loadingMore = ref(false)
-const error = ref('')
-const page = ref(1)
-const allLoaded = ref(false)
-
 const router = useRouter()
 const { fetchUsers, fetchMe } = useUsers()
 const { fetchTags } = useTags()
+const {
+  expenses,
+  loading,
+  loadingMore,
+  error,
+  allLoaded,
+  scrollPosition,
+  fetchExpenses,
+  setScrollPosition
+} = useExpenseCache()
 
 const groupedExpenses = computed(() => {
   const groups: { [key: string]: Expense[] } = {}
@@ -97,51 +100,12 @@ const groupedExpenses = computed(() => {
   return groups
 })
 
-const fetchExpenses = async () => {
-  if (loading.value || loadingMore.value || allLoaded.value) return
-
-  if (page.value === 1) {
-    loading.value = true
-  } else {
-    loadingMore.value = true
-  }
-  error.value = ''
-
-  try {
-    let url = `/depenses?page=${page.value}&itemsPerPage=${props.limit}`
-
-    if (props.tagId) {
-      url += `&tags.id=${props.tagId}`
-    }
-
-    const response = await axios.get(url)
-    const newExpenses = response.data.member || []
-
-    if (newExpenses.length < props.limit) {
-      allLoaded.value = true
-    }
-
-    expenses.value.push(...newExpenses)
-    page.value++
-  } catch (err: unknown) {
-    console.error('Erreur lors du chargement des dépenses:', err)
-    if (err && typeof err === 'object' && 'response' in err) {
-      const axiosError = err as { response?: { data?: { message?: string } } }
-      error.value = axiosError.response?.data?.message || 'Erreur lors du chargement des dépenses'
-    } else {
-      error.value = 'Erreur lors du chargement des dépenses'
-    }
-  } finally {
-    loading.value = false
-    loadingMore.value = false
-  }
-}
-
 const handleScroll = () => {
   const { scrollTop, scrollHeight, clientHeight } = document.documentElement
   if (scrollTop + clientHeight >= scrollHeight - 5) {
-    fetchExpenses()
+    fetchExpenses(props.limit, props.tagId)
   }
+  setScrollPosition(scrollTop)
 }
 
 const handleEdit = (expense: Expense) => {
@@ -150,11 +114,16 @@ const handleEdit = (expense: Expense) => {
 }
 
 onMounted(async () => {
-  await fetchMe()
   await fetchUsers()
   await fetchTags()
-  fetchExpenses()
+  await fetchMe()
+
+  if (expenses.value.length === 0) {
+    fetchExpenses(props.limit, props.tagId)
+  }
+
   window.addEventListener('scroll', handleScroll)
+  window.scrollTo(0, scrollPosition.value)
 })
 
 onUnmounted(() => {

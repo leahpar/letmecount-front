@@ -1,7 +1,8 @@
 <script setup lang="ts">
-import { ref, watch, onMounted } from 'vue'
+import { watch, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useUsers } from '@/composables/useUsers'
+import { useExpenseCache } from '@/composables/useExpenseCache'
 import UserProfile from '@/components/UserProfile.vue'
 import ExpenseList from '@/components/ExpenseList.vue'
 import PullToRefresh from '@/components/PullToRefresh.vue'
@@ -9,13 +10,11 @@ import PullToRefresh from '@/components/PullToRefresh.vue'
 const route = useRoute()
 const router = useRouter()
 const { fetchMe } = useUsers()
-
-const refreshKey = ref(0)
+const { fetchExpenses } = useExpenseCache()
 
 const handleRefresh = async () => {
   if (route.query.refresh) {
-    await fetchMe(true) // Forcer le rafraîchissement
-    refreshKey.value++
+    await fetchExpenses(10, undefined, true) // Forcer le rafraîchissement
     // Supprimer le paramètre de la requête pour éviter les rafraîchissements répétés
     await router.replace({ query: { ...route.query, refresh: undefined } })
   }
@@ -31,8 +30,7 @@ watch(() => route.query.refresh,
 )
 
 const handlePullToRefresh = async () => {
-  await fetchMe(true)
-  refreshKey.value++
+  await fetchExpenses(10, undefined, true)
 }
 
 onMounted(() => {
@@ -47,13 +45,12 @@ onMounted(() => {
     <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
       <div class="lg:grid lg:grid-cols-12 lg:gap-8">
         <div class="lg:col-span-4">
-          <UserProfile :key="`profile-${refreshKey}`" />
+          <UserProfile />
         </div>
         <div class="mt-8 lg:mt-0 lg:col-span-8">
           <div class="bg-white border border-gray-200 sm:rounded-lg">
             <div class="p-6">
               <ExpenseList
-                :key="`expenses-${refreshKey}`"
                 title="Mes dépenses"
                 :limit="10"
               />
