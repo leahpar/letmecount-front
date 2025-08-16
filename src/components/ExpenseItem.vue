@@ -23,14 +23,16 @@
         </span>
       </div>
     </div>
-    <transition name="popup">
-      <ExpenseDetailsPopup
-        v-if="showDetailsPopup"
-        :expense="expense"
-        @close="closeDetailsPopup"
-        @edit="handleEdit"
-      />
-    </transition>
+    <Teleport to="body">
+      <transition name="popup">
+        <ExpenseDetailsPopup
+          v-if="showDetailsPopup"
+          :expense="expense"
+          @close="closeDetailsPopup"
+          @edit="handleEdit"
+        />
+      </transition>
+    </Teleport>
   </div>
 </template>
 
