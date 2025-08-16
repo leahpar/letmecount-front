@@ -3,12 +3,14 @@ export interface User {
   id: number
   username: string
   solde: number
+  tags: string[]
 }
 
 export interface Tag {
   '@id': string
   id: number
   libelle: string
+  users: string[]
 }
 
 export interface ExpenseDetail {
