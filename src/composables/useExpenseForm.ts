@@ -1,16 +1,5 @@
 import { ref, watch, computed } from 'vue'
-
-interface ExpenseDetail {
-  user: string
-  parts: number
-  montant: number
-}
-
-interface ParticipantData {
-  parts: number
-  montant: number
-  manualMontant: boolean
-}
+import type { ExpenseDetail, ParticipantData } from '@/types/api'
 
 export function useExpenseForm() {
   const formData = ref({

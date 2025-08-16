@@ -1,12 +1,6 @@
 import { ref, computed } from 'vue'
 import axios from '@/plugins/axios'
-
-interface User {
-  '@id': string
-  id: number
-  username: string
-  solde: number
-}
+import type { User } from '@/types/api'
 
 const users = ref<User[]>([])
 const me = ref<User | null>(null)

@@ -41,23 +41,7 @@ import { useUsers } from '@/composables/useUsers'
 import { useTags } from '@/composables/useTags'
 import { useExpenseCache } from '@/composables/useExpenseCache'
 import ExpenseItem from './ExpenseItem.vue'
-
-interface ExpenseDetail {
-  user: string;
-  parts: number;
-  montant: number;
-}
-
-interface Expense {
-  '@id': string
-  titre: string
-  montant: number
-  date: string
-  partage: 'parts' | 'montants'
-  payePar: string
-  details?: ExpenseDetail[]
-  tag?: string
-}
+import type { Expense } from '@/types/api'
 
 interface Props {
   title?: string

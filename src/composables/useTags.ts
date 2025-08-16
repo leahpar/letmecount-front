@@ -1,11 +1,6 @@
 import { ref, computed } from 'vue'
 import axios from '@/plugins/axios'
-
-interface Tag {
-  '@id': string
-  id: number
-  libelle: string
-}
+import type { Tag } from '@/types/api'
 
 const tags = ref<Tag[]>([])
 const loading = ref(false)
@@ -13,6 +8,8 @@ const error = ref<string | null>(null)
 const lastFetch = ref<number>(0)
 
 const CACHE_DURATION = 5 * 60 * 1000 // 5 minutes
+
+export type { Tag }
 
 export function useTags() {
   const tagsMap = computed(() => {

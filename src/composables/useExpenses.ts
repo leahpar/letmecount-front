@@ -1,33 +1,6 @@
 import { ref, computed } from 'vue'
 import axios from '@/plugins/axios'
-
-interface ExpenseDetail {
-  user: string
-  parts: number
-  montant: number
-}
-
-interface Expense {
-  '@id': string
-  id?: number
-  titre: string
-  montant: number
-  date: string
-  partage: 'parts' | 'montants'
-  payePar: string
-  details?: ExpenseDetail[]
-  tag?: string
-}
-
-interface CreateExpenseData {
-  details: ExpenseDetail[]
-  date: string
-  montant: number
-  titre: string
-  partage: 'parts' | 'montants'
-  tag?: string
-  payePar: string
-}
+import type { Expense, CreateExpenseData } from '@/types/api'
 
 const loading = ref(false)
 const error = ref<string | null>(null)

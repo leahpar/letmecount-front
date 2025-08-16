@@ -44,23 +44,7 @@
 
 <script setup lang="ts">
 import { useUsers } from '@/composables/useUsers'
-
-interface ExpenseDetail {
-  user: string
-  parts: number
-  montant: number
-}
-
-interface Expense {
-  '@id': string
-  titre: string
-  montant: number
-  date: string
-  partage: 'parts' | 'montants'
-  payePar: string
-  details?: ExpenseDetail[]
-  tag?: string
-}
+import type { Expense } from '@/types/api'
 
 interface Props {
   expense: Expense
