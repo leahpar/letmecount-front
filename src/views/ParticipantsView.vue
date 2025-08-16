@@ -2,7 +2,7 @@
   <PullToRefresh :on-refresh="handleRefresh">
     <div class="py-8">
       <div class="max-w-3xl mx-auto sm:px-6 lg:px-8">
-        <div class="bg-white border border-gray-200 sm:rounded-lg">
+        <div class="bg-white border border-gray-200">
           <div class="p-6">
                       <h1 class="text-2xl font-semibold text-gray-900 flex items-center gap-2">
               <IconUsers class="h-8 w-8" />
@@ -10,7 +10,7 @@
             </h1>
 
             <div v-if="loading" class="mt-4">Chargement...</div>
-            <div v-if="error" class="mt-4 bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">
+            <div v-if="error" class="mt-4 bg-red-100 border border-red-400 text-red-700 px-4 py-3" role="alert">
               <span class="block sm:inline">{{ error }}</span>
             </div>
 

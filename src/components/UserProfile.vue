@@ -1,11 +1,11 @@
 <template>
-  <div class="bg-white border border-gray-200 sm:rounded-lg">
+  <div class="bg-white border border-gray-200">
     <div class="p-6 text-center">
       <div v-if="loading" class="text-center py-8 text-gray-500">
         Chargement...
       </div>
 
-      <div v-else-if="error" class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">
+      <div v-else-if="error" class="bg-red-100 border border-red-400 text-red-700 px-4 py-3" role="alert">
         <span class="block sm:inline">{{ error }}</span>
       </div>
 

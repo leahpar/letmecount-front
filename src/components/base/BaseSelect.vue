@@ -10,7 +10,7 @@
         @change="$emit('update:modelValue', ($event.target as HTMLSelectElement).value)"
         :required="required"
         :disabled="disabled"
-        class="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md placeholder-gray-400 focus:outline-none focus:outline-none focus:border-indigo-500 focus:border-indigo-500 sm:text-sm"
+        class="appearance-none block w-full px-3 py-2 border border-gray-300 placeholder-gray-400 focus:outline-none focus:outline-none focus:border-indigo-500 focus:border-indigo-500 sm:text-sm"
         :class="{ 'border-red-500': hasError }"
       >
         <option v-if="placeholder" value="">{{ placeholder }}</option>

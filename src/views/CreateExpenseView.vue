@@ -1,7 +1,7 @@
 <template>
   <div class="py-8">
     <div class="max-w-3xl mx-auto sm:px-6 lg:px-8">
-      <div class="bg-white border border-gray-200 sm:rounded-lg">
+      <div class="bg-white border border-gray-200">
         <div class="p-6">
 
           <form @submit.prevent="handleSubmit" class="space-y-6">
@@ -37,10 +37,10 @@
 
             <div class="flex flex-col items-stretch pt-6 border-t border-gray-200 gap-4">
               <div class="flex justify-end gap-3">
-                <button type="button" @click="goBack" class="w-full sm:w-auto inline-flex justify-center rounded-md border border-gray-300  px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:outline-none">
+                <button type="button" @click="goBack" class="w-full sm:w-auto inline-flex justify-center border border-gray-300  px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:outline-none">
                   Annuler
                 </button>
-                <button type="submit" :disabled="loading || !canSubmit" class="w-full sm:w-auto inline-flex justify-center rounded-md border border-transparent  px-4 py-2 bg-blue-600 text-base font-medium text-white hover:bg-blue-700 focus:outline-none focus:outline-none disabled:bg-gray-400">
+                <button type="submit" :disabled="loading || !canSubmit" class="w-full sm:w-auto inline-flex justify-center border border-transparent  px-4 py-2 bg-blue-600 text-base font-medium text-white hover:bg-blue-700 focus:outline-none focus:outline-none disabled:bg-gray-400">
                   Enregistrer
                 </button>
               </div>

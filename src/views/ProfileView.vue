@@ -49,7 +49,7 @@ onMounted(() => {
           <UserProfile />
         </div>
         <div class="mt-8 lg:mt-0 lg:col-span-8">
-          <div class="bg-white border border-gray-200 sm:rounded-lg">
+          <div class="bg-white border border-gray-200">
             <div class="p-6">
               <ExpenseList
                 title="Mes dépenses"

@@ -6,6 +6,7 @@ import { useAuth } from '@/composables/useAuth'
 import LoginView from '../views/LoginView.vue'
 import ProfileView from "@/views/ProfileView.vue";
 import CreateExpenseView from "@/views/CreateExpenseView.vue";
+import ExpenseDetailView from "@/views/ExpenseDetailView.vue";
 import ParticipantsView from "@/views/ParticipantsView.vue";
 
 const router = createRouter({
@@ -33,6 +34,11 @@ const router = createRouter({
       path: '/expenses/:id/edit',
       name: 'edit-expense',
       component: CreateExpenseView,
+    },
+    {
+      path: '/expenses/:id',
+      name: 'expense-detail',
+      component: ExpenseDetailView,
     },
     {
       path: '/login',

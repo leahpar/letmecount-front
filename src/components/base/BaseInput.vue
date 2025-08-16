@@ -3,7 +3,7 @@
     <label v-if="label" :for="id" class="block text-sm font-medium text-gray-700">
       {{ label }}
     </label>
-    <div class="mt-1" :class="{ 'relative rounded-md': suffix }">
+    <div class="mt-1" :class="{ 'relative': suffix }">
       <div v-if="suffix" class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none">
         <span class="text-gray-500 sm:text-sm">{{ suffix }}</span>
       </div>
@@ -19,7 +19,7 @@
         :min="min"
         :readonly="readonly"
         :disabled="disabled"
-        class="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md placeholder-gray-400 focus:outline-none focus:outline-none focus:border-indigo-500 focus:border-indigo-500 sm:text-sm"
+        class="appearance-none block w-full px-3 py-2 border border-gray-300 placeholder-gray-400 focus:outline-none focus:outline-none focus:border-indigo-500 focus:border-indigo-500 sm:text-sm"
         :class="[
           { 'border-red-500': hasError },
           { 'pr-7': suffix }

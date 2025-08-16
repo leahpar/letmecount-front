@@ -3,7 +3,7 @@
     <div
       class="bg-white border-gray-200 px-1 py-2"
       :class="{ 'cursor-pointer': expense.details && expense.details.length > 0 }"
-      @click="expense.details && expense.details.length > 0 ? openDetailsPopup() : null"
+      @click="expense.details && expense.details.length > 0 ? navigateToDetail() : null"
     >
       <div class="flex justify-between items-center gap-2">
         <h4 class="text-lg font-semibold text-gray-800 truncate pr-4">{{ expense.titre }}</h4>
@@ -23,24 +23,14 @@
         </span>
       </div>
     </div>
-    <Teleport to="body">
-      <transition name="popup">
-        <ExpenseDetailsPopup
-          v-if="showDetailsPopup"
-          :expense="expense"
-          @close="closeDetailsPopup"
-          @edit="handleEdit"
-        />
-      </transition>
-    </Teleport>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue'
+import { computed } from 'vue'
+import { useRouter } from 'vue-router'
 import { useUsers } from '@/composables/useUsers'
 import { useTags } from '@/composables/useTags'
-import ExpenseDetailsPopup from './ExpenseDetailsPopup.vue'
 import type { Expense } from '@/types/api'
 import { formatAmount, formatImpact } from '@/utils/formatters'
 
@@ -51,12 +41,7 @@ interface Props {
 
 const props = defineProps<Props>()
 
-const emit = defineEmits<{
-  edit: [expense: Expense]
-}>()
-
-const showDetailsPopup = ref(false)
-
+const router = useRouter()
 const { getUsernameByIri, me } = useUsers()
 const { getTagByIri } = useTags()
 
@@ -94,29 +79,7 @@ const getTagName = (tagIri: string | undefined): string => {
   return tag?.libelle || ''
 }
 
-const openDetailsPopup = () => {
-  showDetailsPopup.value = true
-}
-
-const closeDetailsPopup = () => {
-  showDetailsPopup.value = false
-}
-
-const handleEdit = () => {
-  closeDetailsPopup()
-  emit('edit', props.expense)
+const navigateToDetail = () => {
+  router.push({ name: 'expense-detail', params: { id: props.expense.id } })
 }
 </script>
-
-<style scoped>
-.popup-enter-active,
-.popup-leave-active {
-  transition: all 0.3s ease;
-}
-
-.popup-enter-from,
-.popup-leave-to {
-  opacity: 0;
-  transform: scale(0.9);
-}
-</style>

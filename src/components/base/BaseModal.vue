@@ -5,7 +5,7 @@
     @click.self="handleClose"
   >
     <div 
-      class="bg-white rounded-lg shadow-lg w-full"
+      class="bg-white border border-gray-300 w-full"
       :class="[
         sizeClass,
         `p-${padding}`
@@ -30,7 +30,7 @@
         <button 
           v-else-if="showCloseButton"
           @click="handleClose" 
-          class="text-gray-500 hover:text-gray-800 p-1 rounded"
+          class="text-gray-500 hover:text-gray-800 p-1"
           aria-label="Fermer"
         >
           ✕
