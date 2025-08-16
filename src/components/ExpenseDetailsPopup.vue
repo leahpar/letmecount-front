@@ -1,16 +1,16 @@
 <template>
-  <div class="fixed inset-0 bg-gray-100 bg-opacity-20 backdrop-blur-sm flex items-center justify-center z-50" @click.self="$emit('close')">
-    <div class="bg-white rounded-lg shadow-lg p-6 w-full max-w-md">
-      <div class="flex justify-between items-center mb-4">
-        <div>
-          <h4 class="text-xl font-semibold text-gray-800">{{ expense.titre }}</h4>
-          <p class="text-sm text-gray-500">{{ formatDate(expense.date) }}</p>
-        </div>
-        <div>
-          <button @click="$emit('edit')" class="text-gray-500 hover:text-gray-800 mr-4">✏️</button>
-        </div>
-      </div>
-      <div>
+  <BaseModal 
+    :show="true"
+    :title="expense.titre"
+    :subtitle="formatDate(expense.date)"
+    size="md"
+    @close="$emit('close')"
+  >
+    <template #actions>
+      <button @click="$emit('edit')" class="text-gray-500 hover:text-gray-800 mr-4">✏️</button>
+    </template>
+    
+    <div>
         <div class="flex items-center justify-between text-sm text-gray-600 gap-x-4 gap-y-1 mt-2">
           <span class="italic">
             Payé par {{ getPayer(expense) }}
@@ -38,14 +38,14 @@
           </tbody>
         </table>
       </div>
-    </div>
-  </div>
+  </BaseModal>
 </template>
 
 <script setup lang="ts">
 import { useUsers } from '@/composables/useUsers'
 import type { Expense } from '@/types/api'
 import { formatAmount, formatDate } from '@/utils/formatters'
+import BaseModal from '@/components/base/BaseModal.vue'
 
 interface Props {
   expense: Expense
