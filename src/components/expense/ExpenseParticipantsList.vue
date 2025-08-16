@@ -42,7 +42,6 @@
             <button
               type="button"
               @click="incrementParts(user['@id'])"
-              :disabled="!participantCheckboxes[user['@id']]"
               class="px-2 py-1 border border-gray-300 rounded-r-md bg-gray-50 hover:bg-gray-100 disabled:opacity-50"
             >
               +
