@@ -6,7 +6,6 @@ import { useExpenseCache } from '@/composables/useExpenseCache'
 import UserProfile from '@/components/UserProfile.vue'
 import ExpenseList from '@/components/ExpenseList.vue'
 import PullToRefresh from '@/components/PullToRefresh.vue'
-import AddExpenseButton from '@/components/AddExpenseButton.vue'
 
 const route = useRoute()
 const router = useRouter()
@@ -61,5 +60,4 @@ onMounted(() => {
       </div>
     </div>
   </PullToRefresh>
-  <AddExpenseButton />
 </template>

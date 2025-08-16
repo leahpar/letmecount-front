@@ -1,13 +1,19 @@
 <script setup lang="ts">
-import { ref } from 'vue'
-import { RouterLink, RouterView } from 'vue-router'
+import { ref, computed } from 'vue'
+import { RouterLink, RouterView, useRoute } from 'vue-router'
 import NavigationLinks from '@/components/NavigationLinks.vue'
+import AddExpenseButton from '@/components/AddExpenseButton.vue'
 
 const isMobileMenuOpen = ref(false)
+const route = useRoute()
 
 const closeMobileMenu = () => {
   isMobileMenuOpen.value = false
 }
+
+const shouldShowAddButton = computed(() => {
+  return !['create-expense', 'edit-expense', 'login'].includes(route.name as string)
+})
 </script>
 
 <template>
@@ -62,5 +68,7 @@ const closeMobileMenu = () => {
     <main class="flex-grow pt-16">
       <RouterView />
     </main>
+
+    <AddExpenseButton v-if="shouldShowAddButton" />
   </div>
 </template>
