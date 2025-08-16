@@ -2,7 +2,10 @@
 import { ref, computed } from 'vue'
 import { RouterLink, RouterView, useRoute } from 'vue-router'
 import NavigationLinks from '@/components/NavigationLinks.vue'
-import AddExpenseButton from '@/components/AddExpenseButton.vue'
+import { defineAsyncComponent } from 'vue'
+
+const AddExpenseButton = defineAsyncComponent(() => import('@/components/AddExpenseButton.vue'))
+
 
 const isMobileMenuOpen = ref(false)
 const route = useRoute()
