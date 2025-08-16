@@ -1,8 +1,8 @@
 <template>
-  <div>
+  <div class="fixed bottom-8 right-8 z-10">
     <button
-      @click="showTagSelection = true"
-      class="fixed bottom-8 right-8 bg-blue-500 hover:bg-blue-700 text-white font-bold w-16 h-16 rounded-full z-10 flex items-center justify-center"
+      @click="toggleTagSelection"
+      class="bg-blue-500 hover:bg-blue-700 text-white font-bold w-16 h-16 rounded-full flex items-center justify-center"
       aria-label="Ajouter une dépense"
     >
       <svg
@@ -21,38 +21,51 @@
       </svg>
     </button>
 
-    <BaseModal
-      :show="showTagSelection"
-      @close="showTagSelection = false"
-      title="Choisir un tag"
-      size="sm"
+    <!-- Bulle de sélection des tags -->
+    <div 
+      v-if="showTagSelection"
+      class="absolute bottom-20 right-0 bg-white border border-gray-200 rounded-lg shadow-lg min-w-48 max-w-64 z-20"
+      @click.stop
     >
-      <div v-if="isLoading" class="text-center py-4">
-        Chargement des tags...
-      </div>
+      <!-- Petite flèche pointant vers le bouton -->
+      <div class="absolute -bottom-2 right-6 w-0 h-0 border-l-4 border-r-4 border-t-4 border-l-transparent border-r-transparent border-t-gray-200"></div>
       
-      <div v-else-if="userTags.length === 0" class="text-center py-4 text-gray-500">
-        Aucun tag disponible
+      <div class="p-3">
+        <div class="text-sm font-medium text-gray-700 mb-2">Choisir un tag</div>
+        
+        <div v-if="isLoading" class="text-center py-2 text-gray-500 text-sm">
+          Chargement...
+        </div>
+        
+        <div v-else-if="userTags.length === 0" class="text-center py-2 text-gray-500 text-sm">
+          Aucun tag disponible
+        </div>
+        
+        <div v-else class="space-y-1">
+          <button
+            v-for="tag in userTags"
+            :key="tag.id"
+            @click="selectTag(tag)"
+            class="w-full p-2 text-left text-sm hover:bg-gray-50 rounded transition-colors"
+          >
+            {{ tag.libelle }}
+          </button>
+        </div>
       </div>
-      
-      <div v-else class="space-y-2">
-        <button
-          v-for="tag in userTags"
-          :key="tag.id"
-          @click="selectTag(tag)"
-          class="w-full p-3 text-left border border-gray-200 rounded hover:bg-gray-50 transition-colors"
-        >
-          {{ tag.libelle }}
-        </button>
-      </div>
-    </BaseModal>
+    </div>
+
+    <!-- Overlay transparent pour fermer la bulle en cliquant ailleurs -->
+    <div 
+      v-if="showTagSelection"
+      class="fixed inset-0 z-10"
+      @click="showTagSelection = false"
+    ></div>
   </div>
 </template>
 
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
-import BaseModal from './base/BaseModal.vue'
 import { useUsers } from '@/composables/useUsers'
 import { useTags, type Tag } from '@/composables/useTags'
 
@@ -72,6 +85,10 @@ const userTags = computed(() => {
 const isLoading = computed(() => {
   return !me.value || allTags.value.length === 0
 })
+
+const toggleTagSelection = () => {
+  showTagSelection.value = !showTagSelection.value
+}
 
 const selectTag = (tag: Tag) => {
   showTagSelection.value = false
