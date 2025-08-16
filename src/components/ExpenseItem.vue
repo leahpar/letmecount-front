@@ -42,6 +42,7 @@ import { useUsers } from '@/composables/useUsers'
 import { useTags } from '@/composables/useTags'
 import ExpenseDetailsPopup from './ExpenseDetailsPopup.vue'
 import type { Expense } from '@/types/api'
+import { formatAmount, formatImpact } from '@/utils/formatters'
 
 interface Props {
   expense: Expense
@@ -58,18 +59,6 @@ const showDetailsPopup = ref(false)
 
 const { getUsernameByIri, me } = useUsers()
 const { getTagByIri } = useTags()
-
-const formatAmount = (amount: number): string => {
-  return amount.toFixed(2)
-}
-
-const formatImpact = (impact: number): string => {
-  if (impact === 0) {
-    return '0.00€'
-  }
-  const sign = impact > 0 ? '+' : ''
-  return `${sign}${impact.toFixed(2)}€`
-}
 
 const balanceImpact = computed((): number => {
   if (!me.value) {

@@ -45,6 +45,7 @@
 <script setup lang="ts">
 import { useUsers } from '@/composables/useUsers'
 import type { Expense } from '@/types/api'
+import { formatAmount, formatDate } from '@/utils/formatters'
 
 interface Props {
   expense: Expense
@@ -54,19 +55,6 @@ defineProps<Props>()
 defineEmits(['close', 'edit'])
 
 const { getUsernameByIri } = useUsers()
-
-const formatAmount = (amount: number): string => {
-  return amount.toFixed(2)
-}
-
-const formatDate = (dateString: string): string => {
-  const date = new Date(dateString)
-  return date.toLocaleDateString('fr-FR', {
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric'
-  })
-}
 
 const getUserName = (userIri: string): string => {
   return getUsernameByIri(userIri)

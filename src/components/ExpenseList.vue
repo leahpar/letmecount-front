@@ -42,6 +42,7 @@ import { useTags } from '@/composables/useTags'
 import { useExpenseCache } from '@/composables/useExpenseCache'
 import ExpenseItem from './ExpenseItem.vue'
 import type { Expense } from '@/types/api'
+import { formatDateForGrouping } from '@/utils/formatters'
 
 interface Props {
   title?: string
@@ -71,11 +72,7 @@ const {
 const groupedExpenses = computed(() => {
   const groups: { [key: string]: Expense[] } = {}
   for (const expense of expenses.value) {
-    const date = new Date(expense.date).toLocaleDateString('fr-FR', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric'
-    })
+    const date = formatDateForGrouping(expense.date)
     if (!groups[date]) {
       groups[date] = []
     }
