@@ -1,6 +1,7 @@
 import { ref, computed } from 'vue'
 import axios from '@/plugins/axios'
 import type { User } from '@/types/api'
+import { handleApiError } from '@/utils/errorHandler'
 
 const users = ref<User[]>([])
 const me = ref<User | null>(null)
@@ -53,13 +54,7 @@ export function useUsers() {
       users.value = response.data.member || []
       lastFetch.value = now
     } catch (err: unknown) {
-      console.error('Erreur lors du chargement des utilisateurs:', err)
-      if (err && typeof err === 'object' && 'response' in err) {
-        const axiosError = err as { response?: { data?: { message?: string } } }
-        error.value = axiosError.response?.data?.message || 'Erreur lors du chargement des utilisateurs'
-      } else {
-        error.value = 'Erreur lors du chargement des utilisateurs'
-      }
+      error.value = handleApiError(err, 'le chargement des utilisateurs')
     } finally {
       loading.value = false
     }
@@ -79,9 +74,8 @@ export function useUsers() {
       if (me.value && me.value['@id'] === '/users/me' && me.value.id) {
         me.value['@id'] = `/users/${me.value.id}`
       }
-    } catch (err) {
-      console.error('Erreur lors du chargement de l\'utilisateur courant:', err)
-      error.value = 'Erreur lors du chargement de l\'utilisateur courant'
+    } catch (err: unknown) {
+      error.value = handleApiError(err, 'le chargement de l\'utilisateur courant')
     } finally {
       loading.value = false
     }

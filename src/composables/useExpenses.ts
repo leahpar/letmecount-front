@@ -1,6 +1,7 @@
 import { ref, computed } from 'vue'
 import axios from '@/plugins/axios'
 import type { Expense, CreateExpenseData } from '@/types/api'
+import { handleApiError } from '@/utils/errorHandler'
 
 const loading = ref(false)
 const error = ref<string | null>(null)
@@ -14,13 +15,7 @@ export function useExpenses() {
       const response = await axios.post('/depenses', expenseData)
       return response.data
     } catch (err: unknown) {
-      console.error('Erreur lors de la création de la dépense:', err)
-      if (err && typeof err === 'object' && 'response' in err) {
-        const axiosError = err as { response?: { data?: { message?: string } } }
-        error.value = axiosError.response?.data?.message || 'Erreur lors de la création de la dépense'
-      } else {
-        error.value = 'Erreur lors de la création de la dépense'
-      }
+      error.value = handleApiError(err, 'la création de la dépense')
       return null
     } finally {
       loading.value = false
@@ -35,13 +30,7 @@ export function useExpenses() {
       const response = await axios.patch(`/depenses/${id}`, expenseData)
       return response.data
     } catch (err: unknown) {
-      console.error('Erreur lors de la mise à jour de la dépense:', err)
-      if (err && typeof err === 'object' && 'response' in err) {
-        const axiosError = err as { response?: { data?: { message?: string } } }
-        error.value = axiosError.response?.data?.message || 'Erreur lors de la mise à jour de la dépense'
-      } else {
-        error.value = 'Erreur lors de la mise à jour de la dépense'
-      }
+      error.value = handleApiError(err, 'la mise à jour de la dépense')
       return null
     } finally {
       loading.value = false
@@ -56,13 +45,7 @@ export function useExpenses() {
       const response = await axios.get(`/depenses/${id}`)
       return response.data
     } catch (err: unknown) {
-      console.error('Erreur lors du chargement de la dépense:', err)
-      if (err && typeof err === 'object' && 'response' in err) {
-        const axiosError = err as { response?: { data?: { message?: string } } }
-        error.value = axiosError.response?.data?.message || 'Erreur lors du chargement de la dépense'
-      } else {
-        error.value = 'Erreur lors du chargement de la dépense'
-      }
+      error.value = handleApiError(err, 'le chargement de la dépense')
       return null
     } finally {
       loading.value = false
@@ -77,13 +60,7 @@ export function useExpenses() {
       await axios.delete(`/depenses/${id}`)
       return true
     } catch (err: unknown) {
-      console.error('Erreur lors de la suppression de la dépense:', err)
-      if (err && typeof err === 'object' && 'response' in err) {
-        const axiosError = err as { response?: { data?: { message?: string } } }
-        error.value = axiosError.response?.data?.message || 'Erreur lors de la suppression de la dépense'
-      } else {
-        error.value = 'Erreur lors de la suppression de la dépense'
-      }
+      error.value = handleApiError(err, 'la suppression de la dépense')
       return false
     } finally {
       loading.value = false
@@ -104,13 +81,7 @@ export function useExpenses() {
       const response = await axios.get(url)
       return response.data.member || []
     } catch (err: unknown) {
-      console.error('Erreur lors du chargement des dépenses:', err)
-      if (err && typeof err === 'object' && 'response' in err) {
-        const axiosError = err as { response?: { data?: { message?: string } } }
-        error.value = axiosError.response?.data?.message || 'Erreur lors du chargement des dépenses'
-      } else {
-        error.value = 'Erreur lors du chargement des dépenses'
-      }
+      error.value = handleApiError(err, 'le chargement des dépenses')
       return []
     } finally {
       loading.value = false

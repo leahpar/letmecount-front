@@ -1,6 +1,7 @@
 import { ref, computed } from 'vue'
 import axios from '@/plugins/axios'
 import type { Tag } from '@/types/api'
+import { handleApiError } from '@/utils/errorHandler'
 
 const tags = ref<Tag[]>([])
 const loading = ref(false)
@@ -53,13 +54,7 @@ export function useTags() {
       tags.value = response.data.member || []
       lastFetch.value = now
     } catch (err: unknown) {
-      console.error('Erreur lors du chargement des tags:', err)
-      if (err && typeof err === 'object' && 'response' in err) {
-        const axiosError = err as { response?: { data?: { message?: string } } }
-        error.value = axiosError.response?.data?.message || 'Erreur lors du chargement des tags'
-      } else {
-        error.value = 'Erreur lors du chargement des tags'
-      }
+      error.value = handleApiError(err, 'le chargement des tags')
     } finally {
       loading.value = false
     }
