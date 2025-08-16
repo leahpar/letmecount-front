@@ -44,7 +44,18 @@
         :options="userOptions"
       />
 
+      <BaseInput
+        v-if="isTagReadonly"
+        id="tag"
+        :model-value="selectedTagLabel"
+        label="Tag"
+        type="text"
+        readonly
+        disabled
+        class="bg-gray-100"
+      />
       <BaseSelect
+        v-else
         id="tag"
         v-model="formData.tag"
         label="Tag"
@@ -76,6 +87,7 @@ const props = defineProps<{
   users: User[]
   tags: Tag[]
   submitted: boolean
+  isTagReadonly?: boolean
 }>()
 
 const emit = defineEmits<{
@@ -104,4 +116,9 @@ const tagOptions = computed(() =>
     label: tag.libelle
   }))
 )
+
+const selectedTagLabel = computed(() => {
+  const selectedTag = props.tags.find(tag => tag['@id'] === props.modelValue.tag)
+  return selectedTag?.libelle || ''
+})
 </script>

@@ -17,6 +17,7 @@
               :users="users"
               :tags="tags"
               :submitted="submitted"
+              :is-tag-readonly="isTagFromQuery"
             />
 
             <div class="flex items-center justify-between">
@@ -83,6 +84,10 @@ const submitted = ref(false)
 // Détection du mode édition
 const expenseId = computed(() => route.params.id as string)
 const isEditMode = computed(() => !!expenseId.value)
+
+// Détection d'un tag prérempli depuis les query parameters
+const tagFromQuery = computed(() => route.query.tag as string)
+const isTagFromQuery = computed(() => !!tagFromQuery.value && !isEditMode.value)
 
 const {
   formData,
@@ -197,6 +202,11 @@ onMounted(async () => {
     // En mode création, définir l'utilisateur connecté comme payeur par défaut
     if (me.value) {
       formData.value.payePar = me.value['@id']
+    }
+    
+    // Préremplir le tag si fourni dans les query parameters
+    if (tagFromQuery.value) {
+      formData.value.tag = tagFromQuery.value
     }
   }
 })
