@@ -15,7 +15,7 @@ const handleLogout = () => {
 
 <template>
   <div class="flex flex-col min-h-screen bg-gray-100 font-sans">
-    <header class="bg-white border-b border-gray-200 relative">
+    <header class="bg-white border-b border-gray-200 fixed top-0 w-full z-50">
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="flex justify-between items-center h-16">
           <div class="flex-shrink-0">
@@ -74,16 +74,8 @@ const handleLogout = () => {
       </transition>
     </header>
 
-    <main class="flex-grow">
+    <main class="flex-grow pt-16">
       <RouterView />
     </main>
-
-    <footer class="bg-white">
-      <div class="max-w-7xl mx-auto py-4 px-4 sm:px-6 lg:px-8">
-        <p class="text-center text-sm text-gray-500">
-          © {{ new Date().getFullYear() }} LetMeCount. Tous droits réservés.
-        </p>
-      </div>
-    </footer>
   </div>
 </template>
