@@ -6,6 +6,7 @@ import { useAuth } from '@/composables/useAuth'
 import LoginView from '../views/LoginView.vue'
 import ProfileView from "@/views/ProfileView.vue";
 import CreateExpenseView from "@/views/CreateExpenseView.vue";
+import ParticipantsView from "@/views/ParticipantsView.vue";
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -42,6 +43,11 @@ const router = createRouter({
       path: '/style-guide',
       name: 'style-guide',
       component: () => import('../views/StyleGuideView.vue'),
+    },
+    {
+      path: '/participants',
+      name: 'participants',
+      component: ParticipantsView,
     }
   ],
 })

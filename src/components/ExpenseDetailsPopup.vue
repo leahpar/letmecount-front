@@ -1,5 +1,6 @@
 <template>
-  <div class="fixed inset-0 bg-gray-100 bg-opacity-20 backdrop-blur-sm flex items-center justify-center z-50" @click.self="$emit('close')">
+  <Teleport to="body">
+    <div class="fixed inset-0 bg-gray-100 bg-opacity-20 backdrop-blur-sm flex items-center justify-center z-50" @click.self="$emit('close')">
     <div class="bg-white rounded-lg shadow-lg p-6 w-full max-w-md">
       <div class="flex justify-between items-center mb-4">
         <div>
@@ -39,7 +40,8 @@
         </table>
       </div>
     </div>
-  </div>
+    </div>
+  </Teleport>
 </template>
 
 <script setup lang="ts">

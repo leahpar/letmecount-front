@@ -22,6 +22,7 @@ const handleLogout = () => {
             <div class="ml-10 flex items-baseline space-x-4">
               <template v-if="isAuthenticated">
                 <RouterLink to="/profile" class="text-gray-600 hover:bg-gray-200 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium">Mon compte</RouterLink>
+                <RouterLink to="/participants" class="text-gray-600 hover:bg-gray-200 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium">Participants</RouterLink>
                 <RouterLink to="/expenses/create" class="text-gray-600 hover:bg-gray-200 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium">Créer une dépense</RouterLink>
                 <a href="#" @click.prevent="handleLogout" class="text-gray-600 hover:bg-gray-200 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium">Déconnexion</a>
               </template>

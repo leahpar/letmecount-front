@@ -4,6 +4,7 @@ import { useRoute, useRouter } from 'vue-router'
 import { useUsers } from '@/composables/useUsers'
 import UserProfile from '@/components/UserProfile.vue'
 import ExpenseList from '@/components/ExpenseList.vue'
+import PullToRefresh from '@/components/PullToRefresh.vue'
 
 const route = useRoute()
 const router = useRouter()
@@ -29,6 +30,11 @@ watch(() => route.query.refresh,
   { immediate: true }
 )
 
+const handlePullToRefresh = async () => {
+  await fetchMe(true)
+  refreshKey.value++
+}
+
 onMounted(() => {
   if (!route.query.refresh) {
     fetchMe()
@@ -37,7 +43,7 @@ onMounted(() => {
 </script>
 
 <template>
-  <div class="py-8">
+  <PullToRefresh :on-refresh="handlePullToRefresh" class="py-8">
     <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
       <div class="lg:grid lg:grid-cols-12 lg:gap-8">
         <div class="lg:col-span-4">
@@ -56,7 +62,7 @@ onMounted(() => {
         </div>
       </div>
     </div>
-  </div>
+  </PullToRefresh>
   <router-link
     :to="{ name: 'create-expense' }"
     class="fixed bottom-8 right-8 bg-blue-500 hover:bg-blue-700 text-white font-bold w-16 h-16 rounded-full z-10 flex items-center justify-center"
