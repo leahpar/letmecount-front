@@ -11,6 +11,14 @@ import ParticipantsView from "@/views/ParticipantsView.vue";
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
+  scrollBehavior(to, from, savedPosition) {
+    // Si l'utilisateur utilise les boutons précédent/suivant du navigateur
+    if (savedPosition) {
+      return savedPosition
+    }
+    // Pour toute nouvelle navigation, remonter en haut
+    return { top: 0 }
+  },
   routes: [
     {
       path: '/',
