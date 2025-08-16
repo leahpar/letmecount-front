@@ -1,15 +1,12 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import { RouterLink, RouterView } from 'vue-router'
-import { useAuth } from '@/composables/useAuth'
-import IconUsers from '@/components/icons/IconUsers.vue'
+import NavigationLinks from '@/components/NavigationLinks.vue'
 
-const { isAuthenticated, logout } = useAuth()
 const isMobileMenuOpen = ref(false)
 
-const handleLogout = () => {
-  logout()
-  window.location.href = '/login'
+const closeMobileMenu = () => {
+  isMobileMenuOpen.value = false
 }
 </script>
 
@@ -34,14 +31,7 @@ const handleLogout = () => {
           </div>
           <nav class="hidden md:block">
             <div class="ml-10 flex items-baseline space-x-4">
-              <template v-if="isAuthenticated">
-                <RouterLink to="/profile" class="text-gray-600 hover:bg-gray-200 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium">Mon compte</RouterLink>
-                <RouterLink to="/participants" class="text-gray-600 hover:bg-gray-200 hover:text-gray-900 p-2 rounded-md">
-                                    <IconUsers class="h-6 w-6 text-gray-600" />
-                </RouterLink>
-                <RouterLink to="/expenses/create" class="text-gray-600 hover:bg-gray-200 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium">Créer une dépense</RouterLink>
-                <a href="#" @click.prevent="handleLogout" class="text-gray-600 hover:bg-gray-200 hover:text-gray-900 px-3 py-2 rounded-md text-sm font-medium">Déconnexion</a>
-              </template>
+              <NavigationLinks />
             </div>
           </nav>
         </div>
@@ -62,12 +52,7 @@ const handleLogout = () => {
         <div v-if="isMobileMenuOpen" class="absolute top-16 inset-x-0 transition transform origin-top-right md:hidden z-40">
           <div class="bg-white">
             <div class="px-2 pt-2 pb-3 space-y-1 sm:px-3">
-              <template v-if="isAuthenticated">
-                <RouterLink to="/profile" @click="isMobileMenuOpen = false" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-50">Mon compte</RouterLink>
-                <RouterLink to="/participants" @click="isMobileMenuOpen = false" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-50">Participants</RouterLink>
-                <RouterLink to="/expenses/create" @click="isMobileMenuOpen = false" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-50">Créer une dépense</RouterLink>
-                <a href="#" @click.prevent="handleLogout" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-50">Déconnexion</a>
-              </template>
+              <NavigationLinks :is-mobile="true" :on-link-click="closeMobileMenu" />
             </div>
           </div>
         </div>
