@@ -17,9 +17,10 @@
             <ul class="divide-y divide-gray-200">
               <li v-for="participant in participants" :key="participant.id" class="py-4 flex justify-between items-center">
                 <span class="text-lg font-medium text-gray-900">{{ participant.username }}</span>
-                <span :class="['font-semibold', participant.balance > 0 ? 'text-green-600' : 'text-red-600']">
-                  {{ participant.balance.toFixed(2) }} €
+                <span :class="['font-semibold', participant.solde > 0 ? 'text-green-600' : 'text-red-600']">
+                  {{ participant.solde.toFixed(2) }} €
                 </span>
+                
               </li>
             </ul>
           </div>

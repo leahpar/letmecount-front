@@ -10,8 +10,8 @@ export function useParticipants() {
     loading.value = true
     error.value = null
     try {
-      const response = await axios.get('/api/participants')
-      participants.value = response.data['hydra:member']
+      const response = await axios.get('/users')
+      participants.value = response.data.member
     } catch (error: unknown) {
       console.error(error)
       error.value = 'Erreur lors de la récupération des participants'
