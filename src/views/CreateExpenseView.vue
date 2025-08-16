@@ -1,6 +1,13 @@
 <template>
   <div class="py-8">
     <div class="max-w-3xl mx-auto sm:px-6 lg:px-8">
+      <!-- Header avec navigation -->
+      <ExpenseActionHeader 
+        :show-delete="isEditMode"
+        @back="goBack"
+        @delete="handleDelete"
+      />
+      
       <div class="bg-white border border-gray-200">
         <div class="p-6">
 
@@ -35,27 +42,16 @@
               <span class="block sm:inline">{{ error }}</span>
             </div>
 
-            <div class="flex flex-col items-stretch pt-6 border-t border-gray-200 gap-4">
-              <div class="flex justify-end gap-3">
-                <button type="button" @click="goBack" class="w-full sm:w-auto inline-flex justify-center border border-gray-300  px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:outline-none">
-                  Annuler
-                </button>
-                <button type="submit" :disabled="loading || !canSubmit" class="w-full sm:w-auto inline-flex justify-center border border-transparent  px-4 py-2 bg-blue-600 text-base font-medium text-white hover:bg-blue-700 focus:outline-none focus:outline-none disabled:bg-gray-400">
-                  Enregistrer
-                </button>
-              </div>
-              <div class="text-center">
-                <button
-                  v-if="isEditMode"
-                  type="button"
-                  @click="handleDelete"
-                  :disabled="loading"
-                  class="text-red-600 hover:text-red-800 underline disabled:text-gray-400"
-                >
-                  Supprimer
-                </button>
-              </div>
+            <div class="pt-6 border-t border-gray-200">
+              <button 
+                type="submit" 
+                :disabled="loading || !canSubmit" 
+                class="w-full px-4 py-3 bg-blue-600 text-white font-medium hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed"
+              >
+                {{ loading ? 'Enregistrement...' : 'Enregistrer' }}
+              </button>
             </div>
+
           </form>
         </div>
       </div>
@@ -70,6 +66,8 @@ import { useUsers } from '@/composables/useUsers'
 import { useTags } from '@/composables/useTags'
 import { useExpenses } from '@/composables/useExpenses'
 import { useExpenseForm } from '@/composables/useExpenseForm'
+import { useExpenseActions } from '@/composables/useExpenseActions'
+import ExpenseActionHeader from '@/components/ExpenseActionHeader.vue'
 import ExpenseBasicFields from '@/components/expense/ExpenseBasicFields.vue'
 import ExpensePartageToggle from '@/components/expense/ExpensePartageToggle.vue'
 import ExpenseParticipantsList from '@/components/expense/ExpenseParticipantsList.vue'
@@ -78,7 +76,8 @@ const router = useRouter()
 const route = useRoute()
 const { users, fetchUsers, me, fetchMe } = useUsers()
 const { tags, fetchTags } = useTags()
-const { createExpense, updateExpense, fetchExpenseById, deleteExpense, loading, error } = useExpenses()
+const { createExpense, updateExpense, fetchExpenseById, loading, error } = useExpenses()
+const { confirmDeleteExpense } = useExpenseActions()
 const submitted = ref(false)
 
 // Détection du mode édition
@@ -179,17 +178,7 @@ const handleSubmit = async () => {
 const handleDelete = async () => {
   if (!isEditMode.value) return
 
-  const confirmed = confirm(
-    `Êtes-vous sûr de vouloir supprimer la dépense "${formData.value.titre}" ?\n\nCette action est irréversible.`
-  )
-
-  if (confirmed) {
-    const success = await deleteExpense(expenseId.value)
-    if (success) {
-      // Forcer le refresh du profil avec un paramètre
-      router.push({ name: 'profile', query: { refresh: true } })
-    }
-  }
+  await confirmDeleteExpense(expenseId.value, formData.value.titre)
 }
 
 const goBack = () => {

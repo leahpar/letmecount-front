@@ -2,26 +2,13 @@
   <div class="min-h-screen bg-white">
     <div class="max-w-4xl mx-auto px-4 py-6">
       <!-- Header avec navigation -->
-      <div class="flex items-center justify-between mb-6 pb-4 border-b border-gray-200">
-        <button 
-          @click="goBack" 
-          class="flex items-center text-gray-600 hover:text-gray-800"
-        >
-          <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
-          </svg>
-          Retour
-        </button>
-        <button 
-          @click="handleEdit" 
-          class="flex items-center px-4 py-2 text-blue-600 hover:text-blue-800"
-        >
-          <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
-          </svg>
-          Modifier
-        </button>
-      </div>
+      <ExpenseActionHeader 
+        :show-edit="true"
+        :show-delete="true"
+        @back="goBack"
+        @edit="handleEdit"
+        @delete="handleDelete"
+      />
 
       <!-- Contenu principal -->
       <div v-if="expense">
@@ -109,6 +96,8 @@ import { useRoute, useRouter } from 'vue-router'
 import { useUsers } from '@/composables/useUsers'
 import { useTags } from '@/composables/useTags'
 import { useExpenses } from '@/composables/useExpenses'
+import { useExpenseActions } from '@/composables/useExpenseActions'
+import ExpenseActionHeader from '@/components/ExpenseActionHeader.vue'
 import type { Expense } from '@/types/api'
 import { formatAmount, formatDate } from '@/utils/formatters'
 
@@ -117,6 +106,7 @@ const router = useRouter()
 const { getUsernameByIri } = useUsers()
 const { getTagByIri } = useTags()
 const { fetchExpenseById } = useExpenses()
+const { confirmDeleteExpense } = useExpenseActions()
 
 const expense = ref<Expense | null>(null)
 const loading = ref(true)
@@ -145,6 +135,12 @@ const handleEdit = () => {
   if (expense.value) {
     router.push({ name: 'edit-expense', params: { id: expense.value.id } })
   }
+}
+
+const handleDelete = async () => {
+  if (!expense.value) return
+  
+  await confirmDeleteExpense(expense.value.id, expense.value.titre)
 }
 
 onMounted(async () => {
