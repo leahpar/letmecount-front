@@ -15,13 +15,13 @@ const handleLogout = () => {
 
 <template>
   <div class="flex flex-col min-h-screen bg-gray-100 font-sans">
-    <header class="bg-white border-b border-gray-200">
+    <header class="bg-white border-b border-gray-200 relative">
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="flex justify-between items-center h-16">
           <div class="flex-shrink-0">
             <RouterLink to="/" class="text-2xl font-bold text-blue-600">LetMeCount</RouterLink>
           </div>
-                    <div class="md:hidden">
+          <div class="md:hidden">
             <button @click="isMobileMenuOpen = !isMobileMenuOpen" class="inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-white hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-white">
               <span class="sr-only">Open main menu</span>
               <svg v-if="!isMobileMenuOpen" class="block h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
@@ -47,16 +47,31 @@ const handleLogout = () => {
         </div>
       </div>
 
-      <div v-if="isMobileMenuOpen" class="md:hidden">
-        <div class="px-2 pt-2 pb-3 space-y-1 sm:px-3">
-          <template v-if="isAuthenticated">
-            <RouterLink to="/profile" class="text-gray-300 hover:bg-gray-700 hover:text-white block px-3 py-2 rounded-md text-base font-medium">Mon compte</RouterLink>
-            <RouterLink to="/participants" class="text-gray-300 hover:bg-gray-700 hover:text-white block px-3 py-2 rounded-md text-base font-medium">Participants</RouterLink>
-            <RouterLink to="/expenses/create" class="text-gray-300 hover:bg-gray-700 hover:text-white block px-3 py-2 rounded-md text-base font-medium">Créer une dépense</RouterLink>
-            <a href="#" @click.prevent="handleLogout" class="text-gray-300 hover:bg-gray-700 hover:text-white block px-3 py-2 rounded-md text-base font-medium">Déconnexion</a>
-          </template>
+      <!-- Mobile menu overlay -->
+      <div v-if="isMobileMenuOpen" @click="isMobileMenuOpen = false" class="fixed inset-0 z-30"></div>
+
+      <!-- Mobile menu -->
+      <transition
+        enter-active-class="transition ease-out duration-100"
+        enter-from-class="transform opacity-0 scale-95"
+        enter-to-class="transform opacity-100 scale-100"
+        leave-active-class="transition ease-in duration-75"
+        leave-from-class="transform opacity-100 scale-100"
+        leave-to-class="transform opacity-0 scale-95"
+      >
+        <div v-if="isMobileMenuOpen" class="absolute top-16 inset-x-0 transition transform origin-top-right md:hidden z-40">
+          <div class="bg-white">
+            <div class="px-2 pt-2 pb-3 space-y-1 sm:px-3">
+              <template v-if="isAuthenticated">
+                <RouterLink to="/profile" @click="isMobileMenuOpen = false" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-50">Mon compte</RouterLink>
+                <RouterLink to="/participants" @click="isMobileMenuOpen = false" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-50">Participants</RouterLink>
+                <RouterLink to="/expenses/create" @click="isMobileMenuOpen = false" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-50">Créer une dépense</RouterLink>
+                <a href="#" @click.prevent="handleLogout" class="block px-3 py-2 rounded-md text-base font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-50">Déconnexion</a>
+              </template>
+            </div>
+          </div>
         </div>
-      </div>
+      </transition>
     </header>
 
     <main class="flex-grow">
