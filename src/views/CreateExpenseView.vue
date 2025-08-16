@@ -32,6 +32,7 @@
               :participant-checkboxes="participantCheckboxes"
               :participant-data="participantData"
               :partage-mode="formData.partage"
+              :selected-tag="formData.tag"
               @update-participant="updateParticipant"
               @update-participant-parts="updateParticipantParts"
               @update-participant-montant="updateParticipantMontant"

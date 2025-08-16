@@ -1,7 +1,7 @@
 <template>
   <div>
       <div
-        v-for="user in users"
+        v-for="user in filteredUsers"
         :key="user['@id']"
         class="flex items-center gap-x-4 py-1 border-b border-gray-100"
       >
@@ -77,6 +77,9 @@
 </template>
 
 <script setup lang="ts">
+import { computed, ref, watch } from 'vue'
+import { useTags } from '@/composables/useTags'
+
 interface User {
   '@id': string
   username: string
@@ -93,7 +96,47 @@ const props = defineProps<{
   participantCheckboxes: Record<string, boolean>
   participantData: Record<string, ParticipantData>
   partageMode: 'parts' | 'montants'
+  selectedTag?: string
 }>()
+
+const { getTagByIri } = useTags()
+
+// Stocke la liste des utilisateurs visibles initialement
+const initiallyVisibleUsers = ref<Set<string>>(new Set())
+
+// Fonction pour déterminer si un utilisateur doit être visible initialement
+const shouldShowUserInitially = (user: User): boolean => {
+  if (!props.selectedTag) return true
+  
+  const tag = getTagByIri(props.selectedTag)
+  if (!tag || !tag.users) return true
+  
+  const participantData = props.participantData[user['@id']]
+  const isInTag = tag.users.includes(user['@id'])
+  const hasZeroAmount = !participantData || participantData.montant === 0
+  
+  // Masquer seulement si l'utilisateur n'est PAS dans le tag ET a un montant de 0
+  return !((!isInTag && hasZeroAmount))
+}
+
+// Calculer la liste initiale des utilisateurs visibles
+const updateInitiallyVisibleUsers = () => {
+  const visibleUsers = new Set<string>()
+  props.users.forEach(user => {
+    if (shouldShowUserInitially(user)) {
+      visibleUsers.add(user['@id'])
+    }
+  })
+  initiallyVisibleUsers.value = visibleUsers
+}
+
+// Mettre à jour la liste initiale quand les props changent (au début)
+watch([() => props.users, () => props.selectedTag, () => props.participantData], updateInitiallyVisibleUsers, { immediate: true })
+
+const filteredUsers = computed(() => {
+  // Afficher seulement les utilisateurs qui étaient visibles initialement
+  return props.users.filter(user => initiallyVisibleUsers.value.has(user['@id']))
+})
 
 const emit = defineEmits<{
   updateParticipant: [userId: string, checked: boolean]
