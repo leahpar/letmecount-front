@@ -6,7 +6,6 @@ import { defineAsyncComponent } from 'vue'
 
 const AddExpenseButton = defineAsyncComponent(() => import('@/components/AddExpenseButton.vue'))
 
-
 const isMobileMenuOpen = ref(false)
 const route = useRoute()
 
@@ -15,7 +14,7 @@ const closeMobileMenu = () => {
 }
 
 const shouldShowAddButton = computed(() => {
-  return !['create-expense', 'edit-expense', 'login'].includes(route.name as string)
+  return !['create-expense', 'edit-expense', 'login', 'credentials'].includes(route.name as string)
 })
 </script>
 
