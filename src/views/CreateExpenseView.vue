@@ -1,6 +1,5 @@
 <template>
-  <div class="min-h-screen bg-white">
-    <div class="max-w-4xl mx-auto px-4 py-6">
+  <div>
       <!-- Header avec navigation -->
       <ExpenseActionHeader 
         :show-delete="isEditMode"
@@ -8,8 +7,8 @@
         @delete="handleDelete"
       />
       
-      <div class="bg-white border border-gray-200">
-        <div class="p-6">
+      <div>
+        <div>
 
           <form @submit.prevent="handleSubmit" class="space-y-6">
             <ExpenseBasicFields
@@ -57,7 +56,6 @@
           </form>
         </div>
       </div>
-    </div>
   </div>
 </template>
 

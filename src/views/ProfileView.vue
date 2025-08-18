@@ -41,21 +41,17 @@ onMounted(() => {
 </script>
 
 <template>
-  <PullToRefresh :on-refresh="handlePullToRefresh" class="py-8">
-    <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+  <PullToRefresh :on-refresh="handlePullToRefresh">
+    <div>
       <div class="lg:grid lg:grid-cols-12 lg:gap-8">
         <div class="lg:col-span-4">
           <UserProfile />
         </div>
         <div class="mt-8 lg:mt-0 lg:col-span-8">
-          <div class="bg-white border border-gray-200">
-            <div class="p-6">
-              <ExpenseList
-                title="Mes dépenses"
-                :limit="10"
-              />
-            </div>
-          </div>
+          <ExpenseList
+            title="Mes dépenses"
+            :limit="10"
+          />
         </div>
       </div>
     </div>

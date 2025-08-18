@@ -1,7 +1,7 @@
 <template>
   <div>
     <div
-      class="bg-white border-gray-200 px-1 py-2"
+      class="px-1 py-2"
       :class="{ 'cursor-pointer': expense.details && expense.details.length > 0 }"
       @click="expense.details && expense.details.length > 0 ? navigateToDetail() : null"
     >

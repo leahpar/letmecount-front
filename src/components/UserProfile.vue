@@ -1,6 +1,6 @@
 <template>
-  <div class="bg-white border border-gray-200">
-    <div class="p-6 text-center">
+  <div>
+    <div class="text-center">
       <div v-if="loading" class="text-center py-8 text-gray-500">
         Chargement...
       </div>

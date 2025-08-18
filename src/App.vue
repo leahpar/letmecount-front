@@ -24,7 +24,7 @@ const shouldShowAddButton = computed(() => {
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="flex justify-between items-center h-16">
           <div class="flex-shrink-0">
-            <RouterLink to="/" class="text-2xl font-bold text-blue-600">LetMeCount</RouterLink>
+            <RouterLink to="/profile" class="text-2xl font-bold text-blue-600">LetMeCount</RouterLink>
           </div>
           <div class="md:hidden">
             <button @click="isMobileMenuOpen = !isMobileMenuOpen" class="inline-flex items-center justify-center p-2 text-gray-400 hover:text-white hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-white">
@@ -67,8 +67,10 @@ const shouldShowAddButton = computed(() => {
       </transition>
     </header>
 
-    <main class="flex-grow pt-16">
-      <RouterView />
+    <main class="flex-grow pt-16 min-h-screen bg-white">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+        <RouterView />
+      </div>
     </main>
 
     <AddExpenseButton v-if="shouldShowAddButton" />

@@ -33,14 +33,14 @@ const handleClick = () => {
       <RouterLink
         to="/profile"
         @click="handleClick"
-        class="block px-3 py-2 text-base font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-50"
+        class="block px-3 py-2 text-base font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-50 text-right"
       >
         Mon compte
       </RouterLink>
       <RouterLink
         to="/participants"
         @click="handleClick"
-        class="block px-3 py-2 text-base font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-50"
+        class="block px-3 py-2 text-base font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-50 text-right"
       >
         Participants
       </RouterLink>
@@ -48,7 +48,7 @@ const handleClick = () => {
       <a
         href="#"
         @click.prevent="handleLogout"
-        class="block px-3 py-2 text-base font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-50"
+        class="block px-3 py-2 text-base font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-50 text-right"
       >
         Déconnexion
       </a>

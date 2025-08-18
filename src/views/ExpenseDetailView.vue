@@ -1,6 +1,5 @@
 <template>
-  <div class="min-h-screen bg-white">
-    <div class="max-w-4xl mx-auto px-4 py-6">
+  <div>
       <!-- Header avec navigation -->
       <ExpenseActionHeader 
         :show-edit="true"
@@ -27,7 +26,7 @@
         </div>
 
         <!-- Tableau des détails -->
-        <div class="border border-gray-200">
+        <div>
           <table class="w-full">
             <thead class="bg-gray-50">
               <tr>
@@ -86,7 +85,6 @@
           <p class="text-sm">Cette dépense n'existe pas ou n'est plus accessible.</p>
         </div>
       </div>
-    </div>
   </div>
 </template>
 
