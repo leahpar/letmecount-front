@@ -36,15 +36,12 @@ Let-me-count est une application web pour la gestion des comptes entre amis.
 - [Documentation de l'API](openapi.json)
 - Charte graphique sur la page [/style-guide](src/views/StyleGuideView.vue)
 
-## Comment travailler
-
-Pour chaque tâche :
-- Implémenter la fonctionnalité
-- !! Dmenader une validation de la modification !!
-- Commiter avec un message clair et en français
-
 ## Git
 
 - Les commits ne doivent inclure que les fichiers modifiés par la tâche en cours, ignorer les autres fichiers modifiés par quelque chose d'autre.
 - Les messages de commits doivent être concis et en français.
 - Les messages de commits doivent commencer par le picto 🤖 et garder un message concernant les modifications seulement.
+- Wait for my feedback before committing.
+- DON'T YOU DARE TO COMMIT YOUR WITHOUT MY VALIDATION
+- USER'S SILENCE DOES NOT MEAN APPROVAL, WAIT FOR MY FEEDBACK
+- 

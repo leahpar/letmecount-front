@@ -38,14 +38,14 @@
     <div v-if="generatedToken && selectedUser">
       <p class="mt-2">Utilisez ce lien pour vous connecter en tant que {{ selectedUser.username }}.</p>
       <div class="mt-2 p-2 bg-gray-100 rounded">
-        <code class="text-sm break-all">/credentials?username={{ selectedUser.username }}&token={{ generatedToken }}</code>
+        <code class="text-sm break-all">{{ impersonationUrl }}</code>
       </div>
     </div>
   </BaseModal>
 </template>
 
 <script setup lang="ts">
-import { onMounted, ref } from 'vue'
+import { onMounted, ref, computed } from 'vue'
 import { useParticipants } from '@/composables/useParticipants'
 import { useAuth } from '@/composables/useAuth'
 import { useUsers } from '@/composables/useUsers'
@@ -62,6 +62,14 @@ const { getUserToken } = useUsers()
 const selectedUser = ref<User | null>(null)
 const generatedToken = ref<string | null>(null)
 const showTokenModal = ref(false)
+
+const impersonationUrl = computed(() => {
+  if (!selectedUser.value || !generatedToken.value) {
+    return ''
+  }
+  const baseUrl = import.meta.env.VITE_APP_BASE_URL || window.location.origin
+  return `${baseUrl}/credentials?username=${selectedUser.value.username}&token=${generatedToken.value}`
+})
 
 const handleRefresh = async () => {
   await fetchParticipants()
