@@ -11,11 +11,11 @@
         <div class="rounded-md -space-y-px">
           <div>
             <label for="username" class="sr-only">Username</label>
-            <input id="username" v-model="formData.username" name="username" type="text" required class="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:outline-none focus:border-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm" placeholder="Username">
+            <input id="username" v-model="formData.username" name="username" type="text" required class="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:border-indigo-500 focus:z-10 sm:text-sm" placeholder="Username">
           </div>
           <div>
             <label for="password" class="sr-only">Mot de passe</label>
-            <input id="password" v-model="formData.password" name="password" type="password" autocomplete="current-password" required class="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-b-md focus:outline-none focus:outline-none focus:border-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm" placeholder="Mot de passe">
+            <input id="password" v-model="formData.password" name="password" type="password" autocomplete="current-password" required class="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-b-md focus:outline-none focus:border-indigo-500 focus:z-10 sm:text-sm" placeholder="Mot de passe">
           </div>
         </div>
 
@@ -24,7 +24,7 @@
         </div>
 
         <div>
-          <button type="submit" :disabled="loading" class="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:outline-none focus:outline-none focus:border-indigo-500 disabled:bg-gray-400">
+          <button type="submit" :disabled="loading" class="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:bg-gray-400">
             <span class="absolute left-0 inset-y-0 flex items-center pl-3">
               <!-- Heroicon name: solid/lock-closed -->
               <svg class="h-5 w-5 text-indigo-500 group-hover:text-indigo-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
@@ -40,11 +40,12 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
-import { useRouter } from 'vue-router'
+import { onMounted, ref } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
 import axios from '@/plugins/axios'
 import { useAuth } from '@/composables/useAuth'
 
+const route = useRoute()
 const router = useRouter()
 const { login } = useAuth()
 
@@ -55,6 +56,12 @@ const formData = ref({
 
 const loading = ref(false)
 const error = ref('')
+
+onMounted(() => {
+  if (typeof route.query.username === 'string') {
+    formData.value.username = route.query.username
+  }
+})
 
 const handleLogin = async () => {
   if (!formData.value.username || !formData.value.password) {

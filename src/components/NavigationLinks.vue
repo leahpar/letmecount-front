@@ -44,6 +44,7 @@ const handleClick = () => {
       >
         Participants
       </RouterLink>
+      <div class="border-t border-gray-200"></div>
       <a
         href="#"
         @click.prevent="handleLogout"
@@ -61,10 +62,11 @@ const handleClick = () => {
       </RouterLink>
       <RouterLink
         to="/participants"
-        class="text-gray-600 hover:bg-gray-200 hover:text-gray-900 p-2"
+        class="text-gray-600 hover:bg-gray-200 hover:text-gray-900 px-3 py-2 text-sm font-medium"
       >
-        <IconUsers class="h-6 w-6 text-gray-600" />
+        Participants
       </RouterLink>
+      <div class="border-l border-gray-300 h-6 self-center"></div>
       <a
         href="#"
         @click.prevent="handleLogout"
