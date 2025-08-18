@@ -8,6 +8,7 @@ import ProfileView from "@/views/ProfileView.vue";
 import CreateExpenseView from "@/views/CreateExpenseView.vue";
 import ExpenseDetailView from "@/views/ExpenseDetailView.vue";
 import ParticipantsView from "@/views/ParticipantsView.vue";
+import CredentialsView from "@/views/CredentialsView.vue";
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -52,6 +53,11 @@ const router = createRouter({
       path: '/login',
       name: 'login',
       component: LoginView,
+    },
+    {
+      path: '/credentials',
+      name: 'credentials',
+      component: CredentialsView,
     },
     {
       path: '/style-guide',

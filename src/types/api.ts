@@ -47,3 +47,9 @@ export interface ParticipantData {
   montant: number
   manualMontant: boolean
 }
+
+export interface UpdateCredentialsDto {
+  token: string;
+  username?: string;
+  password?: string;
+}
