@@ -4,7 +4,7 @@
       <div class="max-w-3xl mx-auto sm:px-6 lg:px-8">
         <div class="bg-white border border-gray-200">
           <div class="p-6">
-                      <h1 class="text-2xl font-semibold text-gray-900 flex items-center gap-2">
+            <h1 class="text-2xl font-semibold text-gray-900 flex items-center gap-2">
               <IconUsers class="h-8 w-8" />
               <span>Participants</span>
             </h1>
@@ -17,7 +17,10 @@
             <div v-if="!loading && !error" class="mt-6">
               <ul class="divide-y divide-gray-200">
                 <li v-for="participant in participants" :key="participant.id" class="py-4 flex justify-between items-center">
-                  <span class="text-lg font-medium text-gray-900">{{ participant.username }}</span>
+                  <div class="flex items-center gap-2">
+                    <span class="text-lg font-medium text-gray-900">{{ participant.username }}</span>
+                    <IconKey v-if="isAdmin" @click="handleUserClick(participant)" class="h-5 w-5 text-gray-500 cursor-pointer hover:text-gray-700" />
+                  </div>
                   <span :class="['font-semibold', participant.solde > 0 ? 'text-green-600' : 'text-red-600']">
                     {{ participant.solde.toFixed(2) }} €
                   </span>
@@ -30,21 +33,58 @@
       </div>
     </div>
   </PullToRefresh>
+
+  <BaseModal :show="showTokenModal" @close="showTokenModal = false" :title="`Connexion rapide pour ${selectedUser?.username}`">
+    <div v-if="generatedToken && selectedUser">
+      <p class="mt-2">Utilisez ce lien pour vous connecter en tant que {{ selectedUser.username }}.</p>
+      <div class="mt-2 p-2 bg-gray-100 rounded">
+        <code class="text-sm break-all">/credentials?username={{ selectedUser.username }}&token={{ generatedToken }}</code>
+      </div>
+    </div>
+  </BaseModal>
 </template>
 
 <script setup lang="ts">
-import { onMounted } from 'vue'
+import { onMounted, ref } from 'vue'
 import { useParticipants } from '@/composables/useParticipants'
+import { useAuth } from '@/composables/useAuth'
+import { useUsers } from '@/composables/useUsers'
+import type { User } from '@/types/api'
 import IconUsers from '@/components/icons/IconUsers.vue'
+import IconKey from '@/components/icons/IconKey.vue'
 import PullToRefresh from '@/components/PullToRefresh.vue'
+import BaseModal from '@/components/base/BaseModal.vue'
 
 const { participants, loading, error, fetchParticipants } = useParticipants()
+const { isAdmin } = useAuth()
+const { getUserToken } = useUsers()
+
+const selectedUser = ref<User | null>(null)
+const generatedToken = ref<string | null>(null)
+const showTokenModal = ref(false)
 
 const handleRefresh = async () => {
   await fetchParticipants()
+  selectedUser.value = null
+  generatedToken.value = null
+}
+
+const handleUserClick = async (user: User) => {
+  if (!isAdmin.value) {
+    return
+  }
+  selectedUser.value = user
+  generatedToken.value = await getUserToken(user.id)
+  if (generatedToken.value) {
+    showTokenModal.value = true
+  }
 }
 
 onMounted(() => {
   fetchParticipants()
 })
 </script>
+
+<style scoped>
+/* Styles spécifiques au composant */
+</style>

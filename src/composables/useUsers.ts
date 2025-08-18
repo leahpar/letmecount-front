@@ -48,6 +48,16 @@ export function useUsers() {
     }
   }
 
+  const getUserToken = async (userId: number): Promise<string | null> => {
+    try {
+      const response = await axios.get(`/users/${userId}/token`)
+      return response.data.token
+    } catch (error) {
+      console.error(`Erreur lors de la récupération du token pour l\'utilisateur ${userId}:`, error)
+      return null
+    }
+  }
+
   return {
     users: userCache.data,
     me: computed(() => me.value),
@@ -59,6 +69,7 @@ export function useUsers() {
     getUsernameByIri,
     fetchUsers,
     refreshUsers,
-    fetchMe
+    fetchMe,
+    getUserToken
   }
 }

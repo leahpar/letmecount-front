@@ -4,6 +4,7 @@ export interface User {
   username: string
   solde: number
   tags: string[]
+  roles: string[]
 }
 
 export interface Tag {

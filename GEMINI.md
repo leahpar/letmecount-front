@@ -32,6 +32,7 @@ Let-me-count est une application web pour la gestion des comptes entre amis.
 
 ## Ressources utiles
 
+- [Documentation technique du projet](doc-technique.md)
 - [Documentation de l'API](openapi.json)
 - Charte graphique sur la page [/style-guide](src/views/StyleGuideView.vue)
 
@@ -39,7 +40,7 @@ Let-me-count est une application web pour la gestion des comptes entre amis.
 
 Pour chaque tâche :
 - Implémenter la fonctionnalité
-- Dmenader une validation de la modification
+- !! Dmenader une validation de la modification !!
 - Commiter avec un message clair et en français
 
 ## Git

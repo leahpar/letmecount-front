@@ -1,15 +1,18 @@
 import { ref, computed } from 'vue'
+import { useUsers } from '@/composables/useUsers'
 
 const token = ref<string | null>(localStorage.getItem('jwt_token'))
 const refreshToken = ref<string | null>(localStorage.getItem('refresh_token'))
 
 export function useAuth() {
+  const { me } = useUsers()
   const isAuthenticated = computed(() => !!token.value)
+  const isAdmin = computed(() => me.value?.roles.includes('ROLE_ADMIN') || false)
 
   const setTokens = (newToken: string, newRefreshToken?: string) => {
     token.value = newToken
     localStorage.setItem('jwt_token', newToken)
-    
+
     if (newRefreshToken) {
       refreshToken.value = newRefreshToken
       localStorage.setItem('refresh_token', newRefreshToken)
@@ -40,6 +43,7 @@ export function useAuth() {
 
   return {
     isAuthenticated,
+    isAdmin,
     login,
     logout,
     getToken,
