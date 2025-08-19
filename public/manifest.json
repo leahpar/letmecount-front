@@ -2,16 +2,21 @@
   "name": "Let me count",
   "short_name": "LetMeCount",
   "description": "Application de gestion des comptes entre amis",
+  "id": "bGV0bWVjb3VudAo=",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#ffffff",
   "theme_color": "#000000",
   "orientation": "portrait-primary",
+  "launch_handler": {
+    "client_mode": "navigate-existing"
+  },
   "icons": [
     {
-      "src": "/favicon.ico",
-      "sizes": "32x32",
-      "type": "image/x-icon"
+      "src": "/img/logo.png",
+      "type": "image/png",
+      "sizes": "512x512",
+      "purpose": "any maskable"
     }
   ]
 }
