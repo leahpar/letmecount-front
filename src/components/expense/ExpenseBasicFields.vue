@@ -58,7 +58,8 @@
       <BaseSelect
         v-else
         id="tag"
-        v-model="formData.tag"
+        :model-value="tagId"
+        @update:model-value="$emit('update:tagId', $event)"
         label="Tag"
         required
         placeholder="-- Choisir un tag --"
@@ -85,6 +86,7 @@ interface FormData {
 
 const props = defineProps<{
   modelValue: FormData
+  tagId: string
   users: User[]
   tags: Tag[]
   submitted: boolean
@@ -93,6 +95,7 @@ const props = defineProps<{
 
 const emit = defineEmits<{
   'update:modelValue': [value: FormData]
+  'update:tagId': [value: string]
 }>()
 
 const formData = computed({

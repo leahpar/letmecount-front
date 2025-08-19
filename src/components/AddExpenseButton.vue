@@ -22,25 +22,23 @@
     </button>
 
     <!-- Bulle de sélection des tags -->
-    <div 
+    <div
       v-if="showTagSelection"
       class="absolute bottom-20 right-0 bg-white border border-gray-200 rounded-lg shadow-lg min-w-48 max-w-64 z-20"
       @click.stop
     >
       <!-- Petite flèche pointant vers le bouton -->
       <div class="absolute -bottom-2 right-6 w-0 h-0 border-l-4 border-r-4 border-t-4 border-l-transparent border-r-transparent border-t-gray-200"></div>
-      
+
       <div class="p-3">
-        <div class="text-sm font-medium text-gray-700 mb-2">Choisir un tag</div>
-        
         <div v-if="isLoading" class="text-center py-2 text-gray-500 text-sm">
           Chargement...
         </div>
-        
+
         <div v-else-if="userTags.length === 0" class="text-center py-2 text-gray-500 text-sm">
           Aucun tag disponible
         </div>
-        
+
         <div v-else class="space-y-1">
           <button
             v-for="tag in userTags"
@@ -55,7 +53,7 @@
     </div>
 
     <!-- Overlay transparent pour fermer la bulle en cliquant ailleurs -->
-    <div 
+    <div
       v-if="showTagSelection"
       class="fixed inset-0 z-10"
       @click="showTagSelection = false"
@@ -76,7 +74,7 @@ const { tags: allTags, fetchTags, getTagByIri } = useTags()
 
 const userTags = computed(() => {
   if (!me.value?.tags) return []
-  
+
   return me.value.tags
     .map(tagIri => getTagByIri(tagIri))
     .filter(tag => tag !== undefined)
