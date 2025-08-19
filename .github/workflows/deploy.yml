@@ -34,9 +34,9 @@ jobs:
             -   name: Deploy to Server
                 uses: up9cloud/action-rsync@master
                 env:
-                    HOST: ${{ secrets.DEPLOY_HOST }}
-                    USER: ${{ secrets.DEPLOY_USER }}
-                    KEY: ${{secrets.DEPLOY_SSH_KEY}}
+                    HOST: ${{ secrets.SSH_HOST }}
+                    USER: ${{ secrets.SSH_USER }}
+                    KEY: ${{secrets.SSH_PRIVATE_KEY}}
                     PORT: ${{ secrets.DEPLOY_PORT }}
                     SOURCE: ./dist/
                     TARGET: ${{ secrets.DEPLOY_PATH }}
