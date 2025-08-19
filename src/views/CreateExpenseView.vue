@@ -175,7 +175,7 @@ const handleSubmit = async () => {
 
   if (result) {
     // Forcer le refresh du profil avec un paramètre
-    router.push({ name: 'profile', query: { refresh: true } })
+    router.push({ name: 'profile', query: { refresh: 'true' } })
   }
 }
 

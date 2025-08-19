@@ -55,9 +55,11 @@ const balanceImpact = computed((): number => {
     impact += expense.montant
   }
 
-  const userDetail = expense.details.find(d => d.user === me.value['@id'])
-  if (userDetail) {
-    impact -= userDetail.montant
+  if (expense.details) {
+    const userDetail = expense.details.find(d => d.user === me.value?.['@id'])
+    if (userDetail) {
+      impact -= userDetail.montant
+    }
   }
 
   return impact

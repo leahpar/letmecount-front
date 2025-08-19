@@ -136,9 +136,9 @@ const handleEdit = () => {
 }
 
 const handleDelete = async () => {
-  if (!expense.value) return
+  if (!expense.value || typeof expense.value.id === 'undefined') return
   
-  await confirmDeleteExpense(expense.value.id, expense.value.titre)
+  await confirmDeleteExpense(expense.value.id.toString(), expense.value.titre)
 }
 
 onMounted(async () => {

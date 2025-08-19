@@ -9,7 +9,7 @@ export type { Tag }
 export function useTags() {
   const tagsMap = computed(() => {
     const map = new Map<string, Tag>()
-    tagCache.data.value.forEach(tag => {
+    tagCache.data.value.forEach((tag: Tag) => {
       map.set(tag['@id'], tag)
       map.set(tag.id.toString(), tag)
     })
@@ -22,7 +22,7 @@ export function useTags() {
 
   const getTagNameById = (id: string | number): string => {
     const tag = getTagById(id)
-    return tag?.name || `Tag ${id}`
+    return tag?.libelle || `Tag ${id}`
   }
 
   const getTagByIri = (iri: string): Tag | undefined => {

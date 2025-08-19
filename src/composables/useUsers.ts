@@ -9,7 +9,7 @@ const userCache = useCache<User[]>('/users', 'le chargement des utilisateurs')
 export function useUsers() {
   const usersMap = computed(() => {
     const map = new Map<string, User>()
-    userCache.data.value.forEach(user => {
+    userCache.data.value.forEach((user: User) => {
       map.set(user['@id'], user)
       map.set(user.id.toString(), user)
     })

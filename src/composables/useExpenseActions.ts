@@ -30,7 +30,7 @@ export function useExpenseActions() {
     if (success) {
       // Redirection avec refresh optionnel
       if (refreshProfile && redirectTo === 'profile') {
-        router.push({ name: redirectTo, query: { refresh: true } })
+        router.push({ name: redirectTo, query: { refresh: 'true' } })
       } else {
         router.push({ name: redirectTo })
       }

@@ -1,8 +1,9 @@
 import { ref, computed } from 'vue'
 import axios from '@/plugins/axios'
+import type { User } from '@/types/api'
 
 export function useParticipants() {
-  const participantsData = ref([])
+  const participantsData = ref<User[]>([])
   const loading = ref(false)
   const error = ref<string | null>(null)
 
@@ -16,9 +17,9 @@ export function useParticipants() {
     try {
       const response = await axios.get('/users')
       participantsData.value = response.data.member
-    } catch (error: unknown) {
-      console.error(error)
-      error.value = 'Erreur lors de la récupération des participants'
+    } catch (err: any) {
+      console.error(err)
+      error.value = err.message || 'Erreur lors de la récupération des participants'
     } finally {
       loading.value = false
     }
