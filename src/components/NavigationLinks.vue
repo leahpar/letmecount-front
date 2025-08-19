@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { RouterLink } from 'vue-router'
 import { useAuth } from '@/composables/useAuth'
-import IconUsers from '@/components/icons/IconUsers.vue'
 
 interface Props {
   isMobile?: boolean

@@ -90,19 +90,11 @@ const formData = computed({
 
 const isTitreValid = computed(() => props.modelValue.titre.trim() !== '')
 const isMontantValid = computed(() => props.modelValue.montant > 0)
-const isTagValid = computed(() => props.modelValue.tag !== '')
 
 const userOptions = computed(() => 
   props.users.map(user => ({
     value: user['@id'],
     label: user.username
-  }))
-)
-
-const tagOptions = computed(() => 
-  props.tags.map(tag => ({
-    value: tag['@id'],
-    label: tag.libelle
   }))
 )
 

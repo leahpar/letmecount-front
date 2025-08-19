@@ -17,9 +17,9 @@ export function useParticipants() {
     try {
       const response = await axios.get('/users')
       participantsData.value = response.data.member
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error(err)
-      error.value = err.message || 'Erreur lors de la récupération des participants'
+      error.value = (err as Error).message || 'Erreur lors de la récupération des participants'
     } finally {
       loading.value = false
     }
