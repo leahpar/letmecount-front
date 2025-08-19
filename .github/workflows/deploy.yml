@@ -39,4 +39,4 @@ jobs:
                     KEY: ${{secrets.DEPLOY_SSH_KEY}}
                     PORT: ${{ secrets.DEPLOY_PORT }}
                     SOURCE: ./dist/
-                    TARGET: ${{ secret.DEPLOY_PATH }}
+                    TARGET: ${{ secrets.DEPLOY_PATH }}
