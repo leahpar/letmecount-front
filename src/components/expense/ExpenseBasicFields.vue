@@ -46,7 +46,6 @@
       />
 
       <BaseInput
-        v-if="isTagReadonly"
         id="tag"
         :model-value="selectedTagLabel"
         label="Tag"
@@ -54,17 +53,6 @@
         readonly
         disabled
         class="bg-gray-100"
-      />
-      <BaseSelect
-        v-else
-        id="tag"
-        :model-value="tagId"
-        @update:model-value="$emit('update:tagId', $event)"
-        label="Tag"
-        required
-        placeholder="-- Choisir un tag --"
-        :options="tagOptions"
-        :has-error="submitted && !isTagValid"
       />
     </div>
   </div>
@@ -86,16 +74,13 @@ interface FormData {
 
 const props = defineProps<{
   modelValue: FormData
-  tagId: string
   users: User[]
   tags: Tag[]
   submitted: boolean
-  isTagReadonly?: boolean
 }>()
 
 const emit = defineEmits<{
   'update:modelValue': [value: FormData]
-  'update:tagId': [value: string]
 }>()
 
 const formData = computed({

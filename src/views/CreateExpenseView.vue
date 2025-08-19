@@ -13,12 +13,9 @@
           <form @submit.prevent="handleSubmit" class="space-y-6">
             <ExpenseBasicFields
               v-model="formData"
-              :tag-id="formData.tag"
-              @update:tag-id="formData.tag = $event"
               :users="users"
               :tags="tags"
               :submitted="submitted"
-              :is-tag-readonly="isTagFromQuery"
             />
 
             <!-- Cas spécial pour le tag "Transfert" -->
@@ -98,9 +95,8 @@ const submitted = ref(false)
 const expenseId = computed(() => route.params.id as string)
 const isEditMode = computed(() => !!expenseId.value)
 
-// Détection d'un tag prérempli depuis les query parameters
-const tagFromQuery = computed(() => route.query.tag as string)
-const isTagFromQuery = computed(() => !!tagFromQuery.value && !isEditMode.value)
+// Le tag est toujours non modifiable
+const isTagReadonly = computed(() => true)
 
 const {
   formData,
@@ -212,7 +208,8 @@ const handleSubmit = async () => {
   if (isEditMode.value) {
     result = await updateExpense(expenseId.value, expenseData)
   } else {
-    result = await createExpense(expenseData)
+    const tagFromQuery = route.query.tag as string
+    result = await createExpense({ ...expenseData, tag: tagFromQuery })
   }
 
   if (result) {
@@ -246,8 +243,9 @@ onMounted(async () => {
     }
 
     // Préremplir le tag si fourni dans les query parameters
-    if (tagFromQuery.value) {
-      formData.value.tag = tagFromQuery.value
+    const tagFromQuery = route.query.tag as string
+    if (tagFromQuery) {
+      formData.value.tag = tagFromQuery
     }
   }
 })
