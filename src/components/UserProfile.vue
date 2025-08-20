@@ -19,6 +19,14 @@
             {{ formatMoney(user.solde) }} €
           </span>
         </div>
+        <div class="hidden lg:block mt-2">
+          <button
+            @click="handleRefresh"
+            class="text-sm text-gray-500 hover:text-gray-700 underline"
+          >
+            Actualiser
+          </button>
+        </div>
       </div>
     </div>
   </div>
@@ -27,11 +35,23 @@
 <script setup lang="ts">
 import { onMounted } from 'vue'
 import { useUsers } from '@/composables/useUsers'
+import { useExpenseCache } from '@/composables/useExpenseCache'
+import { useTags } from '@/composables/useTags'
 
 const { me: user, loading, error, fetchMe } = useUsers()
+const { fetchExpenses } = useExpenseCache()
+const { refreshTags } = useTags()
 
 const formatMoney = (amount: number): string => {
   return amount.toFixed(2)
+}
+
+const handleRefresh = async () => {
+  await Promise.all([
+    fetchExpenses(10, undefined, true),
+    refreshTags(),
+    fetchMe(true)
+  ])
 }
 
 onMounted(() => {
