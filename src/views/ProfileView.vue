@@ -2,6 +2,7 @@
 import { watch, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useUsers } from '@/composables/useUsers'
+import { useTags } from '@/composables/useTags'
 import { useExpenseCache } from '@/composables/useExpenseCache'
 import UserProfile from '@/components/UserProfile.vue'
 import ExpenseList from '@/components/ExpenseList.vue'
@@ -11,10 +12,15 @@ const route = useRoute()
 const router = useRouter()
 const { fetchMe } = useUsers()
 const { fetchExpenses } = useExpenseCache()
+const { refreshTags } = useTags()
 
 const handleRefresh = async () => {
   if (route.query.refresh) {
-    await fetchExpenses(10, undefined, true) // Forcer le rafraîchissement
+    await Promise.all([
+      fetchExpenses(10, undefined, true), // Forcer le rafraîchissement
+      refreshTags(),
+      fetchMe(true)
+    ])
     // Supprimer le paramètre de la requête pour éviter les rafraîchissements répétés
     await router.replace({ query: { ...route.query, refresh: undefined } })
   }
@@ -30,7 +36,11 @@ watch(() => route.query.refresh,
 )
 
 const handlePullToRefresh = async () => {
-  await fetchExpenses(10, undefined, true)
+  await Promise.all([
+    fetchExpenses(10, undefined, true),
+    refreshTags(),
+    fetchMe(true)
+  ])
 }
 
 onMounted(() => {

@@ -53,3 +53,8 @@ export interface UpdateCredentialsDto {
   username?: string;
   password?: string;
 }
+
+export interface CreateTagData {
+  libelle: string;
+  users: string[];
+}

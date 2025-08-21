@@ -48,6 +48,14 @@
           >
             {{ tag.libelle }}
           </button>
+          <hr class="my-1">
+          <router-link v-if="isAdmin"
+            :to="{ name: 'create-tag' }"
+            class="w-full p-2 text-left text-sm text-blue-600 hover:bg-gray-50 rounded transition-colors block"
+            @click="showTagSelection = false"
+          >
+            Créer un nouveau tag
+          </router-link>
         </div>
       </div>
     </div>
@@ -66,18 +74,29 @@ import { ref, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useUsers } from '@/composables/useUsers'
 import { useTags, type Tag } from '@/composables/useTags'
+import {useAuth} from "@/composables/useAuth.ts";
 
 const router = useRouter()
 const showTagSelection = ref(false)
 const { me, fetchMe } = useUsers()
 const { tags: allTags, fetchTags, getTagByIri } = useTags()
+const { isAdmin } = useAuth()
 
 const userTags = computed(() => {
   if (!me.value?.tags) return []
 
-  return me.value.tags
+  const tags = me.value.tags
     .map(tagIri => getTagByIri(tagIri))
-    .filter(tag => tag !== undefined)
+    .filter((tag): tag is Tag => tag !== undefined)
+
+  const transfertTag = tags.find(tag => tag.libelle === 'Transfert')
+  const otherTags = tags.filter(tag => tag.libelle !== 'Transfert')
+
+  if (transfertTag) {
+    return [...otherTags, transfertTag]
+  }
+
+  return otherTags
 })
 
 const isLoading = computed(() => {

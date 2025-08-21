@@ -73,7 +73,7 @@
 import { computed, onMounted, ref } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { useUsers } from '@/composables/useUsers'
-import { useTags } from '@/composables/useTags'
+import { useTags, type Tag } from '@/composables/useTags'
 import { useExpenses } from '@/composables/useExpenses'
 import { useExpenseForm } from '@/composables/useExpenseForm'
 import { useExpenseActions } from '@/composables/useExpenseActions'
@@ -110,7 +110,7 @@ const {
 // Logique pour le cas "Transfert"
 const beneficiaryId = ref<string | null>(null)
 const isTransfert = computed(() => {
-  const selectedTag = tags.value.find((t: any) => t['@id'] === formData.value.tag)
+  const selectedTag = tags.value.find((t: Tag) => t['@id'] === formData.value.tag)
   return selectedTag?.libelle === 'Transfert'
 })
 
