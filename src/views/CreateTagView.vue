@@ -65,6 +65,7 @@ import { useUsers } from '@/composables/useUsers'
 import { useTags } from '@/composables/useTags'
 import ExpenseActionHeader from '@/components/ExpenseActionHeader.vue'
 import BaseInput from '@/components/base/BaseInput.vue'
+import type { User } from '@/types/api'
 
 const router = useRouter()
 const { users, fetchUsers } = useUsers()
@@ -105,7 +106,7 @@ const goBack = () => {
 
 onMounted(async () => {
   await fetchUsers()
-  users.value.forEach(user => {
+  users.value.forEach((user: User) => {
     participantCheckboxes.value[user['@id']] = false
   })
 })
