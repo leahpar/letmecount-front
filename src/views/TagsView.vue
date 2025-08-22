@@ -54,6 +54,7 @@ import { useUsers } from '@/composables/useUsers'
 import { useRouter } from 'vue-router'
 import IconTag from '@/components/icons/IconTag.vue'
 import PullToRefresh from '@/components/PullToRefresh.vue'
+import type { User } from '@/types/api'
 
 const { tags, loading, error, fetchTags } = useTags()
 const { isAdmin } = useAuth()
@@ -62,7 +63,7 @@ const router = useRouter()
 
 const getParticipantNames = (userIris: string[]): string[] => {
   return userIris
-    .map(iri => users.value.find(user => user['@id'] === iri)?.username)
+    .map(iri => users.value.find((user: User) => user['@id'] === iri)?.username)
     .filter((name): name is string => !!name)
 }
 
