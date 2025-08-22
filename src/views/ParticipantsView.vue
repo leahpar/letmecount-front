@@ -19,7 +19,7 @@
                     <span class="text-lg font-medium text-gray-900">{{ participant.username }}</span>
                     <IconKey v-if="isAdmin" @click="handleUserClick(participant)" class="h-5 w-5 text-gray-500 cursor-pointer hover:text-gray-700" />
                   </div>
-                  <span :class="['font-semibold', participant.solde > 0 ? 'text-green-600' : 'text-red-600']">
+                  <span :class="['font-semibold', participant.solde >= 0 ? 'text-green-600' : 'text-red-600']">
                     {{ participant.solde.toFixed(2) }} €
                   </span>
                 </li>
