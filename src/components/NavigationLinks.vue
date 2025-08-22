@@ -11,7 +11,7 @@ const props = withDefaults(defineProps<Props>(), {
   isMobile: false
 })
 
-const { isAuthenticated } = useAuth()
+const { isAuthenticated, isAdmin } = useAuth()
 
 const handleLogout = () => {
   const { logout } = useAuth()
@@ -43,6 +43,14 @@ const handleClick = () => {
       >
         Participants
       </RouterLink>
+      <RouterLink
+        v-if="isAdmin"
+        to="/tags"
+        @click="handleClick"
+        class="block px-3 py-2 text-base font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-50 text-right"
+      >
+        Tags
+      </RouterLink>
       <div class="border-t border-gray-200"></div>
       <a
         href="#"
@@ -64,6 +72,13 @@ const handleClick = () => {
         class="text-gray-600 hover:bg-gray-200 hover:text-gray-900 px-3 py-2 text-sm font-medium"
       >
         Participants
+      </RouterLink>
+      <RouterLink
+        v-if="isAdmin"
+        to="/tags"
+        class="text-gray-600 hover:bg-gray-200 hover:text-gray-900 px-3 py-2 text-sm font-medium"
+      >
+        Tags
       </RouterLink>
       <div class="border-l border-gray-300 h-6 self-center"></div>
       <a

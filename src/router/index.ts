@@ -9,6 +9,7 @@ import CreateExpenseView from "@/views/CreateExpenseView.vue";
 import ExpenseDetailView from "@/views/ExpenseDetailView.vue";
 import ParticipantsView from "@/views/ParticipantsView.vue";
 import CredentialsView from "@/views/CredentialsView.vue";
+import TagsView from "@/views/TagsView.vue";
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -68,6 +69,11 @@ const router = createRouter({
       path: '/participants',
       name: 'participants',
       component: ParticipantsView,
+    },
+    {
+      path: '/tags',
+      name: 'tags',
+      component: TagsView,
     },
     {
       path: '/tags/create',
