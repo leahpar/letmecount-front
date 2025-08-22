@@ -79,6 +79,11 @@ const router = createRouter({
       path: '/tags/create',
       name: 'create-tag',
       component: () => import('../views/CreateTagView.vue'),
+    },
+    {
+      path: '/tags/:id/edit',
+      name: 'edit-tag',
+      component: () => import('../views/CreateTagView.vue'),
     }
   ],
 })

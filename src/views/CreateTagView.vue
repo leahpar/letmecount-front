@@ -49,7 +49,7 @@
               :disabled="loading || !canSubmit"
               class="w-full px-4 py-3 bg-blue-600 text-white font-medium hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed"
             >
-              {{ loading ? 'Enregistrement...' : 'Enregistrer' }}
+              {{ loading ? 'Enregistrement...' : (isEditing ? 'Modifier' : 'Enregistrer') }}
             </button>
           </div>
         </form>
@@ -60,7 +60,7 @@
 
 <script setup lang="ts">
 import { computed, onMounted, ref } from 'vue'
-import { useRouter } from 'vue-router'
+import { useRouter, useRoute } from 'vue-router'
 import { useUsers } from '@/composables/useUsers'
 import { useTags } from '@/composables/useTags'
 import ExpenseActionHeader from '@/components/ExpenseActionHeader.vue'
@@ -68,9 +68,12 @@ import BaseInput from '@/components/base/BaseInput.vue'
 import type { User } from '@/types/api'
 
 const router = useRouter()
+const route = useRoute()
 const { users, fetchUsers } = useUsers()
-const { createTag, loading, error } = useTags()
+const { createTag, updateTag, getTagById, loading, error } = useTags()
 const submitted = ref(false)
+const isEditing = computed(() => !!route.params.id)
+const tagId = computed(() => route.params.id as string)
 
 const formData = ref({
   libelle: '',
@@ -93,10 +96,15 @@ const handleSubmit = async () => {
     .filter(([, checked]) => checked)
     .map(([userId]) => userId)
 
-  const result = await createTag(formData.value)
+  let result
+  if (isEditing.value) {
+    result = await updateTag(tagId.value, formData.value)
+  } else {
+    result = await createTag(formData.value)
+  }
 
   if (result) {
-    router.push({ name: 'profile', query: { refresh: 'true' } })
+    router.push({ name: 'tags' })
   }
 }
 
@@ -109,5 +117,17 @@ onMounted(async () => {
   users.value.forEach((user: User) => {
     participantCheckboxes.value[user['@id']] = false
   })
+
+  if (isEditing.value) {
+    const tag = getTagById(tagId.value)
+    if (tag) {
+      formData.value.libelle = tag.libelle
+      if (tag.users) {
+        tag.users.forEach((userIri: string) => {
+          participantCheckboxes.value[userIri] = true
+        })
+      }
+    }
+  }
 })
 </script>

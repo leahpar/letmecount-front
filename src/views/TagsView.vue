@@ -22,13 +22,21 @@
 
             <div v-if="!loading && !error" class="mt-6">
               <ul class="divide-y divide-gray-200">
-                <li v-for="tag in tags" :key="tag.id" class="py-4 flex justify-between items-center">
-                  <div class="flex items-center gap-2">
-                    <span class="text-lg font-medium text-gray-900">{{ tag.libelle }}</span>
+                <li v-for="tag in tags" :key="tag.id" class="py-4">
+                  <div class="flex justify-between items-start">
+                    <div class="flex-1">
+                      <span class="text-lg font-medium text-gray-900">{{ tag.libelle }}</span>
+                      <div v-if="tag.users && tag.users.length > 0" class="mt-1">
+                        <span class="text-sm text-gray-500">{{ getParticipantNames(tag.users).join(', ') }}</span>
+                      </div>
+                    </div>
+                    <RouterLink
+                      :to="{ name: 'edit-tag', params: { id: tag.id } }"
+                      class="text-blue-600 hover:text-blue-800 text-sm font-medium ml-4"
+                    >
+                      Éditer
+                    </RouterLink>
                   </div>
-                  <span class="text-sm text-gray-500">
-                    ID: {{ tag.id }}
-                  </span>
                 </li>
               </ul>
               <div class="pb-24"></div>
@@ -42,16 +50,24 @@
 import { onMounted } from 'vue'
 import { useTags } from '@/composables/useTags'
 import { useAuth } from '@/composables/useAuth'
+import { useUsers } from '@/composables/useUsers'
 import { useRouter } from 'vue-router'
 import IconTag from '@/components/icons/IconTag.vue'
 import PullToRefresh from '@/components/PullToRefresh.vue'
 
 const { tags, loading, error, fetchTags } = useTags()
 const { isAdmin } = useAuth()
+const { users, fetchUsers } = useUsers()
 const router = useRouter()
 
+const getParticipantNames = (userIris: string[]): string[] => {
+  return userIris
+    .map(iri => users.value.find(user => user['@id'] === iri)?.username)
+    .filter((name): name is string => !!name)
+}
+
 const handleRefresh = async () => {
-  await fetchTags(true)
+  await Promise.all([fetchTags(true), fetchUsers()])
 }
 
 onMounted(async () => {
@@ -59,7 +75,7 @@ onMounted(async () => {
     router.push('/')
     return
   }
-  await fetchTags()
+  await Promise.all([fetchTags(), fetchUsers()])
 })
 </script>
 

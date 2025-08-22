@@ -56,6 +56,22 @@ export function useTags() {
     }
   }
 
+  const updateTag = async (id: string, tagData: Partial<CreateTagData>): Promise<Tag | null> => {
+    loading.value = true
+    error.value = null
+
+    try {
+      const response = await axios.patch(`/tags/${id}`, tagData)
+      await refreshTags() // Refresh cache after update
+      return response.data
+    } catch (err: unknown) {
+      error.value = handleApiError(err, 'la modification du tag')
+      return null
+    } finally {
+      loading.value = false
+    }
+  }
+
   return {
     tags: tagCache.data,
     loading: computed(() => loading.value || tagCache.loading.value),
@@ -66,6 +82,7 @@ export function useTags() {
     getTagByIri,
     fetchTags,
     refreshTags,
-    createTag
+    createTag,
+    updateTag
   }
 }
