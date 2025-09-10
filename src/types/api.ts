@@ -3,6 +3,7 @@ export interface User {
   id: number
   username: string
   solde: number
+  soldeIndividuel: number
   tags: string[]
   roles: string[]
   conjoint?: string
