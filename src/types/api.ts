@@ -5,6 +5,7 @@ export interface User {
   solde: number
   tags: string[]
   roles: string[]
+  conjoint?: string
 }
 
 export interface Tag {
