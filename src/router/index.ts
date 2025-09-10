@@ -61,11 +61,6 @@ const router = createRouter({
       component: CredentialsView,
     },
     {
-      path: '/style-guide',
-      name: 'style-guide',
-      component: () => import('../views/StyleGuideView.vue'),
-    },
-    {
       path: '/participants',
       name: 'participants',
       component: ParticipantsView,
