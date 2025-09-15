@@ -11,6 +11,7 @@ import ParticipantsView from "@/views/ParticipantsView.vue";
 import CredentialsView from "@/views/CredentialsView.vue";
 import TagsView from "@/views/TagsView.vue";
 import NotificationsView from "@/views/NotificationsView.vue";
+import HistoriqueView from "@/views/HistoriqueView.vue";
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -85,6 +86,11 @@ const router = createRouter({
       path: '/notifications',
       name: 'notifications',
       component: NotificationsView,
+    },
+    {
+      path: '/historique',
+      name: 'historique',
+      component: HistoriqueView,
     }
   ],
 })
