@@ -70,9 +70,21 @@ const chartData = computed(() => {
     })
   })
 
-  const datasets = Array.from(entityKeys).map((entityKey, index) => {
+  const datasetsWithSolde = Array.from(entityKeys).map((entityKey) => {
     const data = dates.map(date => groupedHistorique[date][entityKey] || 0)
+    const soldeActuel = data[0] || 0 // Premier élément = dernier jour
 
+    return {
+      entityKey,
+      data,
+      soldeActuel
+    }
+  })
+
+  // Trier par solde décroissant
+  datasetsWithSolde.sort((a, b) => a.soldeActuel - b.soldeActuel)
+
+  const datasets = datasetsWithSolde.map((item, index) => {
     // Palette de couleurs distinctes
     const colors = [
       '#3B82F6', // blue-500
@@ -92,8 +104,8 @@ const chartData = computed(() => {
     const color = colors[index % colors.length]
 
     return {
-      label: entityKey,
-      data: data,
+      label: item.entityKey,
+      data: item.data,
       borderColor: color,
       backgroundColor: color + '20', // Ajoute une transparence
       tension: 0.1,
