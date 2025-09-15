@@ -19,7 +19,7 @@ const chartData = computed(() => {
     return null
   }
 
-  const dates = Object.keys(historique.value).sort()
+  const dates = Object.keys(historique.value).sort().reverse()
   const userIds = new Set<string>()
 
   dates.forEach(date => {
