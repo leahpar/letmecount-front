@@ -14,25 +14,64 @@ const { users, fetchUsers } = useUsers()
 const chartRef = ref<HTMLCanvasElement>()
 const chartInstance = ref<Chart>()
 
+const groupConjointUsers = (historiqueData: Record<string, Record<string, number>>, usersData: User[]) => {
+  const conjointGroups: { [key: string]: string[] } = {}
+  const processedUsers = new Set<string>()
+
+  usersData.forEach(user => {
+    if (user.conjoint && !processedUsers.has(user['@id'])) {
+      const conjointUser = usersData.find(u => u['@id'] === user.conjoint)
+      if (conjointUser && !processedUsers.has(user.conjoint)) {
+        const groupKey = `${user.username} & ${conjointUser.username}`
+        conjointGroups[groupKey] = [user['@id'], user.conjoint]
+        processedUsers.add(user['@id'])
+        processedUsers.add(user.conjoint)
+      }
+    }
+  })
+
+  const dates = Object.keys(historiqueData).sort().reverse()
+  const groupedData: { [date: string]: { [groupKey: string]: number } } = {}
+
+  dates.forEach(date => {
+    groupedData[date] = {}
+
+    Object.entries(conjointGroups).forEach(([groupKey, userIds]) => {
+      const totalSolde = userIds.reduce((sum, userId) => {
+        return sum + (historiqueData[date][userId] || 0)
+      }, 0)
+      groupedData[date][groupKey] = totalSolde
+    })
+
+    Object.keys(historiqueData[date]).forEach(userId => {
+      if (!processedUsers.has(userId)) {
+        const user = usersData.find(u => u['@id'] === userId)
+        const userName = user?.username || `User ${userId}`
+        groupedData[date][userName] = historiqueData[date][userId]
+      }
+    })
+  })
+
+  return groupedData
+}
+
 const chartData = computed(() => {
   if (!historique.value || Object.keys(historique.value).length === 0) {
     return null
   }
 
-  const dates = Object.keys(historique.value).sort().reverse()
-  const userIds = new Set<string>()
+  const groupedHistorique = groupConjointUsers(historique.value, users.value)
+  const dates = Object.keys(groupedHistorique).sort().reverse()
+  const entityKeys = new Set<string>()
 
   dates.forEach(date => {
-    Object.keys(historique.value[date]).forEach(userId => {
-      userIds.add(userId)
+    Object.keys(groupedHistorique[date]).forEach(entityKey => {
+      entityKeys.add(entityKey)
     })
   })
 
-  const datasets = Array.from(userIds).map((userId, index) => {
-    const user = users.value.find((u: User) => u['@id'] === userId)
-    const userName = user?.username || `User ${userId}`
-
-    const data = dates.map(date => historique.value[date][userId] || 0)
+  const datasets = Array.from(entityKeys).map((entityKey, index) => {
+    const data = dates.map(date => groupedHistorique[date][entityKey] || 0)
 
     // Palette de couleurs distinctes
     const colors = [
@@ -53,7 +92,7 @@ const chartData = computed(() => {
     const color = colors[index % colors.length]
 
     return {
-      label: userName,
+      label: entityKey,
       data: data,
       borderColor: color,
       backgroundColor: color + '20', // Ajoute une transparence
