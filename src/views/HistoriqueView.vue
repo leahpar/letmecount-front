@@ -4,6 +4,7 @@ import { Chart, CategoryScale, LinearScale, LineElement, PointElement, LineContr
 import 'chartjs-adapter-date-fns'
 import { useHistorique } from '@/composables/useHistorique'
 import { useUsers } from '@/composables/useUsers'
+import type { User } from '@/types/api'
 import PullToRefresh from '@/components/PullToRefresh.vue'
 
 Chart.register(CategoryScale, LinearScale, LineElement, PointElement, LineController, Title, Tooltip, Legend, TimeScale)
@@ -28,7 +29,7 @@ const chartData = computed(() => {
   })
 
   const datasets = Array.from(userIds).map((userId, index) => {
-    const user = users.value.find(u => u['@id'] === userId)
+    const user = users.value.find((u: User) => u['@id'] === userId)
     const userName = user?.username || `User ${userId}`
 
     const data = dates.map(date => historique.value[date][userId] || 0)
