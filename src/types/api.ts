@@ -60,3 +60,14 @@ export interface CreateTagData {
   libelle: string;
   users: string[];
 }
+
+export interface Log {
+  '@id': string
+  id: number
+  date: string
+  action: string
+  user: string
+  depense?: string
+  libelle: string
+  montant?: number
+}

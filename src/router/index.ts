@@ -10,6 +10,7 @@ import ExpenseDetailView from "@/views/ExpenseDetailView.vue";
 import ParticipantsView from "@/views/ParticipantsView.vue";
 import CredentialsView from "@/views/CredentialsView.vue";
 import TagsView from "@/views/TagsView.vue";
+import NotificationsView from "@/views/NotificationsView.vue";
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -79,6 +80,11 @@ const router = createRouter({
       path: '/tags/:id/edit',
       name: 'edit-tag',
       component: () => import('../views/CreateTagView.vue'),
+    },
+    {
+      path: '/notifications',
+      name: 'notifications',
+      component: NotificationsView,
     }
   ],
 })

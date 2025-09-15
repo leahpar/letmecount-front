@@ -44,6 +44,14 @@ const handleClick = () => {
         Participants
       </RouterLink>
       <RouterLink
+        to="/notifications"
+        v-if="isAdmin"
+        @click="handleClick"
+        class="block px-3 py-2 text-base font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-50 text-right"
+      >
+        Notifications
+      </RouterLink>
+      <RouterLink
         v-if="isAdmin"
         to="/tags"
         @click="handleClick"
@@ -72,6 +80,12 @@ const handleClick = () => {
         class="text-gray-600 hover:bg-gray-200 hover:text-gray-900 px-3 py-2 text-sm font-medium"
       >
         Participants
+      </RouterLink>
+      <RouterLink
+        to="/notifications"
+        class="text-gray-600 hover:bg-gray-200 hover:text-gray-900 px-3 py-2 text-sm font-medium"
+      >
+        Notifications
       </RouterLink>
       <RouterLink
         v-if="isAdmin"
