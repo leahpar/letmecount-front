@@ -23,7 +23,7 @@ export function useExpenses() {
     if (loading.value || loadingMore.value || (allLoaded.value && !forceRefresh)) return;
 
     if (forceRefresh) {
-      expenses.value = [];
+      //expenses.value = [];
       page.value = 1;
       allLoaded.value = false;
       scrollPosition.value = 0;

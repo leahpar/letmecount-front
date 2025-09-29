@@ -7,12 +7,12 @@
           <span>Participants</span>
         </h1>
 
-        <div v-if="loading" class="mt-4">Chargement...</div>
+        <div v-if="loading && participants.length===0" class="mt-4">Chargement...</div>
         <div v-if="error" class="mt-4 bg-red-100 border border-red-400 text-red-700 px-4 py-3" role="alert">
           <span class="block sm:inline">{{ error }}</span>
         </div>
 
-        <div v-if="!loading && !error" class="mt-6">
+        <div v-if="!error" class="mt-6">
           <ul class="divide-y divide-gray-200">
             <li v-for="participant in participants" :key="participant.id" class="py-4 flex justify-between items-center">
               <div class="flex items-center gap-2">
