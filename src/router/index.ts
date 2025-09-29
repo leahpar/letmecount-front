@@ -3,6 +3,7 @@ import { authGuard } from './authGuard'
 import { useAuth } from '@/composables/useAuth'
 
 // Pages
+import WelcomeView from '../views/WelcomeView.vue'
 import LoginView from '../views/LoginView.vue'
 import ProfileView from "@/views/ProfileView.vue";
 import CreateExpenseView from "@/views/CreateExpenseView.vue";
@@ -29,8 +30,13 @@ const router = createRouter({
       name: 'home',
       redirect: () => {
         const { isAuthenticated } = useAuth()
-        return isAuthenticated.value ? { name: 'profile' } : { name: 'login' }
+        return isAuthenticated.value ? { name: 'profile' } : { name: 'welcome' }
       }
+    },
+    {
+      path: '/welcome',
+      name: 'welcome',
+      component: WelcomeView,
     },
     {
       path: '/profile',

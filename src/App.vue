@@ -14,11 +14,11 @@ const closeMobileMenu = () => {
 }
 
 const shouldShowAddButton = computed(() => {
-  return !['create-expense', 'edit-expense', 'login','login_link', 'credentials', 'create-tag', 'edit-tag'].includes(route.name as string)
+  return !['create-expense', 'edit-expense', 'welcome', 'login','login_link', 'credentials', 'create-tag', 'edit-tag'].includes(route.name as string)
 })
 
 const shouldShowNavigation = computed(() => {
-  return !['login', 'login_link', 'credentials'].includes(route.name as string)
+  return !['welcome', 'login', 'login_link', 'credentials'].includes(route.name as string)
 })
 </script>
 
