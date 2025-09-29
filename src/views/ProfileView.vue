@@ -3,7 +3,7 @@ import { watch, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useUsers } from '@/composables/useUsers'
 import { useTags } from '@/composables/useTags'
-import { useExpenseCache } from '@/composables/useExpenseCache'
+import { useExpenses } from '@/composables/useExpenses'
 import UserProfile from '@/components/UserProfile.vue'
 import ExpenseList from '@/components/ExpenseList.vue'
 import PullToRefresh from '@/components/PullToRefresh.vue'
@@ -11,7 +11,7 @@ import PullToRefresh from '@/components/PullToRefresh.vue'
 const route = useRoute()
 const router = useRouter()
 const { fetchMe } = useUsers()
-const { fetchExpenses } = useExpenseCache()
+const { fetchExpenses } = useExpenses()
 const { refreshTags } = useTags()
 
 const handleRefresh = async () => {

@@ -93,8 +93,7 @@ import { ref, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useUsers } from '@/composables/useUsers'
 import { useTags } from '@/composables/useTags'
-import { useExpenseCache } from '@/composables/useExpenseCache'
-import { useExpenseActions } from '@/composables/useExpenseActions'
+import { useExpenses } from '@/composables/useExpenses'
 import ExpenseActionHeader from '@/components/ExpenseActionHeader.vue'
 import type { Expense } from '@/types/api'
 import { formatAmount, formatDate } from '@/utils/formatters'
@@ -103,8 +102,7 @@ const route = useRoute()
 const router = useRouter()
 const { getUsernameByIri } = useUsers()
 const { getTagByIri } = useTags()
-const { fetchExpenseById } = useExpenseCache()
-const { confirmDeleteExpense } = useExpenseActions()
+const { fetchExpenseById, confirmDeleteExpense } = useExpenses()
 
 const expense = ref<Expense | null>(null)
 const loading = ref(true)

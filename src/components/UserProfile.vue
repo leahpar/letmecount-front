@@ -35,11 +35,11 @@
 <script setup lang="ts">
 import { onMounted } from 'vue'
 import { useUsers } from '@/composables/useUsers'
-import { useExpenseCache } from '@/composables/useExpenseCache'
+import { useExpenses } from '@/composables/useExpenses'
 import { useTags } from '@/composables/useTags'
 
 const { me: user, loading, error, fetchMe } = useUsers()
-const { fetchExpenses } = useExpenseCache()
+const { fetchExpenses } = useExpenses()
 const { refreshTags } = useTags()
 
 const formatMoney = (amount: number): string => {

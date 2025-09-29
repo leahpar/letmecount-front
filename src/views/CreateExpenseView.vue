@@ -74,9 +74,8 @@ import { computed, onMounted, ref } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { useUsers } from '@/composables/useUsers'
 import { useTags, type Tag } from '@/composables/useTags'
-import { useExpenseCache } from '@/composables/useExpenseCache'
+import { useExpenses } from '@/composables/useExpenses'
 import { useExpenseForm } from '@/composables/useExpenseForm'
-import { useExpenseActions } from '@/composables/useExpenseActions'
 import ExpenseActionHeader from '@/components/ExpenseActionHeader.vue'
 import ExpenseBasicFields from '@/components/expense/ExpenseBasicFields.vue'
 import ExpensePartageToggle from '@/components/expense/ExpensePartageToggle.vue'
@@ -87,8 +86,7 @@ const router = useRouter()
 const route = useRoute()
 const { users, fetchUsers, me, fetchMe } = useUsers()
 const { tags, fetchTags } = useTags()
-const { createExpense, updateExpense, fetchExpenseById, loading, error } = useExpenseCache()
-const { confirmDeleteExpense } = useExpenseActions()
+const { createExpense, updateExpense, fetchExpenseById, loading, error, confirmDeleteExpense } = useExpenses()
 const submitted = ref(false)
 
 // Détection du mode édition

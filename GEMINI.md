@@ -27,8 +27,9 @@ Let-me-count est une application web pour la gestion des comptes entre amis.
 - **TypeScript**
 
 ## Code quality tools
-- 
+
 - `npm run lint`: Lint JavaScript/TypeScript files
+- `npm run type-check`: More strict type checking (before deploying to production)
 
 ## Ressources utiles
 

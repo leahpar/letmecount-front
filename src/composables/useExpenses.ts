@@ -1,7 +1,13 @@
 import { ref, computed } from 'vue';
+import { useRouter } from 'vue-router';
 import axios from '@/plugins/axios';
 import type { Expense, CreateExpenseData } from '@/types/api';
 import { handleApiError } from '@/utils/errorHandler';
+
+interface DeleteExpenseOptions {
+  redirectTo?: string
+  refreshProfile?: boolean
+}
 
 const expenses = ref<Expense[]>([]);
 const page = ref(1);
@@ -11,7 +17,7 @@ const loading = ref(false);
 const loadingMore = ref(false);
 const error = ref('');
 
-export function useExpenseCache() {
+export function useExpenses() {
 
   const fetchExpenses = async (limit: number, tagId?: string, forceRefresh = false) => {
     if (loading.value || loadingMore.value || (allLoaded.value && !forceRefresh)) return;
@@ -127,6 +133,39 @@ export function useExpenseCache() {
     }
   }
 
+  const confirmDeleteExpense = async (
+    expenseId: string,
+    expenseTitle: string,
+    options: DeleteExpenseOptions = {}
+  ): Promise<boolean> => {
+    const router = useRouter()
+    const { redirectTo = 'profile', refreshProfile = true } = options
+
+    const confirmed = confirm(
+      `Êtes-vous sûr de vouloir supprimer la dépense "${expenseTitle}" ?\n\nCette action est irréversible.`
+    )
+
+    if (!confirmed) {
+      return false
+    }
+
+    const success = await deleteExpense(expenseId)
+
+    if (success) {
+      // Redirection avec refresh optionnel
+      if (refreshProfile && redirectTo === 'profile') {
+        router.push({ name: redirectTo, query: { refresh: 'true' } })
+      } else {
+        router.push({ name: redirectTo })
+      }
+
+      return true
+    } else {
+      alert('Erreur lors de la suppression de la dépense')
+      return false
+    }
+  }
+
   return {
     expenses,
     page,
@@ -141,5 +180,6 @@ export function useExpenseCache() {
     updateExpense,
     fetchExpenseById,
     deleteExpense,
+    confirmDeleteExpense,
   };
 }

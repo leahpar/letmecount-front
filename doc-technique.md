@@ -16,13 +16,13 @@ Ce document décrit l'architecture technique front-end de l'application.
 
 ### `src/composables/useXXX.ts` - La Logique Métier
 
-*   **Rôle** : Encapsule la logique et l'état liés à une fonctionnalité (ex: `useExpenseCache` pour les dépenses avec cache) via la Composition API de Vue.
+*   **Rôle** : Encapsule la logique et l'état liés à une fonctionnalité (ex: `useExpenses` pour les dépenses) via la Composition API de Vue.
 *   **Fonctionnement** : Un composable gère un état réactif (`ref`, `reactive`), appelle l'API via axios, et expose l'état et les fonctions aux composants.
 *   **Avantage** : Logique découplée, réutilisable et facile à maintenir.
 
 ### Flux de Données Typique
 
-1.  **Composant Vue** : Appelle une fonction d'un `composable` (ex: `fetchExpenses()` depuis `useExpenseCache`).
+1.  **Composant Vue** : Appelle une fonction d'un `composable` (ex: `fetchExpenses()` depuis `useExpenses`).
 2.  **Composable** : Fait l'appel API via `axios` et met à jour son état (`isLoading`).
 3.  **Plugin Axios** : Intercepte la requête pour y ajouter le token.
 4.  **Composable** : Reçoit la réponse, et met à jour son état réactif (ex: `expenses.value = ...`).

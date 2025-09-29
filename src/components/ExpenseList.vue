@@ -39,7 +39,7 @@ import { onMounted, onUnmounted, computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { useUsers } from '@/composables/useUsers'
 import { useTags } from '@/composables/useTags'
-import { useExpenseCache } from '@/composables/useExpenseCache'
+import { useExpenses } from '@/composables/useExpenses'
 import ExpenseItem from './ExpenseItem.vue'
 import type { Expense } from '@/types/api'
 import { formatDateForGrouping } from '@/utils/formatters'
@@ -67,7 +67,7 @@ const {
   scrollPosition,
   fetchExpenses,
   setScrollPosition
-} = useExpenseCache()
+} = useExpenses()
 
 const groupedExpenses = computed(() => {
   const groups: { [key: string]: Expense[] } = {}
