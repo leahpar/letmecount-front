@@ -74,7 +74,7 @@ import { computed, onMounted, ref } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { useUsers } from '@/composables/useUsers'
 import { useTags, type Tag } from '@/composables/useTags'
-import { useExpenses } from '@/composables/useExpenses'
+import { useExpenseCache } from '@/composables/useExpenseCache'
 import { useExpenseForm } from '@/composables/useExpenseForm'
 import { useExpenseActions } from '@/composables/useExpenseActions'
 import ExpenseActionHeader from '@/components/ExpenseActionHeader.vue'
@@ -87,7 +87,7 @@ const router = useRouter()
 const route = useRoute()
 const { users, fetchUsers, me, fetchMe } = useUsers()
 const { tags, fetchTags } = useTags()
-const { createExpense, updateExpense, fetchExpenseById, loading, error } = useExpenses()
+const { createExpense, updateExpense, fetchExpenseById, loading, error } = useExpenseCache()
 const { confirmDeleteExpense } = useExpenseActions()
 const submitted = ref(false)
 

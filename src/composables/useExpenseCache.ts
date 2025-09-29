@@ -1,22 +1,7 @@
-import { ref } from 'vue';
+import { ref, computed } from 'vue';
 import axios from '@/plugins/axios';
-
-interface ExpenseDetail {
-  user: string;
-  parts: number;
-  montant: number;
-}
-
-interface Expense {
-  '@id': string;
-  titre: string;
-  montant: number;
-  date: string;
-  partage: 'parts' | 'montants';
-  payePar: string;
-  details?: ExpenseDetail[];
-  tag?: string;
-}
+import type { Expense, CreateExpenseData } from '@/types/api';
+import { handleApiError } from '@/utils/errorHandler';
 
 const expenses = ref<Expense[]>([]);
 const page = ref(1);
@@ -82,15 +67,79 @@ export function useExpenseCache() {
     scrollPosition.value = position;
   };
 
+  const createExpense = async (expenseData: CreateExpenseData): Promise<Expense | null> => {
+    loading.value = true
+    error.value = ''
+
+    try {
+      const response = await axios.post('/depenses', expenseData)
+      return response.data
+    } catch (err: unknown) {
+      error.value = handleApiError(err, 'la création de la dépense')
+      return null
+    } finally {
+      loading.value = false
+    }
+  }
+
+  const updateExpense = async (id: string, expenseData: CreateExpenseData): Promise<Expense | null> => {
+    loading.value = true
+    error.value = ''
+
+    try {
+      const response = await axios.patch(`/depenses/${id}`, expenseData)
+      return response.data
+    } catch (err: unknown) {
+      error.value = handleApiError(err, 'la mise à jour de la dépense')
+      return null
+    } finally {
+      loading.value = false
+    }
+  }
+
+  const fetchExpenseById = async (id: string): Promise<Expense | null> => {
+    loading.value = true
+    error.value = ''
+
+    try {
+      const response = await axios.get(`/depenses/${id}`)
+      return response.data
+    } catch (err: unknown) {
+      error.value = handleApiError(err, 'le chargement de la dépense')
+      return null
+    } finally {
+      loading.value = false
+    }
+  }
+
+  const deleteExpense = async (id: string): Promise<boolean> => {
+    loading.value = true
+    error.value = ''
+
+    try {
+      await axios.delete(`/depenses/${id}`)
+      return true
+    } catch (err: unknown) {
+      error.value = handleApiError(err, 'la suppression de la dépense')
+      return false
+    } finally {
+      loading.value = false
+    }
+  }
+
   return {
     expenses,
     page,
     allLoaded,
     scrollPosition,
-    loading,
+    loading: computed(() => loading.value),
     loadingMore,
-    error,
+    error: computed(() => error.value),
     fetchExpenses,
     setScrollPosition,
+    createExpense,
+    updateExpense,
+    fetchExpenseById,
+    deleteExpense,
   };
 }

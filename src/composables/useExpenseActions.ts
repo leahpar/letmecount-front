@@ -1,5 +1,5 @@
 import { useRouter } from 'vue-router'
-import { useExpenses } from '@/composables/useExpenses'
+import { useExpenseCache } from '@/composables/useExpenseCache'
 
 interface DeleteExpenseOptions {
   redirectTo?: string
@@ -8,7 +8,7 @@ interface DeleteExpenseOptions {
 
 export function useExpenseActions() {
   const router = useRouter()
-  const { deleteExpense } = useExpenses()
+  const { deleteExpense } = useExpenseCache()
 
   const confirmDeleteExpense = async (
     expenseId: string, 
