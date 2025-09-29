@@ -101,7 +101,11 @@ instance.interceptors.response.use(
           
           // Déconnecte l'utilisateur
           clearTokens();
-          redirectToLogin();
+
+          // Ne pas rediriger si on est sur la page login_link
+          if (!window.location.pathname.includes('/login_link')) {
+            redirectToLogin();
+          }
           return Promise.reject(refreshError);
         }
       } else {
@@ -111,7 +115,11 @@ instance.interceptors.response.use(
         
         // Redirige vers le login
         clearTokens();
-        redirectToLogin();
+
+        // Ne pas rediriger si on est sur la page login_link
+        if (!window.location.pathname.includes('/login_link')) {
+          redirectToLogin();
+        }
       }
     }
     return Promise.reject(error);

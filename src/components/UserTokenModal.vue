@@ -58,7 +58,7 @@ const impersonationUrl = computed(() => {
     return ''
   }
   const baseUrl = import.meta.env.VITE_APP_BASE_URL || window.location.origin
-  return `${baseUrl}/credentials?username=${props.user.username}&token=${generatedToken.value}`
+  return `${baseUrl}/login_link?token=${generatedToken.value}`
 })
 
 const qrCodeUrl = computed(() => {

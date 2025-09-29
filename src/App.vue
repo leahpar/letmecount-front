@@ -14,7 +14,11 @@ const closeMobileMenu = () => {
 }
 
 const shouldShowAddButton = computed(() => {
-  return !['create-expense', 'edit-expense', 'login', 'credentials', 'create-tag', 'edit-tag'].includes(route.name as string)
+  return !['create-expense', 'edit-expense', 'login','login_link', 'credentials', 'create-tag', 'edit-tag'].includes(route.name as string)
+})
+
+const shouldShowNavigation = computed(() => {
+  return !['login', 'login_link', 'credentials'].includes(route.name as string)
 })
 </script>
 
@@ -26,7 +30,7 @@ const shouldShowAddButton = computed(() => {
           <div class="flex-shrink-0">
             <RouterLink to="/profile" class="text-2xl font-bold text-blue-600">LetMeCount</RouterLink>
           </div>
-          <div class="md:hidden">
+          <div v-if="shouldShowNavigation" class="md:hidden">
             <button @click="isMobileMenuOpen = !isMobileMenuOpen" class="inline-flex items-center justify-center p-2 text-gray-400 hover:text-white hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-white">
               <span class="sr-only">Open main menu</span>
               <svg v-if="!isMobileMenuOpen" class="block h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
@@ -37,7 +41,7 @@ const shouldShowAddButton = computed(() => {
               </svg>
             </button>
           </div>
-          <nav class="hidden md:block">
+          <nav v-if="shouldShowNavigation" class="hidden md:block">
             <div class="ml-10 flex items-baseline space-x-4">
               <NavigationLinks />
             </div>
@@ -46,7 +50,7 @@ const shouldShowAddButton = computed(() => {
       </div>
 
       <!-- Mobile menu overlay -->
-      <div v-if="isMobileMenuOpen" @click="isMobileMenuOpen = false" class="fixed inset-0 z-30"></div>
+      <div v-if="isMobileMenuOpen && shouldShowNavigation" @click="isMobileMenuOpen = false" class="fixed inset-0 z-30"></div>
 
       <!-- Mobile menu -->
       <transition
@@ -57,7 +61,7 @@ const shouldShowAddButton = computed(() => {
         leave-from-class="transform opacity-100 scale-100"
         leave-to-class="transform opacity-0 scale-95"
       >
-        <div v-if="isMobileMenuOpen" class="absolute top-16 inset-x-0 transition transform origin-top-right md:hidden z-40">
+        <div v-if="isMobileMenuOpen && shouldShowNavigation" class="absolute top-16 inset-x-0 transition transform origin-top-right md:hidden z-40">
           <div class="bg-white">
             <div class="px-2 pt-2 pb-3 space-y-1 sm:px-3">
               <NavigationLinks :is-mobile="true" :on-link-click="closeMobileMenu" />
