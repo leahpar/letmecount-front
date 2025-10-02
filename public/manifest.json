@@ -4,6 +4,7 @@
   "description": "Application de gestion des comptes entre amis",
   "id": "bGV0bWVjb3VudAo=",
   "start_url": "/",
+  "scope": "/",
   "display": "standalone",
   "background_color": "#ffffff",
   "theme_color": "#000000",
@@ -11,6 +12,12 @@
   "launch_handler": {
     "client_mode": "navigate-existing"
   },
+  "url_handlers": [
+    {
+      "origin": "https://letmecount.lasoireefille.fr"
+    },
+  ],
+  "handle_links": "preferred",
   "icons": [
     {
       "src": "/img/logo.png",
