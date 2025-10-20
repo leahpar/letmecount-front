@@ -45,14 +45,12 @@ const handleClick = () => {
       </RouterLink>
       <RouterLink
         to="/notifications"
-        v-if="isAdmin"
         @click="handleClick"
         class="block px-3 py-2 text-base font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-50 text-right"
       >
         Notifications
       </RouterLink>
       <RouterLink
-        v-if="isAdmin"
         to="/historique"
         @click="handleClick"
         class="block px-3 py-2 text-base font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-50 text-right"
