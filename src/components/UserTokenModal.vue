@@ -1,6 +1,6 @@
 <template>
-  <BaseModal :show="show" @close="closeModal" :title="`Token pour ${user?.username}`">
-    <div v-if="loading" class="text-center">Génération du token...</div>
+  <BaseModal :show="show" @close="closeModal" :title="`Code pour ${user?.username}`">
+    <div v-if="loading" class="text-center">Génération du code de connexion...</div>
     <div v-if="error" class="bg-red-100 border border-red-400 text-red-700 px-4 py-3" role="alert">
       {{ error }}
     </div>
@@ -8,9 +8,9 @@
       <div class="mt-2 p-2 bg-gray-100 rounded flex justify-center">
         <img :src="qrCodeUrl" alt="QR Code" />
       </div>
-      <div class="mt-2 p-2 bg-gray-100 rounded relative">
-        <code class="text-sm break-all cursor-pointer" @click="copyToClipboard(impersonationUrl)">
-          {{ impersonationUrl }}
+      <div class="mt-2 p-2 bg-gray-100 rounded relative text-center">
+        <code class="text-3xl font-bold break-all cursor-pointer" @click="copyToClipboard(impersonationUrl)">
+          {{ generatedToken }}
         </code>
         <span v-if="copiedMessage" class="absolute right-2 top-1/2 -translate-y-1/2 text-sm text-green-600">{{ copiedMessage }}</span>
       </div>
@@ -54,17 +54,10 @@ watch(() => props.show, async (newValue) => {
 })
 
 const impersonationUrl = computed(() => {
-  if (!props.user || !generatedToken.value) {
-    return ''
-  }
-  const baseUrl = import.meta.env.VITE_APP_BASE_URL || window.location.origin
-  return `${baseUrl}/login_link?token=${generatedToken.value}`
+  return import.meta.env.VITE_APP_BASE_URL || window.location.origin;
 })
 
 const qrCodeUrl = computed(() => {
-  if (!impersonationUrl.value) {
-    return ''
-  }
   return `https://yaqrgen.com/qrcode.png?data=${encodeURIComponent(impersonationUrl.value)}`
 })
 
