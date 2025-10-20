@@ -15,7 +15,7 @@
   "url_handlers": [
     {
       "origin": "https://letmecount.lasoireefille.fr"
-    },
+    }
   ],
   "handle_links": "preferred",
   "icons": [
