@@ -32,7 +32,8 @@
               <div class="flex items-center justify-between">
                 <div class="text-lg font-medium text-gray-900">Participants</div>
                 <ExpensePartageToggle
-                  v-model="formData.partage"
+                  :model-value="formData.partage"
+                  @update:model-value="handlePartageChange"
                 />
               </div>
 
@@ -102,6 +103,7 @@ const {
   updateParticipantMontant,
   initializeParticipants,
   updateFormDetails,
+  resetManualMontants,
   canSubmit: originalCanSubmit
 } = useExpenseForm()
 
@@ -119,6 +121,11 @@ const canSubmit = computed(() => {
   return originalCanSubmit.value
 })
 
+const handlePartageChange = (newValue: 'parts' | 'montants') => {
+  formData.value.partage = newValue
+  // Réinitialiser les montants manuels et recalculer quand l'utilisateur change le mode
+  resetManualMontants()
+}
 
 const loadExpenseForEdit = async () => {
   if (!isEditMode.value) return
@@ -129,15 +136,10 @@ const loadExpenseForEdit = async () => {
     return
   }
 
-  // Remplir le formulaire avec les données de la dépense
-  formData.value.titre = expense.titre
-  formData.value.montant = expense.montant
-  formData.value.date = expense.date.split('T')[0] // Convertir au format date HTML
-  formData.value.payePar = expense.payePar
-  formData.value.partage = expense.partage
-  formData.value.tag = expense.tag || ''
+  // Initialiser TOUS les participants à false/0 en premier
+  initializeParticipants(users.value)
 
-  // Initialiser les participants avec les données de la dépense
+  // Restaurer les participants avec les données de la dépense
   if (expense.details) {
     if (isTransfert.value) {
       // En mode transfert, il ne devrait y avoir qu'un seul bénéficiaire
@@ -151,13 +153,22 @@ const loadExpenseForEdit = async () => {
         participantData.value[detail.user] = {
           parts: detail.parts,
           montant: detail.montant,
-          manualMontant: formData.value.partage === 'montants' // Considérer comme manuel en mode montants
+          manualMontant: expense.partage === 'montants' // Considérer comme manuel en mode montants
         }
       })
-      // Mettre à jour formData.details avec les données chargées
-      updateFormDetails()
     }
   }
+
+  // Remplir le formulaire avec les données de la dépense
+  formData.value.titre = expense.titre
+  formData.value.montant = expense.montant
+  formData.value.date = expense.date.split('T')[0] // Convertir au format date HTML
+  formData.value.payePar = expense.payePar
+  formData.value.partage = expense.partage
+  formData.value.tag = expense.tag || ''
+
+  // Mettre à jour formData.details avec les données chargées
+  updateFormDetails()
 }
 
 const handleSubmit = async () => {
@@ -225,12 +236,13 @@ const goBack = () => {
 onMounted(async () => {
   await Promise.all([fetchUsers(), fetchTags(), fetchMe()])
 
-  initializeParticipants(users.value)
-
   if (isEditMode.value) {
-    // En mode édition, charger les données existantes
+    // En mode édition, charger les données existantes AVANT d'initialiser les participants
     await loadExpenseForEdit()
   } else {
+    // En mode création, initialiser tous les participants par défaut
+    initializeParticipants(users.value)
+
     // En mode création, définir l'utilisateur connecté comme payeur par défaut
     if (me.value) {
       formData.value.payePar = me.value['@id']

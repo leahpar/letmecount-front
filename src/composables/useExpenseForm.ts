@@ -185,7 +185,7 @@ export function useExpenseForm() {
   const resetManualMontants = () => {
     Object.keys(participantData.value).forEach(userId => {
       participantData.value[userId].manualMontant = false
-      
+
       // Si on passe en mode 'parts', initialiser les parts à 1 pour les participants cochés
       if (formData.value.partage === 'parts' && participantCheckboxes.value[userId]) {
         participantData.value[userId].parts = 1
@@ -194,7 +194,7 @@ export function useExpenseForm() {
         participantData.value[userId].parts = 0
       }
     })
-    
+
     // Mettre à jour formData.details avec les nouvelles parts avant de recalculer
     updateFormDetails()
     calculateAmounts()
@@ -251,7 +251,8 @@ export function useExpenseForm() {
 
   // Watchers
   watch(() => formData.value.montant, calculateAmounts)
-  watch(() => formData.value.partage, resetManualMontants)
+  // Note: resetManualMontants n'est plus appelé automatiquement par un watcher
+  // Il doit être appelé manuellement quand l'utilisateur change le mode de partage
 
   return {
     formData,
