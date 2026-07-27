@@ -8,9 +8,9 @@
       <div class="mt-2 p-2 bg-gray-100 rounded flex justify-center">
         <img :src="qrCodeUrl" alt="QR Code" />
       </div>
-      <div class="mt-2 p-2 bg-gray-100 rounded relative">
-        <code class="text-sm break-all cursor-pointer" @click="copyToClipboard(impersonationUrl)">
-          {{ impersonationUrl }}
+      <div class="mt-2 p-2 bg-gray-100 rounded relative text-center">
+        <code class="text-3xl font-bold break-all cursor-pointer" @click="copyToClipboard(generatedToken as string)">
+          {{ generatedToken }}
         </code>
         <span v-if="copiedMessage" class="absolute right-2 top-1/2 -translate-y-1/2 text-sm text-green-600">{{ copiedMessage }}</span>
       </div>
