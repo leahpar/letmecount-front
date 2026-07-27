@@ -27,12 +27,17 @@ export function usePullToRefresh(onRefresh: () => Promise<void>) {
     if (pullDistance.value > 60 && !isRefreshing.value) {
       isRefreshing.value = true
       await onRefresh()
-      
+
       setTimeout(() => {
         isRefreshing.value = false
       }, 500)
     }
-    
+
+    pullDistance.value = 0
+    startY.value = 0
+  }
+
+  const handleTouchCancel = () => {
     pullDistance.value = 0
     startY.value = 0
   }
@@ -43,6 +48,7 @@ export function usePullToRefresh(onRefresh: () => Promise<void>) {
       container.addEventListener('touchstart', handleTouchStart, { passive: true })
       container.addEventListener('touchmove', handleTouchMove, { passive: true })
       container.addEventListener('touchend', handleTouchEnd, { passive: true })
+      container.addEventListener('touchcancel', handleTouchCancel, { passive: true })
     }
   }
 
@@ -52,6 +58,7 @@ export function usePullToRefresh(onRefresh: () => Promise<void>) {
       container.removeEventListener('touchstart', handleTouchStart)
       container.removeEventListener('touchmove', handleTouchMove)
       container.removeEventListener('touchend', handleTouchEnd)
+      container.removeEventListener('touchcancel', handleTouchCancel)
     }
   }
 
