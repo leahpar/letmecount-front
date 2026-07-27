@@ -94,6 +94,11 @@ const router = createRouter({
       component: () => import('../views/CreateTagView.vue'),
     },
     {
+      path: '/passkeys',
+      name: 'passkeys',
+      component: () => import('../views/PasskeysView.vue'),
+    },
+    {
       path: '/notifications',
       name: 'notifications',
       component: NotificationsView,

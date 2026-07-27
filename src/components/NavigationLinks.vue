@@ -37,6 +37,13 @@ const handleClick = () => {
         Mon compte
       </RouterLink>
       <RouterLink
+        to="/passkeys"
+        @click="handleClick"
+        class="block px-3 py-2 text-base font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-50 text-right"
+      >
+        Mes appareils
+      </RouterLink>
+      <RouterLink
         to="/participants"
         @click="handleClick"
         class="block px-3 py-2 text-base font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-50 text-right"
@@ -80,6 +87,12 @@ const handleClick = () => {
         class="text-gray-600 hover:bg-gray-200 hover:text-gray-900 px-3 py-2 text-sm font-medium"
       >
         Mon compte
+      </RouterLink>
+      <RouterLink
+        to="/passkeys"
+        class="text-gray-600 hover:bg-gray-200 hover:text-gray-900 px-3 py-2 text-sm font-medium"
+      >
+        Mes appareils
       </RouterLink>
       <RouterLink
         to="/participants"
