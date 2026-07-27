@@ -46,8 +46,13 @@ instance.interceptors.request.use(
       config.headers.Authorization = `Bearer ${token}`;
     }
 
-    // Utiliser JSON-LD pour les requêtes POST/PUT et JSON MERGE PATCH pour les requêtes PATCH
-    if (config.data) {
+    // Les routes WebAuthn ne sont pas des ressources API Platform : elles rejettent
+    // tout ce qui n'est pas application/json. La règle est portée ici, sur l'URL,
+    // plutôt que laissée à la charge de l'appelant.
+    if (config.url?.startsWith('/auth/webauthn')) {
+      config.headers['Content-Type'] = 'application/json';
+    } else if (config.data && !config.headers['Content-Type']) {
+      // JSON-LD pour les POST/PUT, JSON MERGE PATCH pour les PATCH
       const method = config.method?.toLowerCase();
       if (method === 'patch') {
         config.headers['Content-Type'] = 'application/merge-patch+json';

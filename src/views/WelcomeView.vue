@@ -29,6 +29,17 @@
         </p>
       </div>
 
+      <!-- Section connexion -->
+      <div class="bg-white rounded-lg shadow-md p-6 space-y-4">
+        <h2 class="text-xl font-semibold text-gray-900">3. 🚪 Accède à l'application</h2>
+        <RouterLink
+          to="/login"
+          class="block w-full bg-blue-600 text-white text-center py-3 px-4 rounded-lg font-semibold hover:bg-blue-700 transition-colors"
+        >
+          Se connecter
+        </RouterLink>
+      </div>
+
       <!-- input code d'accès -->
       <div class="bg-white rounded-lg shadow-md p-6 space-y-4">
         <h2 class="text-xl font-semibold text-gray-900">3. 🚪 Accède à l'application</h2>
@@ -67,6 +78,7 @@
 </template>
 
 <script setup lang="ts">
+import { RouterLink } from 'vue-router'
 import { ref, computed } from 'vue'
 import { useRouter } from 'vue-router'
 import axios from '@/plugins/axios'

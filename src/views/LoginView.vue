@@ -3,97 +3,113 @@
     <div class="max-w-md w-full space-y-8">
       <div>
         <h2 class="mt-6 text-center text-3xl font-extrabold text-gray-900">
-          Connectez-vous à votre compte
+          Connexion à votre compte
         </h2>
       </div>
-      <form class="mt-8 space-y-6" @submit.prevent="handleLogin">
-        <input type="hidden" name="remember" value="true">
-        <div class="rounded-md -space-y-px">
-          <div>
-            <label for="username" class="sr-only">Username</label>
-            <input id="username" v-model="formData.username" name="username" type="text" required class="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:border-indigo-500 focus:z-10 sm:text-sm" placeholder="Username">
-          </div>
-          <div>
-            <label for="password" class="sr-only">Mot de passe</label>
-            <input id="password" v-model="formData.password" name="password" type="password" autocomplete="current-password" required class="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-b-md focus:outline-none focus:border-indigo-500 focus:z-10 sm:text-sm" placeholder="Mot de passe">
-          </div>
+
+      <div v-if="busy" class="text-center">
+        <div class="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600"></div>
+        <p class="mt-2 text-gray-600">Authentification en cours...</p>
+      </div>
+
+      <div v-if="errorMessage" class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded" role="alert">
+        <span class="block sm:inline">{{ errorMessage }}</span>
+      </div>
+
+      <div v-if="!busy" class="space-y-4">
+        <button
+          v-if="isSupported"
+          @click="handlePasskeyLogin"
+          class="w-full bg-indigo-600 text-white py-3 px-4 rounded-lg font-semibold hover:bg-indigo-700 transition-colors"
+        >
+          🔓 Se connecter avec cet appareil
+        </button>
+
+        <div v-if="isSupported" class="flex items-center gap-3 text-sm text-gray-400">
+          <span class="flex-1 border-t border-gray-200"></span>
+          <span>ou avec un code</span>
+          <span class="flex-1 border-t border-gray-200"></span>
         </div>
 
-        <div v-if="error" class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">
-          <span class="block sm:inline">{{ error }}</span>
-        </div>
+        <input
+          v-model="accessCode"
+          type="number"
+          inputmode="numeric"
+          placeholder="Entre ton code"
+          class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-center text-2xl tracking-widest"
+          @keyup.enter="handleCodeLogin"
+        >
+        <button
+          @click="handleCodeLogin"
+          :disabled="!isAccessCodeValid"
+          class="w-full border border-indigo-600 text-indigo-600 py-3 px-4 rounded-lg font-semibold hover:bg-indigo-50 disabled:border-gray-300 disabled:text-gray-300 disabled:cursor-not-allowed transition-colors"
+        >
+          Se connecter
+        </button>
 
-        <div>
-          <button type="submit" :disabled="loading" class="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:bg-gray-400">
-            <span class="absolute left-0 inset-y-0 flex items-center pl-3">
-              <!-- Heroicon name: solid/lock-closed -->
-              <svg class="h-5 w-5 text-indigo-500 group-hover:text-indigo-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-                <path fill-rule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clip-rule="evenodd" />
-              </svg>
-            </span>
-            {{ loading ? 'Connexion...' : 'Se connecter' }}
-          </button>
-        </div>
-      </form>
+        <p class="text-center text-sm text-gray-500">
+          Pas encore de code ? Contacte ton administrateur préféré.
+        </p>
+      </div>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { onMounted, ref } from 'vue'
-import { useRoute, useRouter } from 'vue-router'
+import { computed, ref } from 'vue'
+import { useRouter } from 'vue-router'
 import axios from '@/plugins/axios'
 import { useAuth } from '@/composables/useAuth'
+import { useWebauthn } from '@/composables/useWebauthn'
 
-const route = useRoute()
 const router = useRouter()
 const { login } = useAuth()
+const { isSupported, loading: passkeyLoading, error: passkeyError, loginWithPasskey } = useWebauthn()
 
-const formData = ref({
-  username: '',
-  password: ''
-})
+const accessCode = ref('')
+const codeLoading = ref(false)
+const codeError = ref('')
 
-const loading = ref(false)
-const error = ref('')
+const busy = computed(() => codeLoading.value || passkeyLoading.value)
+const errorMessage = computed(() => codeError.value || passkeyError.value)
 
-onMounted(() => {
-  if (typeof route.query.username === 'string') {
-    formData.value.username = route.query.username
+const isAccessCodeValid = computed(() => /^\d{6}$/.test(accessCode.value))
+
+const handlePasskeyLogin = async () => {
+  codeError.value = ''
+
+  if (await loginWithPasskey()) {
+    router.push({ name: 'profile' })
   }
-})
+}
 
-const handleLogin = async () => {
-  if (!formData.value.username || !formData.value.password) {
-    error.value = 'Veuillez remplir tous les champs'
+const handleCodeLogin = async () => {
+  if (!isAccessCodeValid.value) {
     return
   }
 
-  loading.value = true
-  error.value = ''
+  codeLoading.value = true
+  codeError.value = ''
 
   try {
-    const response = await axios.post('/auth', {
-      username: formData.value.username,
-      password: formData.value.password
-    })
+    const response = await axios.get(`/auth/${accessCode.value}`)
 
     if (response.data.token) {
       login(response.data.token, response.data.refresh_token)
       router.push({ name: 'profile' })
     } else {
-      error.value = 'Erreur de connexion'
+      codeError.value = 'Erreur lors de l\'authentification'
     }
   } catch (err: unknown) {
-    console.error('Erreur de connexion:', err)
+    console.error('Erreur d\'authentification:', err)
     if (err && typeof err === 'object' && 'response' in err) {
       const axiosError = err as { response?: { data?: { message?: string } } }
-      error.value = axiosError.response?.data?.message || 'Erreur de connexion'
+      codeError.value = axiosError.response?.data?.message || 'Code invalide ou expiré'
     } else {
-      error.value = 'Erreur de connexion'
+      codeError.value = 'Erreur lors de l\'authentification'
     }
   } finally {
-    loading.value = false
+    codeLoading.value = false
   }
 }
 </script>
