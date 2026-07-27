@@ -31,3 +31,4 @@ coverage
 *.tsbuildinfo
 .editorconfig
 openapi.json
+claude_notes.md
