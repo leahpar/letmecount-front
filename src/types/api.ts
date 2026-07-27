@@ -53,7 +53,14 @@ export interface ParticipantData {
 export interface UpdateCredentialsDto {
   token: string;
   username?: string;
-  password?: string;
+}
+
+export interface Passkey {
+  '@id': string
+  id: number
+  name: string
+  createdAt: string
+  lastUsedAt: string | null
 }
 
 export interface CreateTagData {

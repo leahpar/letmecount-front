@@ -8,8 +8,8 @@ export const authGuard: NavigationGuard = (to, from, next) => {
   const isPublicRoute = publicRoutes.includes(to.name as string)
 
   if (!isPublicRoute && !isAuthenticated.value) {
-    // welcome porte la saisie du code d'accès ; login_link exige un ?token= dans l'URL
-    next({ name: 'welcome' })
+    // login porte le passkey et la saisie du code ; login_link exige un ?token= dans l'URL
+    next({ name: 'login' })
   } else if (to.name === 'login' && isAuthenticated.value) {
     next({ name: 'profile' })
   } else {
