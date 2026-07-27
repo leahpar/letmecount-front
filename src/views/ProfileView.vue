@@ -5,7 +5,6 @@ import { useUsers } from '@/composables/useUsers'
 import { useTags } from '@/composables/useTags'
 import { useExpenses } from '@/composables/useExpenses'
 import UserProfile from '@/components/UserProfile.vue'
-import PasskeyManager from '@/components/PasskeyManager.vue'
 import ExpenseList from '@/components/ExpenseList.vue'
 import PullToRefresh from '@/components/PullToRefresh.vue'
 
@@ -55,9 +54,8 @@ onMounted(() => {
   <PullToRefresh :on-refresh="handlePullToRefresh">
     <div>
       <div class="lg:grid lg:grid-cols-12 lg:gap-8">
-        <div class="lg:col-span-4 space-y-8">
+        <div class="lg:col-span-4">
           <UserProfile />
-          <PasskeyManager />
         </div>
         <div class="mt-8 lg:mt-0 lg:col-span-8">
           <ExpenseList
