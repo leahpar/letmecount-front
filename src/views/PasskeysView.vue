@@ -24,18 +24,42 @@
       <ul v-else-if="passkeys.length" class="mt-4 divide-y divide-gray-200">
         <li v-for="passkey in passkeys" :key="passkey.id" class="py-3 flex items-center justify-between gap-4">
           <div class="min-w-0">
-            <p class="font-medium text-gray-900 truncate">{{ passkey.name }}</p>
+            <div v-if="editingId === passkey.id" class="flex items-center gap-2">
+              <input
+                v-model="editingName"
+                type="text"
+                maxlength="100"
+                class="min-w-0 flex-1 border border-gray-300 rounded px-2 py-1 text-sm"
+                @keyup.enter="confirmRename(passkey)"
+                @keyup.escape="cancelRename"
+              />
+              <button @click="confirmRename(passkey)" class="text-sm text-indigo-600 hover:text-indigo-800 shrink-0">
+                Valider
+              </button>
+              <button @click="cancelRename" class="text-sm text-gray-500 hover:text-gray-700 shrink-0">
+                Annuler
+              </button>
+            </div>
+            <p v-else class="font-medium text-gray-900 truncate">{{ passkey.name }}</p>
             <p class="text-sm text-gray-500">
               Ajouté le {{ formatDate(passkey.createdAt) }}
               <span v-if="passkey.lastUsedAt"> · utilisé le {{ formatDate(passkey.lastUsedAt) }}</span>
             </p>
           </div>
-          <button
-            @click="handleDelete(passkey)"
-            class="text-sm text-red-600 hover:text-red-800 shrink-0"
-          >
-            Supprimer
-          </button>
+          <div v-if="editingId !== passkey.id" class="flex items-center gap-3 shrink-0">
+            <button
+              @click="startRename(passkey)"
+              class="text-sm text-gray-600 hover:text-gray-900"
+            >
+              Renommer
+            </button>
+            <button
+              @click="handleDelete(passkey)"
+              class="text-sm text-red-600 hover:text-red-800"
+            >
+              Supprimer
+            </button>
+          </div>
         </li>
       </ul>
 
@@ -60,10 +84,12 @@ import type { Passkey } from '@/types/api'
 import { usePasskeys } from '@/composables/usePasskeys'
 import { useWebauthn } from '@/composables/useWebauthn'
 
-const { passkeys, loading, error: listError, fetchPasskeys, deletePasskey } = usePasskeys()
+const { passkeys, loading, error: listError, fetchPasskeys, renamePasskey, deletePasskey } = usePasskeys()
 const { isSupported, loading: registering, error: registerError, registerPasskey } = useWebauthn()
 
 const message = ref('')
+const editingId = ref<number | null>(null)
+const editingName = ref('')
 
 const errorMessage = computed(() => registerError.value || listError.value)
 
@@ -83,6 +109,29 @@ const handleRegister = async () => {
 const handleDelete = async (passkey: Passkey) => {
   message.value = ''
   await deletePasskey(passkey.id)
+}
+
+const startRename = (passkey: Passkey) => {
+  message.value = ''
+  editingId.value = passkey.id
+  editingName.value = passkey.name
+}
+
+const cancelRename = () => {
+  editingId.value = null
+  editingName.value = ''
+}
+
+const confirmRename = async (passkey: Passkey) => {
+  const name = editingName.value.trim()
+  if (!name || name === passkey.name) {
+    cancelRename()
+    return
+  }
+
+  if (await renamePasskey(passkey.id, name)) {
+    cancelRename()
+  }
 }
 
 onMounted(() => {
