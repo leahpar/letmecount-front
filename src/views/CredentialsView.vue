@@ -7,7 +7,6 @@
         </h2>
       </div>
       <form class="mt-8 space-y-6" @submit.prevent="submit">
-        <input type="hidden" v-model="token">
         <div class="rounded-md -space-y-px">
           <div>
             <label for="username" class="sr-only">Utilisateur</label>
@@ -47,24 +46,20 @@ const router = useRouter();
 const { updateCredentials, loading, error } = useCredentials();
 
 const username = ref('');
-const token = ref('');
 
 onMounted(() => {
   if (typeof route.query.username === 'string') {
     username.value = route.query.username;
   }
-  if (typeof route.query.token === 'string') {
-    token.value = route.query.token;
-  }
 });
 
+// L'utilisateur est déjà authentifié à ce stade : la liaison OAuth a émis ses jetons.
 const submit = async () => {
   await updateCredentials({
-    token: token.value,
     username: username.value,
   });
   if (!error.value) {
-    await router.push({ name: 'login' });
+    await router.push({ name: 'profile' });
   }
 };
 </script>

@@ -16,7 +16,13 @@ export const useCredentials = () => {
         }
       });
     } catch (e: unknown) {
-      if (e instanceof Error) {
+      if (e && typeof e === 'object' && 'response' in e) {
+        const axiosError = e as { response?: { status?: number; data?: { detail?: string; message?: string } } };
+        const data = axiosError.response?.data;
+        error.value = data?.detail
+          || data?.message
+          || (axiosError.response?.status === 409 ? 'Ce nom d\'utilisateur est déjà pris' : 'Erreur lors de la mise à jour');
+      } else if (e instanceof Error) {
         error.value = e.message;
       } else {
         error.value = 'An unknown error occurred';

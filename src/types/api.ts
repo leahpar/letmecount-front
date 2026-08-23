@@ -51,8 +51,7 @@ export interface ParticipantData {
 }
 
 export interface UpdateCredentialsDto {
-  token: string;
-  username?: string;
+  username: string;
 }
 
 export interface Passkey {
