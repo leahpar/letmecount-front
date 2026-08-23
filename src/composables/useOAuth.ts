@@ -22,8 +22,6 @@ const LINK_TOKEN_KEY = 'oauth_link_token'
 export interface OAuthResult {
   token: string
   refresh_token: string
-  /** Vrai si on arrivait par un lien d'invitation : le pseudo reste à choisir. */
-  isFirstLink: boolean
 }
 
 /** Caractères « unreserved » autorisés dans un code_verifier (RFC 7636). */
@@ -100,28 +98,41 @@ export function useOAuth() {
       return
     }
 
-    const codeVerifier = randomString(64)
-    const state = randomString(32)
+    // crypto.subtle n'existe qu'en contexte sécurisé et sessionStorage peut être
+    // refusé : sans filet, l'utilisateur resterait bloqué sur le bouton en chargement.
+    try {
+      const codeVerifier = randomString(64)
+      const state = randomString(32)
 
-    sessionStorage.setItem(VERIFIER_KEY, codeVerifier)
-    sessionStorage.setItem(STATE_KEY, state)
-    if (linkToken) {
-      sessionStorage.setItem(LINK_TOKEN_KEY, linkToken)
-    } else {
-      sessionStorage.removeItem(LINK_TOKEN_KEY)
+      sessionStorage.setItem(VERIFIER_KEY, codeVerifier)
+      sessionStorage.setItem(STATE_KEY, state)
+      if (linkToken) {
+        sessionStorage.setItem(LINK_TOKEN_KEY, linkToken)
+      } else {
+        sessionStorage.removeItem(LINK_TOKEN_KEY)
+      }
+
+      const params = new URLSearchParams({
+        client_id: clientId,
+        redirect_uri: redirectUri,
+        response_type: 'code',
+        scope: 'openid',
+        code_challenge: await codeChallengeFor(codeVerifier),
+        code_challenge_method: 'S256',
+        state,
+      })
+
+      window.location.assign(`${GOOGLE_AUTH_URL}?${params.toString()}`)
+    } catch (err: unknown) {
+      console.error('Départ vers Google impossible', err)
+      try {
+        clearSession()
+      } catch {
+        // sessionStorage indisponible : rien à nettoyer.
+      }
+      error.value = 'Impossible de démarrer la connexion Google sur ce navigateur.'
+      loading.value = false
     }
-
-    const params = new URLSearchParams({
-      client_id: clientId,
-      redirect_uri: redirectUri,
-      response_type: 'code',
-      scope: 'openid',
-      code_challenge: await codeChallengeFor(codeVerifier),
-      code_challenge_method: 'S256',
-      state,
-    })
-
-    window.location.assign(`${GOOGLE_AUTH_URL}?${params.toString()}`)
   }
 
   /**
@@ -173,7 +184,6 @@ export function useOAuth() {
       return {
         token: data.token,
         refresh_token: data.refresh_token,
-        isFirstLink: !!linkToken,
       }
     } catch (err: unknown) {
       error.value = messageFor(err, 'Connexion impossible')
