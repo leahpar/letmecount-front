@@ -42,7 +42,10 @@ instance.interceptors.request.use(
   (config) => {
     const { getToken } = useAuth();
     const token = getToken();
-    if (token) {
+    // /auth/oauth est une route de connexion : l'appelant n'est pas authentifié.
+    // Y joindre un jeton périmé ferait échouer la requête en 401 avant le contrôleur,
+    // et brûlerait le code d'autorisation Google au passage.
+    if (token && !config.url?.startsWith('/auth/oauth')) {
       config.headers.Authorization = `Bearer ${token}`;
     }
 
