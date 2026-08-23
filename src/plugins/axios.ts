@@ -19,6 +19,11 @@ const instance = axios.create({
   baseURL: import.meta.env.VITE_API_URL,
 });
 
+// Pages qui gèrent elles-mêmes l'absence de session : y rediriger vers /login
+// couperait le flow en cours (échange OAuth, lien d'invitation).
+const AUTH_PAGES = ['/login_link', '/welcome', '/auth/callback'];
+const isOnAuthPage = () => AUTH_PAGES.some(path => window.location.pathname.includes(path));
+
 // Variables pour gérer le refresh de token unique
 let isRefreshing = false;
 let failedQueue: QueuedRequest[] = [];
@@ -123,8 +128,7 @@ instance.interceptors.response.use(
           // Déconnecte l'utilisateur
           clearTokens();
 
-          // Ne pas rediriger si on est sur la page login_link ou welcome
-          if (!window.location.pathname.includes('/login_link') && !window.location.pathname.includes('/welcome')) {
+          if (!isOnAuthPage()) {
             redirectToLogin();
           }
           return Promise.reject(refreshError);
@@ -137,8 +141,7 @@ instance.interceptors.response.use(
         // Redirige vers le login
         clearTokens();
 
-        // Ne pas rediriger si on est sur la page login_link ou welcome
-        if (!window.location.pathname.includes('/login_link') && !window.location.pathname.includes('/welcome')) {
+        if (!isOnAuthPage()) {
           redirectToLogin();
         }
       }
