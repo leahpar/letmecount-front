@@ -25,7 +25,8 @@
       <div class="bg-white rounded-lg shadow-md p-6 space-y-4">
         <h2 class="text-xl font-semibold text-gray-900">2. 🔑 Demande ton accès</h2>
         <p class="text-gray-600">
-          Contactez ton administrateur préféré !
+          Contactez ton administrateur préféré !<br>
+          Il t'enverra un lien d'invitation à ouvrir sur cet appareil.
         </p>
       </div>
 
