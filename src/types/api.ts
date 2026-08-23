@@ -50,10 +50,6 @@ export interface ParticipantData {
   manualMontant: boolean
 }
 
-export interface UpdateCredentialsDto {
-  username: string;
-}
-
 export interface Passkey {
   '@id': string
   id: number

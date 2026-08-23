@@ -22,12 +22,12 @@ const routeIsResolved = computed(() => !!route.name)
 
 const shouldShowAddButton = computed(() => {
   if (!routeIsResolved.value) return false
-  return !['create-expense', 'edit-expense', 'welcome', 'login','login_link', 'auth_callback', 'credentials', 'create-tag', 'edit-tag'].includes(route.name as string)
+  return !['create-expense', 'edit-expense', 'welcome', 'login','login_link', 'auth_callback', 'create-tag', 'edit-tag'].includes(route.name as string)
 })
 
 const shouldShowNavigation = computed(() => {
   if (!routeIsResolved.value) return false
-  return !['welcome', 'login', 'login_link', 'auth_callback', 'credentials'].includes(route.name as string)
+  return !['welcome', 'login', 'login_link', 'auth_callback'].includes(route.name as string)
 })
 </script>
 

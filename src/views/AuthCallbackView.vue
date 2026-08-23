@@ -46,8 +46,7 @@ onMounted(async () => {
 
   login(result.token, result.refresh_token)
 
-  // Première liaison : le compte n'a pas encore de pseudo choisi par son propriétaire.
   // `replace` pour ne pas laisser le code d'autorisation dans l'historique.
-  await router.replace({ name: result.isFirstLink ? 'credentials' : 'profile' })
+  await router.replace({ name: 'profile' })
 })
 </script>
