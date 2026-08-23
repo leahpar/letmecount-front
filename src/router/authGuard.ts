@@ -1,7 +1,7 @@
 import type { NavigationGuard } from 'vue-router'
 import { useAuth } from '@/composables/useAuth'
 
-const publicRoutes = ['welcome', 'login', 'login_link', 'auth_callback', 'credentials']
+const publicRoutes = ['welcome', 'login', 'login_link', 'auth_callback']
 
 export const authGuard: NavigationGuard = (to, from, next) => {
   const { isAuthenticated } = useAuth()
