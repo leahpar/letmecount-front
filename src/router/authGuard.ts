@@ -1,14 +1,14 @@
 import type { NavigationGuard } from 'vue-router'
 import { useAuth } from '@/composables/useAuth'
 
-const publicRoutes = ['welcome', 'login', 'login_link', 'credentials']
+const publicRoutes = ['welcome', 'login', 'login_link', 'auth_callback']
 
 export const authGuard: NavigationGuard = (to, from, next) => {
   const { isAuthenticated } = useAuth()
   const isPublicRoute = publicRoutes.includes(to.name as string)
 
   if (!isPublicRoute && !isAuthenticated.value) {
-    // login porte le passkey et la saisie du code ; login_link exige un ?token= dans l'URL
+    // login porte le passkey et Google ; login_link exige un ?token= dans l'URL
     next({ name: 'login' })
   } else if (to.name === 'login' && isAuthenticated.value) {
     next({ name: 'profile' })

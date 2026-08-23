@@ -9,7 +9,6 @@ import ProfileView from "@/views/ProfileView.vue";
 import CreateExpenseView from "@/views/CreateExpenseView.vue";
 import ExpenseDetailView from "@/views/ExpenseDetailView.vue";
 import ParticipantsView from "@/views/ParticipantsView.vue";
-import CredentialsView from "@/views/CredentialsView.vue";
 import TagsView from "@/views/TagsView.vue";
 import NotificationsView from "@/views/NotificationsView.vue";
 import HistoriqueView from "@/views/HistoriqueView.vue";
@@ -69,9 +68,9 @@ const router = createRouter({
       component: () => import('../views/LoginLinkView.vue'),
     },
     {
-      path: '/credentials',
-      name: 'credentials',
-      component: CredentialsView,
+      path: '/auth/callback',
+      name: 'auth_callback',
+      component: () => import('../views/AuthCallbackView.vue'),
     },
     {
       path: '/participants',

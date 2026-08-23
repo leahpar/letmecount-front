@@ -27,28 +27,20 @@
 
         <div v-if="isSupported" class="flex items-center gap-3 text-sm text-gray-400">
           <span class="flex-1 border-t border-gray-200"></span>
-          <span>ou avec un code</span>
+          <span>ou</span>
           <span class="flex-1 border-t border-gray-200"></span>
         </div>
 
-        <input
-          v-model="accessCode"
-          type="number"
-          inputmode="numeric"
-          placeholder="Entre ton code"
-          class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-center text-2xl tracking-widest"
-          @keyup.enter="handleCodeLogin"
-        >
         <button
-          @click="handleCodeLogin"
-          :disabled="!isAccessCodeValid"
-          class="w-full border border-indigo-600 text-indigo-600 py-3 px-4 rounded-lg font-semibold hover:bg-indigo-50 disabled:border-gray-300 disabled:text-gray-300 disabled:cursor-not-allowed transition-colors"
+          @click="handleGoogleLogin"
+          class="w-full flex items-center justify-center gap-3 border border-gray-300 bg-white text-gray-700 py-3 px-4 rounded-lg font-semibold hover:bg-gray-50 transition-colors"
         >
-          Se connecter
+          <GoogleLogo />
+          Continuer avec Google
         </button>
 
         <p class="text-center text-sm text-gray-500">
-          Pas encore de code ? Contacte ton administrateur préféré.
+          Pas encore de compte ? Contacte ton administrateur préféré.
         </p>
       </div>
     </div>
@@ -56,60 +48,27 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from 'vue'
+import { computed } from 'vue'
 import { useRouter } from 'vue-router'
-import axios from '@/plugins/axios'
-import { useAuth } from '@/composables/useAuth'
 import { useWebauthn } from '@/composables/useWebauthn'
+import { useOAuth } from '@/composables/useOAuth'
+import GoogleLogo from '@/components/GoogleLogo.vue'
 
 const router = useRouter()
-const { login } = useAuth()
 const { isSupported, loading: passkeyLoading, error: passkeyError, loginWithPasskey } = useWebauthn()
+const { loading: oauthLoading, error: oauthError, startGoogleLogin } = useOAuth()
 
-const accessCode = ref('')
-const codeLoading = ref(false)
-const codeError = ref('')
-
-const busy = computed(() => codeLoading.value || passkeyLoading.value)
-const errorMessage = computed(() => codeError.value || passkeyError.value)
-
-const isAccessCodeValid = computed(() => /^\d{6}$/.test(accessCode.value))
+const busy = computed(() => oauthLoading.value || passkeyLoading.value)
+const errorMessage = computed(() => oauthError.value || passkeyError.value)
 
 const handlePasskeyLogin = async () => {
-  codeError.value = ''
+  oauthError.value = ''
 
   if (await loginWithPasskey()) {
     router.push({ name: 'profile' })
   }
 }
 
-const handleCodeLogin = async () => {
-  if (!isAccessCodeValid.value) {
-    return
-  }
-
-  codeLoading.value = true
-  codeError.value = ''
-
-  try {
-    const response = await axios.get(`/auth/${accessCode.value}`)
-
-    if (response.data.token) {
-      login(response.data.token, response.data.refresh_token)
-      router.push({ name: 'profile' })
-    } else {
-      codeError.value = 'Erreur lors de l\'authentification'
-    }
-  } catch (err: unknown) {
-    console.error('Erreur d\'authentification:', err)
-    if (err && typeof err === 'object' && 'response' in err) {
-      const axiosError = err as { response?: { data?: { message?: string } } }
-      codeError.value = axiosError.response?.data?.message || 'Code invalide ou expiré'
-    } else {
-      codeError.value = 'Erreur lors de l\'authentification'
-    }
-  } finally {
-    codeLoading.value = false
-  }
-}
+// Quitte la page : la suite se passe dans AuthCallbackView.
+const handleGoogleLogin = () => startGoogleLogin()
 </script>
