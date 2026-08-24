@@ -24,11 +24,12 @@ jobs:
             -   name: Create .env.production file
                 run: |
                     echo "VITE_APP_BASE_URL=${{ env.VITE_APP_BASE_URL }}" >> .env.production
-                    # client_id OAuth Google : public, donc une variable de dépôt et non un secret.
-                    # À créer dans Settings > Secrets and variables > Actions > Variables.
-                    # La clé est déjà présente (vide) dans le .env.production versionné :
-                    # on la remplace au lieu d'ajouter un doublon.
+                    # Identifiants OAuth : publics, donc des variables de dépôt et non des
+                    # secrets. À créer dans Settings > Secrets and variables > Actions > Variables.
+                    # Les clés sont déjà présentes (vides) dans le .env.production versionné :
+                    # on les remplace au lieu d'ajouter des doublons.
                     sed -i "s|^VITE_GOOGLE_CLIENT_ID=.*|VITE_GOOGLE_CLIENT_ID=${{ vars.VITE_GOOGLE_CLIENT_ID }}|" .env.production
+                    sed -i "s|^VITE_APPLE_SERVICES_ID=.*|VITE_APPLE_SERVICES_ID=${{ vars.VITE_APPLE_SERVICES_ID }}|" .env.production
 
             -   name: Install Dependencies
                 run: npm ci

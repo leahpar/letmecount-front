@@ -6,7 +6,7 @@
     </div>
     <div v-if="invitationUrl && user">
       <p class="text-sm text-gray-600">
-        Envoie ce lien à {{ user.username }} : il lui permet de rattacher son compte Google. Il ne sert qu'une fois.
+        Envoie ce lien à {{ user.username }} : il lui permet de rattacher son compte Google ou Apple. Il ne sert qu'une fois.
       </p>
       <div class="mt-2 p-2 bg-gray-100 rounded flex justify-center">
         <img :src="qrCodeUrl" alt="QR Code" />
@@ -56,7 +56,7 @@ watch(() => props.show, async (newValue) => {
   }
 })
 
-// Le lien porte le jeton : c'est lui qui autorise la première connexion Google.
+// Le lien porte le jeton : c'est lui qui autorise la première connexion OAuth.
 const invitationUrl = computed(() => {
   if (!generatedToken.value) {
     return ''
