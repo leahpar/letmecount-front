@@ -30,6 +30,10 @@ self.addEventListener('push', (event) => {
     self.registration.showNotification(payload.title || 'Let me count', {
       body: payload.body || '',
       icon: '/img/logo.png',
+      // Android n'affiche que la silhouette du badge dans la barre d'état : il
+      // la remplit de sa propre couleur, seul le canal alpha compte. D'où une
+      // image monochrome sur fond transparent, et non le logo.
+      badge: '/img/badge.png',
       // Les notifications d'une même dépense se remplacent au lieu de s'empiler
       tag: payload.url || 'letmecount',
       data: { url: payload.url || '/' }
