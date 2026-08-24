@@ -25,7 +25,7 @@ export function useLogs() {
         hasMore: data.view?.next ? true : false
       }
     } catch (err: unknown) {
-      error.value = handleApiError(err, 'le chargement des notifications')
+      error.value = handleApiError(err, 'le chargement de l\'activité')
       return { logs: [], totalItems: 0, hasMore: false }
     } finally {
       loading.value = false
@@ -40,7 +40,7 @@ export function useLogs() {
       const response = await axios.get(`/logs/${id}`)
       return response.data
     } catch (err: unknown) {
-      error.value = handleApiError(err, 'le chargement de la notification')
+      error.value = handleApiError(err, 'le chargement de l\'activité')
       return null
     } finally {
       loading.value = false

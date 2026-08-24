@@ -10,7 +10,7 @@ import CreateExpenseView from "@/views/CreateExpenseView.vue";
 import ExpenseDetailView from "@/views/ExpenseDetailView.vue";
 import ParticipantsView from "@/views/ParticipantsView.vue";
 import TagsView from "@/views/TagsView.vue";
-import NotificationsView from "@/views/NotificationsView.vue";
+import ActiviteView from "@/views/ActiviteView.vue";
 import HistoriqueView from "@/views/HistoriqueView.vue";
 
 const router = createRouter({
@@ -98,14 +98,25 @@ const router = createRouter({
       component: () => import('../views/PasskeysView.vue'),
     },
     {
+      path: '/activite',
+      name: 'activite',
+      component: ActiviteView,
+    },
+    // Ancienne URL de l'activité : conservée pour les PWA déjà installées et les
+    // signets, qui pointent encore dessus.
+    {
       path: '/notifications',
-      name: 'notifications',
-      component: NotificationsView,
+      redirect: { name: 'activite' },
     },
     {
       path: '/historique',
       name: 'historique',
       component: HistoriqueView,
+    },
+    // Toute URL inconnue revient à l'accueil, qui oriente selon la session.
+    {
+      path: '/:pathMatch(.*)*',
+      redirect: { name: 'home' },
     }
   ],
 })
