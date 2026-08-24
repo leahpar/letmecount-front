@@ -75,6 +75,60 @@
         {{ registering ? 'Enregistrement...' : 'Enregistrer cet appareil' }}
       </button>
     </template>
+
+    <hr class="my-8 border-gray-200" />
+
+    <h2 class="text-xl font-semibold text-gray-900 mb-2">🔔 Notifications</h2>
+
+    <p class="text-gray-600">
+      Reçois une notification quand quelqu'un ajoute une dépense qui te concerne.
+    </p>
+
+    <!-- Sur iOS, le push n'existe que dans l'app installée sur l'écran d'accueil -->
+    <p v-if="pushNeedsInstall" class="mt-4 text-gray-600 italic">
+      Ajoute d'abord l'application à ton écran d'accueil : les notifications ne
+      sont pas disponibles depuis le navigateur.
+    </p>
+
+    <p v-else-if="!pushSupported" class="mt-4 text-gray-600 italic">
+      Cet appareil ne gère pas les notifications.
+    </p>
+
+    <template v-else>
+      <p v-if="pushError" class="mt-4 bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded" role="alert">
+        {{ pushError }}
+      </p>
+
+      <!-- Une permission refusée est définitive : le navigateur ne la redemande plus -->
+      <p v-else-if="pushDenied" class="mt-4 text-gray-600 italic">
+        Les notifications sont bloquées pour ce site. Il faut les réautoriser
+        dans les réglages du navigateur.
+      </p>
+
+      <ul v-if="pushDevices.length" class="mt-4 divide-y divide-gray-200">
+        <li v-for="device in pushDevices" :key="device.id" class="py-3 flex items-center justify-between gap-4">
+          <div class="min-w-0">
+            <p class="font-medium text-gray-900 truncate">{{ device.deviceName }}</p>
+            <p class="text-sm text-gray-500">Activé le {{ formatDate(device.createdAt) }}</p>
+          </div>
+          <button
+            @click="pushDeleteDevice(device.id)"
+            class="text-sm text-red-600 hover:text-red-800 shrink-0"
+          >
+            Supprimer
+          </button>
+        </li>
+      </ul>
+
+      <button
+        v-if="!pushDenied"
+        @click="handlePushToggle"
+        :disabled="pushLoading"
+        class="mt-6 w-full bg-indigo-600 text-white py-3 px-4 rounded-lg font-semibold hover:bg-indigo-700 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors"
+      >
+        {{ pushButtonLabel }}
+      </button>
+    </template>
   </div>
 </template>
 
@@ -83,9 +137,25 @@ import { computed, onMounted, ref } from 'vue'
 import type { Passkey } from '@/types/api'
 import { usePasskeys } from '@/composables/usePasskeys'
 import { useWebauthn } from '@/composables/useWebauthn'
+import { useWebPush } from '@/composables/useWebPush'
 
 const { passkeys, loading, error: listError, fetchPasskeys, renamePasskey, deletePasskey } = usePasskeys()
 const { isSupported, loading: registering, error: registerError, registerPasskey } = useWebauthn()
+
+const {
+  devices: pushDevices,
+  subscribed: pushSubscribed,
+  loading: pushLoading,
+  error: pushError,
+  isSupported: pushSupported,
+  needsInstall: pushNeedsInstall,
+  permissionDenied: pushDenied,
+  fetchDevices: pushFetchDevices,
+  refresh: pushRefresh,
+  subscribe: pushSubscribe,
+  unsubscribe: pushUnsubscribe,
+  deleteDevice: pushDeleteDevice
+} = useWebPush()
 
 const message = ref('')
 const editingId = ref<number | null>(null)
@@ -134,9 +204,37 @@ const confirmRename = async (passkey: Passkey) => {
   }
 }
 
+const pushButtonLabel = computed(() => {
+  if (pushLoading.value) return 'Patiente...'
+  return pushSubscribed.value ? 'Désactiver sur cet appareil' : 'Activer sur cet appareil'
+})
+
+/**
+ * L'abonnement doit partir d'un geste de l'utilisateur : les navigateurs
+ * refusent la demande de permission autrement.
+ */
+const handlePushToggle = async () => {
+  message.value = ''
+
+  if (pushSubscribed.value) {
+    await pushUnsubscribe()
+    return
+  }
+
+  if (await pushSubscribe()) {
+    message.value = 'Notifications activées sur cet appareil.'
+  }
+}
+
 onMounted(() => {
   if (isSupported) {
     fetchPasskeys()
+  }
+
+  if (pushSupported) {
+    pushFetchDevices()
+    // Le navigateur peut avoir renouvelé l'endpoint depuis la dernière visite
+    pushRefresh()
   }
 })
 </script>
