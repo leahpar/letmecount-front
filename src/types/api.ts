@@ -58,6 +58,18 @@ export interface Passkey {
   lastUsedAt: string | null
 }
 
+/**
+ * Un navigateur abonné aux notifications push. L'endpoint sert au front à
+ * reconnaître, dans la liste, l'appareil sur lequel il tourne.
+ */
+export interface PushSubscriptionDevice {
+  '@id': string
+  id: number
+  endpoint: string
+  deviceName: string
+  createdAt: string
+}
+
 export interface CreateTagData {
   libelle: string;
   users: string[];

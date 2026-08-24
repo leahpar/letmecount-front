@@ -8,7 +8,7 @@
   },
   "scripts": {
     "dev": "vite",
-    "dev:https": "DEV_HTTPS=1 vite",
+    "dev:https": "vite --mode https",
     "build": "run-p type-check \"build-only {@}\" --",
     "preview": "vite preview",
     "build-only": "vite build",
