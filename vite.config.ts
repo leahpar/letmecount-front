@@ -39,7 +39,7 @@ export default defineConfig(({ mode }) => ({
         // Depuis une autre machine, `VITE_API_URL=http://localhost:8888` désigne
         // *sa* loopback, et une page https ne peut de toute façon pas appeler une
         // API en http (contenu mixte). Ce proxy met l'API sur la même origine que
-        // le front : poser `VITE_API_URL=/api` dans .env.local pour l'emprunter.
+        // le front ; .env.https bascule VITE_API_URL dessus.
         proxy: {
           '/api': {
             target: 'http://127.0.0.1:8888',
