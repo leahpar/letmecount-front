@@ -46,12 +46,12 @@ export function useLogCache() {
       }
       page.value++;
     } catch (err: unknown) {
-      console.error('Erreur lors du chargement des notifications:', err);
+      console.error('Erreur lors du chargement de l\'activité:', err);
       if (err && typeof err === 'object' && 'response' in err) {
         const axiosError = err as { response?: { data?: { message?: string } } };
-        error.value = axiosError.response?.data?.message || 'Erreur lors du chargement des notifications';
+        error.value = axiosError.response?.data?.message || 'Erreur lors du chargement de l\'activité';
       } else {
-        error.value = 'Erreur lors du chargement des notifications';
+        error.value = 'Erreur lors du chargement de l\'activité';
       }
     } finally {
       loading.value = false;
