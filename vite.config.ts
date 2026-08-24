@@ -24,13 +24,28 @@ export default defineConfig(({ mode }) => ({
   ],
   server: mode === 'https'
     ? {
-        host: appleHost,
+        // Écoute sur toutes les interfaces, pour tester depuis un autre appareil
+        // du réseau local (Safari macOS, iPhone). Celui-ci doit atteindre le
+        // front par le NOM de domaine — le certificat ne couvre pas l'IP — donc
+        // via son propre /etc/hosts. Voir api/doc/notifications-push.md.
+        host: true,
         port: 443,
         // Vite 7 rejette les Host headers inconnus.
         allowedHosts: [appleHost],
         https: {
           key: fs.readFileSync('./.certs/dev-key.pem'),
           cert: fs.readFileSync('./.certs/dev.pem'),
+        },
+        // Depuis une autre machine, `VITE_API_URL=http://localhost:8888` désigne
+        // *sa* loopback, et une page https ne peut de toute façon pas appeler une
+        // API en http (contenu mixte). Ce proxy met l'API sur la même origine que
+        // le front : poser `VITE_API_URL=/api` dans .env.local pour l'emprunter.
+        proxy: {
+          '/api': {
+            target: 'http://127.0.0.1:8888',
+            changeOrigin: true,
+            rewrite: (path: string) => path.replace(/^\/api/, ''),
+          },
         },
       }
     : undefined,
