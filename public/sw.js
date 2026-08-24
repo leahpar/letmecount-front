@@ -41,10 +41,21 @@ self.addEventListener('push', (event) => {
   );
 });
 
+// La charge utile vient de notre serveur et voyage chiffrée, mais elle reste une
+// entrée : on n'ouvre qu'un chemin de notre propre origine, jamais une URL absolue.
+const sameOriginPath = (candidate) => {
+  try {
+    const url = new URL(candidate || '/', self.location.origin);
+    return url.origin === self.location.origin ? url.pathname + url.search : '/';
+  } catch {
+    return '/';
+  }
+};
+
 self.addEventListener('notificationclick', (event) => {
   event.notification.close();
 
-  const url = (event.notification.data && event.notification.data.url) || '/';
+  const url = sameOriginPath(event.notification.data && event.notification.data.url);
 
   // Reprendre l'onglet déjà ouvert plutôt que d'en ouvrir un second : sur une
   // PWA installée, c'est la même fenêtre que l'utilisateur a sous les yeux.

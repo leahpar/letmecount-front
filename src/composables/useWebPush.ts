@@ -33,11 +33,18 @@ export function useWebPush() {
   const loading = ref(false)
   const error = ref('')
 
-  const isSupported = 'serviceWorker' in navigator && 'PushManager' in window && !!VAPID_PUBLIC_KEY
+  // Les trois causes d'indisponibilité sont distinctes, et n'appellent pas le
+  // même message : navigateur sans les API, clé VAPID absente du build, ou iOS
+  // pas encore installé.
+  const hasPushApi = 'serviceWorker' in navigator && 'PushManager' in window && 'Notification' in window
+  const isSupported = hasPushApi && !!VAPID_PUBLIC_KEY
 
-  // iOS ne donne accès au push qu'une fois l'app installée : le dire, plutôt que
-  // d'afficher un interrupteur qui ne peut pas fonctionner.
-  const needsInstall = computed(() => !isSupported && !isStandalone() && 'serviceWorker' in navigator)
+  // Le service worker existe mais pas PushManager, hors mode installé : c'est la
+  // signature de Safari iOS. Le dire, plutôt que d'afficher un interrupteur qui
+  // ne peut pas fonctionner.
+  const needsInstall = computed(
+    () => 'serviceWorker' in navigator && !('PushManager' in window) && !isStandalone()
+  )
 
   // Une permission refusée est définitive : le navigateur ne repropose plus sa
   // boîte de dialogue, il faut passer par ses réglages de site.
@@ -87,15 +94,18 @@ export function useWebPush() {
       return
     }
 
-    const subscription = await currentSubscription()
-    subscribed.value = subscription !== null
+    // Appelée sans await au montage de la vue : tout doit être rattrapé ici,
+    // sinon un rejet finit en « Unhandled Promise Rejection » et laisse
+    // `subscribed` incohérent.
+    try {
+      const subscription = await currentSubscription()
+      subscribed.value = subscription !== null
 
-    if (subscription) {
-      try {
+      if (subscription) {
         await save(subscription)
-      } catch {
-        // Une resynchronisation qui échoue ne doit rien casser à l'écran.
       }
+    } catch {
+      subscribed.value = false
     }
   }
 

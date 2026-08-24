@@ -95,6 +95,10 @@
     </p>
 
     <template v-else>
+      <p v-if="pushMessage" class="mt-4 bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded" role="status">
+        {{ pushMessage }}
+      </p>
+
       <p v-if="pushError" class="mt-4 bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded" role="alert">
         {{ pushError }}
       </p>
@@ -158,6 +162,9 @@ const {
 } = useWebPush()
 
 const message = ref('')
+// Distinct de `message`, qui n'est affiché que dans la section des passkeys :
+// un appareil peut gérer le push sans gérer les passkeys.
+const pushMessage = ref('')
 const editingId = ref<number | null>(null)
 const editingName = ref('')
 
@@ -214,7 +221,7 @@ const pushButtonLabel = computed(() => {
  * refusent la demande de permission autrement.
  */
 const handlePushToggle = async () => {
-  message.value = ''
+  pushMessage.value = ''
 
   if (pushSubscribed.value) {
     await pushUnsubscribe()
@@ -222,7 +229,7 @@ const handlePushToggle = async () => {
   }
 
   if (await pushSubscribe()) {
-    message.value = 'Notifications activées sur cet appareil.'
+    pushMessage.value = 'Notifications activées sur cet appareil.'
   }
 }
 
