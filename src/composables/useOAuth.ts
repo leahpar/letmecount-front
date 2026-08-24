@@ -9,9 +9,11 @@ import axios from '@/plugins/axios'
  * /auth/callback avec un code, et c'est l'API qui échange ce code en
  * serveur-à-serveur.
  *
- * Aucun scope : on ne veut ni l'email ni le nom, seul le `sub` sert d'identité (D3).
- * Côté Apple c'est même ce qui rend ce flow possible : sans scope, le retour se
- * fait en `query` et non en `form_post`, qu'une SPA statique ne saurait recevoir.
+ * Aucun scope porteur de données : `openid` seul côté Google, rien du tout côté
+ * Apple. On ne demande ni l'email ni le nom, le `sub` suffit comme identité (D3).
+ * Côté Apple, cette absence totale de scope est même ce qui rend ce flow
+ * possible : le retour se fait alors en `query` et non en `form_post`, qu'une
+ * SPA statique ne saurait recevoir.
  */
 
 export type OAuthProvider = 'google' | 'apple'
@@ -57,12 +59,25 @@ const codeChallengeFor = async (verifier: string): Promise<string> => {
   return base64url(digest)
 }
 
+const SESSION_KEYS = [PROVIDER_KEY, VERIFIER_KEY, NONCE_KEY, STATE_KEY, LINK_TOKEN_KEY]
+
+// sessionStorage n'est pas seulement vide quand le navigateur le refuse : il lève.
+// Une lecture non gardée au retour du provider rejetterait la promesse de
+// handleCallback, et la vue callback resterait en chargement sans message.
+const readSession = (key: string): string | null => {
+  try {
+    return sessionStorage.getItem(key)
+  } catch {
+    return null
+  }
+}
+
 const clearSession = () => {
-  sessionStorage.removeItem(PROVIDER_KEY)
-  sessionStorage.removeItem(VERIFIER_KEY)
-  sessionStorage.removeItem(NONCE_KEY)
-  sessionStorage.removeItem(STATE_KEY)
-  sessionStorage.removeItem(LINK_TOKEN_KEY)
+  try {
+    SESSION_KEYS.forEach((key) => sessionStorage.removeItem(key))
+  } catch {
+    // sessionStorage indisponible : rien à nettoyer.
+  }
 }
 
 const clientIdFor = (provider: OAuthProvider): string | undefined =>
@@ -159,11 +174,7 @@ export function useOAuth() {
       window.location.assign(`${AUTH_URLS[provider]}?${params.toString()}`)
     } catch (err: unknown) {
       console.error(`Départ vers ${label} impossible`, err)
-      try {
-        clearSession()
-      } catch {
-        // sessionStorage indisponible : rien à nettoyer.
-      }
+      clearSession()
       error.value = `Impossible de démarrer la connexion ${label} sur ce navigateur.`
       loading.value = false
     }
@@ -180,11 +191,11 @@ export function useOAuth() {
     const params = new URLSearchParams(window.location.search)
     const code = params.get('code')
     const state = params.get('state')
-    const provider = sessionStorage.getItem(PROVIDER_KEY) as OAuthProvider | null
-    const expectedState = sessionStorage.getItem(STATE_KEY)
-    const codeVerifier = sessionStorage.getItem(VERIFIER_KEY)
-    const nonce = sessionStorage.getItem(NONCE_KEY)
-    const linkToken = sessionStorage.getItem(LINK_TOKEN_KEY)
+    const provider = readSession(PROVIDER_KEY) as OAuthProvider | null
+    const expectedState = readSession(STATE_KEY)
+    const codeVerifier = readSession(VERIFIER_KEY)
+    const nonce = readSession(NONCE_KEY)
+    const linkToken = readSession(LINK_TOKEN_KEY)
 
     clearSession()
 
