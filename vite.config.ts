@@ -10,18 +10,19 @@ import tailwindcss from '@tailwindcss/vite'
 // d'un Services ID. Pour tester « Continuer avec Apple » en local, on sert donc
 // le front sur le domaine de prod, redirigé vers 127.0.0.1 par /etc/hosts, en
 // https sur 443 avec un certificat mkcert : `npm run dev:https`.
+// C'est le mode Vite `https` qui déclenche tout ça, parce qu'il charge aussi
+// .env.https, où le redirect_uri OAuth pointe sur ce même domaine.
 // Voir api/doc/authentification-oauth.md, « Développer en https en local ».
 const appleHost = 'letmecount.lasoireefille.fr'
-const devHttps = process.env.DEV_HTTPS === '1'
 
 // https://vite.dev/config/
-export default defineConfig({
+export default defineConfig(({ mode }) => ({
   plugins: [
     vue(),
     vueDevTools(),
     tailwindcss(),
   ],
-  server: devHttps
+  server: mode === 'https'
     ? {
         host: appleHost,
         port: 443,
@@ -38,4 +39,4 @@ export default defineConfig({
       '@': fileURLToPath(new URL('./src', import.meta.url))
     },
   },
-})
+}))
