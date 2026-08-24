@@ -31,13 +31,7 @@
           <span class="flex-1 border-t border-gray-200"></span>
         </div>
 
-        <button
-          @click="handleGoogleLogin"
-          class="w-full flex items-center justify-center gap-3 border border-gray-300 bg-white text-gray-700 py-3 px-4 rounded-lg font-semibold hover:bg-gray-50 transition-colors"
-        >
-          <GoogleLogo />
-          Continuer avec Google
-        </button>
+        <OAuthButtons @select="handleOAuthLogin" />
 
         <p class="text-center text-sm text-gray-500">
           Pas encore de compte ? Contacte ton administrateur préféré.
@@ -51,12 +45,12 @@
 import { computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { useWebauthn } from '@/composables/useWebauthn'
-import { useOAuth } from '@/composables/useOAuth'
-import GoogleLogo from '@/components/GoogleLogo.vue'
+import { useOAuth, type OAuthProvider } from '@/composables/useOAuth'
+import OAuthButtons from '@/components/OAuthButtons.vue'
 
 const router = useRouter()
 const { isSupported, loading: passkeyLoading, error: passkeyError, loginWithPasskey } = useWebauthn()
-const { loading: oauthLoading, error: oauthError, startGoogleLogin } = useOAuth()
+const { loading: oauthLoading, error: oauthError, startLogin } = useOAuth()
 
 const busy = computed(() => oauthLoading.value || passkeyLoading.value)
 const errorMessage = computed(() => oauthError.value || passkeyError.value)
@@ -70,5 +64,5 @@ const handlePasskeyLogin = async () => {
 }
 
 // Quitte la page : la suite se passe dans AuthCallbackView.
-const handleGoogleLogin = () => startGoogleLogin()
+const handleOAuthLogin = (provider: OAuthProvider) => startLogin(provider)
 </script>

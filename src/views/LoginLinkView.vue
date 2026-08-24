@@ -23,17 +23,11 @@
 
       <div v-if="token && !loading" class="space-y-4">
         <p class="text-center text-gray-600">
-          Tu as été invité ! Relie ton compte Google pour activer ton accès,
-          tu n'auras plus jamais besoin de ce lien ensuite.
+          Tu as été invité ! Relie ton compte Google ou Apple pour activer ton
+          accès, tu n'auras plus jamais besoin de ce lien ensuite.
         </p>
 
-        <button
-          @click="startGoogleLogin(token)"
-          class="w-full flex items-center justify-center gap-3 border border-gray-300 bg-white text-gray-700 py-3 px-4 rounded-lg font-semibold hover:bg-gray-50 transition-colors"
-        >
-          <GoogleLogo />
-          Continuer avec Google
-        </button>
+        <OAuthButtons @select="(provider) => startLogin(provider, token)" />
       </div>
     </div>
   </div>
@@ -43,10 +37,10 @@
 import { onMounted, ref } from 'vue'
 import { useRoute } from 'vue-router'
 import { useOAuth } from '@/composables/useOAuth'
-import GoogleLogo from '@/components/GoogleLogo.vue'
+import OAuthButtons from '@/components/OAuthButtons.vue'
 
 const route = useRoute()
-const { loading, error, startGoogleLogin } = useOAuth()
+const { loading, error, startLogin } = useOAuth()
 
 // Jeton d'invitation à usage unique généré par l'admin (cf. /login_link?token=123456).
 const token = ref('')
