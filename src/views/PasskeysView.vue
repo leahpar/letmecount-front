@@ -152,12 +152,20 @@
     <ul v-else-if="sessions.length" class="mt-4 divide-y divide-gray-200">
       <li v-for="session in sessions" :key="session.id" class="py-3 flex items-center justify-between gap-4">
         <div class="min-w-0">
-          <p class="font-medium text-gray-900 truncate">{{ session.label || 'Connexion' }}</p>
+          <p class="font-medium text-gray-900 truncate">
+            {{ session.label || 'Connexion' }}
+            <span v-if="isCurrentSession(session)" class="ml-1 text-xs font-normal text-indigo-600">
+              · cet appareil
+            </span>
+          </p>
           <p v-if="session.createdAt" class="text-sm text-gray-500">
             Dernière activité le {{ formatDate(session.createdAt) }}
           </p>
         </div>
+        <!-- Pas de bouton sur la session courante : s'en déconnecter se fait par
+             le menu, qui prévient aussi le serveur. -->
         <button
+          v-if="!isCurrentSession(session)"
           @click="revokeSession(session.id)"
           class="text-sm text-red-600 hover:text-red-800 shrink-0"
         >
@@ -179,6 +187,8 @@ import { usePasskeys } from '@/composables/usePasskeys'
 import { useWebauthn } from '@/composables/useWebauthn'
 import { useWebPush } from '@/composables/useWebPush'
 import { useSessions } from '@/composables/useSessions'
+import { useAuth } from '@/composables/useAuth'
+import type { Session } from '@/types/api'
 
 const { passkeys, loading, error: listError, fetchPasskeys, renamePasskey, deletePasskey } = usePasskeys()
 const { isSupported, loading: registering, error: registerError, registerPasskey } = useWebauthn()
@@ -205,6 +215,13 @@ const {
   fetchSessions,
   revokeSession
 } = useSessions()
+
+const { getSessionKey } = useAuth()
+
+// La session ouverte depuis ce navigateur. Absente des connexions ouvertes
+// avant l'arrivée du repère : aucune ligne n'est alors marquée.
+const isCurrentSession = (session: Session): boolean =>
+  !!session.sessionKey && session.sessionKey === getSessionKey()
 
 const message = ref('')
 // Distinct de `message`, qui n'est affiché que dans la section des passkeys :

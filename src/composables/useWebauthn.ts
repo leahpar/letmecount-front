@@ -48,7 +48,7 @@ export function useWebauthn() {
         return false
       }
 
-      login(data.token, data.refresh_token)
+      login(data.token, data.refresh_token, data.session_key)
       return true
     } catch (err: unknown) {
       error.value = messageFor(err, 'Connexion par passkey impossible')

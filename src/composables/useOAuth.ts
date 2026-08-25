@@ -38,6 +38,7 @@ const LINK_TOKEN_KEY = 'oauth_link_token'
 export interface OAuthResult {
   token: string
   refresh_token: string
+  session_key?: string
 }
 
 /** Caractères « unreserved » autorisés dans un code_verifier (RFC 7636). */
@@ -241,6 +242,7 @@ export function useOAuth() {
       return {
         token: data.token,
         refresh_token: data.refresh_token,
+        session_key: data.session_key,
       }
     } catch (err: unknown) {
       error.value = messageFor(err, 'Connexion impossible', label)

@@ -13,9 +13,9 @@ const props = withDefaults(defineProps<Props>(), {
 
 const { isAuthenticated, isAdmin } = useAuth()
 
-const handleLogout = () => {
-  const { logout } = useAuth()
-  logout()
+const handleLogout = async () => {
+  const { signOut } = useAuth()
+  await signOut()
   window.location.href = '/login'
 }
 

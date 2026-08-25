@@ -80,6 +80,8 @@ export interface Session {
   id: number
   label: string | null
   createdAt: string | null
+  /** Repère stable de la session, à comparer à celui que l'API a rendu à la connexion. */
+  sessionKey: string | null
 }
 
 export interface CreateTagData {
