@@ -47,6 +47,7 @@ import { useRouter } from 'vue-router'
 import { useWebauthn } from '@/composables/useWebauthn'
 import { useOAuth, type OAuthProvider } from '@/composables/useOAuth'
 import OAuthButtons from '@/components/OAuthButtons.vue'
+import { takeAfterLogin } from '@/composables/useAfterLogin'
 
 const router = useRouter()
 const { isSupported, loading: passkeyLoading, error: passkeyError, loginWithPasskey } = useWebauthn()
@@ -59,7 +60,8 @@ const handlePasskeyLogin = async () => {
   oauthError.value = ''
 
   if (await loginWithPasskey()) {
-    router.push({ name: 'profile' })
+    // Comme au retour d'un provider : une page peut attendre le retour.
+    router.push(takeAfterLogin() ?? { name: 'profile' })
   }
 }
 
