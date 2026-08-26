@@ -21,20 +21,6 @@ jobs:
                     node-version: ${{ env.NODE_VERSION }}
                     cache: 'npm'
 
-            -   name: Create .env.production file
-                run: |
-                    echo "VITE_APP_BASE_URL=${{ env.VITE_APP_BASE_URL }}" >> .env.production
-                    # Identifiants OAuth : publics, donc des variables de dépôt et non des
-                    # secrets. À créer dans Settings > Secrets and variables > Actions > Variables.
-                    # Les clés sont déjà présentes (vides) dans le .env.production versionné :
-                    # on les remplace au lieu d'ajouter des doublons.
-                    sed -i "s|^VITE_GOOGLE_CLIENT_ID=.*|VITE_GOOGLE_CLIENT_ID=${{ vars.VITE_GOOGLE_CLIENT_ID }}|" .env.production
-                    sed -i "s|^VITE_APPLE_SERVICES_ID=.*|VITE_APPLE_SERVICES_ID=${{ vars.VITE_APPLE_SERVICES_ID }}|" .env.production
-                    sed -i "s|^VITE_POCKETID_BASE_URL=.*|VITE_POCKETID_BASE_URL=${{ vars.VITE_POCKETID_BASE_URL }}|" .env.production
-                    sed -i "s|^VITE_POCKETID_CLIENT_ID=.*|VITE_POCKETID_CLIENT_ID=${{ vars.VITE_POCKETID_CLIENT_ID }}|" .env.production
-                    # Clé publique VAPID : publique elle aussi, même traitement.
-                    sed -i "s|^VITE_VAPID_PUBLIC_KEY=.*|VITE_VAPID_PUBLIC_KEY=${{ vars.VITE_VAPID_PUBLIC_KEY }}|" .env.production
-
             -   name: Install Dependencies
                 run: npm ci
 
