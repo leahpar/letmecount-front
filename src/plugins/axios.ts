@@ -13,6 +13,7 @@ interface QueuedRequest {
 interface RefreshResponse {
   token: string
   refresh_token: string
+  session_key?: string
 }
 
 const instance = axios.create({
@@ -107,7 +108,7 @@ instance.interceptors.response.use(
           });
 
           // Stocke le nouveau token et le nouveau refresh token via useAuth
-          setTokens(data.token, data.refresh_token);
+          setTokens(data.token, data.refresh_token, data.session_key);
 
           // Met à jour l'en-tête de la requête originale avec le nouveau token
           originalRequest.headers.Authorization = `Bearer ${data.token}`;

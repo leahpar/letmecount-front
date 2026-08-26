@@ -133,6 +133,50 @@
         {{ pushButtonLabel }}
       </button>
     </template>
+
+    <hr class="my-8 border-gray-200" />
+
+    <h2 class="text-xl font-semibold text-gray-900 mb-2">🔗 Connexions</h2>
+
+    <p class="text-gray-600">
+      Les appareils et applications connectés à ton compte. En révoquer un le
+      déconnecte à sa prochaine reconnexion, dans l'heure.
+    </p>
+
+    <p v-if="sessionsError" class="mt-4 bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded" role="alert">
+      {{ sessionsError }}
+    </p>
+
+    <div v-if="sessionsLoading" class="mt-4 text-gray-500">Chargement...</div>
+
+    <ul v-else-if="sessions.length" class="mt-4 divide-y divide-gray-200">
+      <li v-for="session in sessions" :key="session.id" class="py-3 flex items-center justify-between gap-4">
+        <div class="min-w-0">
+          <p class="font-medium text-gray-900 truncate">
+            {{ session.label || 'Connexion' }}
+            <span v-if="isCurrentSession(session)" class="ml-1 text-xs font-normal text-indigo-600">
+              · cet appareil
+            </span>
+          </p>
+          <p v-if="session.createdAt" class="text-sm text-gray-500">
+            Dernière activité le {{ formatDate(session.createdAt) }}
+          </p>
+        </div>
+        <!-- Pas de bouton sur la session courante : s'en déconnecter se fait par
+             le menu, qui prévient aussi le serveur. -->
+        <button
+          v-if="!isCurrentSession(session)"
+          @click="revokeSession(session.id)"
+          class="text-sm text-red-600 hover:text-red-800 shrink-0"
+        >
+          Révoquer
+        </button>
+      </li>
+    </ul>
+
+    <p v-else class="mt-4 text-gray-500 italic">
+      Aucune connexion enregistrée.
+    </p>
   </div>
 </template>
 
@@ -142,6 +186,9 @@ import type { Passkey } from '@/types/api'
 import { usePasskeys } from '@/composables/usePasskeys'
 import { useWebauthn } from '@/composables/useWebauthn'
 import { useWebPush } from '@/composables/useWebPush'
+import { useSessions } from '@/composables/useSessions'
+import { useAuth } from '@/composables/useAuth'
+import type { Session } from '@/types/api'
 
 const { passkeys, loading, error: listError, fetchPasskeys, renamePasskey, deletePasskey } = usePasskeys()
 const { isSupported, loading: registering, error: registerError, registerPasskey } = useWebauthn()
@@ -160,6 +207,21 @@ const {
   unsubscribe: pushUnsubscribe,
   deleteDevice: pushDeleteDevice
 } = useWebPush()
+
+const {
+  sessions,
+  loading: sessionsLoading,
+  error: sessionsError,
+  fetchSessions,
+  revokeSession
+} = useSessions()
+
+const { getSessionKey } = useAuth()
+
+// La session ouverte depuis ce navigateur. Absente des connexions ouvertes
+// avant l'arrivée du repère : aucune ligne n'est alors marquée.
+const isCurrentSession = (session: Session): boolean =>
+  !!session.sessionKey && session.sessionKey === getSessionKey()
 
 const message = ref('')
 // Distinct de `message`, qui n'est affiché que dans la section des passkeys :
@@ -234,6 +296,10 @@ const handlePushToggle = async () => {
 }
 
 onMounted(() => {
+  // Les connexions ne dépendent ni des passkeys ni du push : la liste s'affiche
+  // même sur un appareil qui ne gère ni l'un ni l'autre.
+  fetchSessions()
+
   if (isSupported) {
     fetchPasskeys()
   }

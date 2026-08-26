@@ -92,6 +92,13 @@ const router = createRouter({
       name: 'edit-tag',
       component: () => import('../views/CreateTagView.vue'),
     },
+    // Consentement OAuth : l'API y renvoie le navigateur au milieu du flow d'un
+    // client MCP (cf. api/doc/couche-mcp.md, M3).
+    {
+      path: '/oauth/consent',
+      name: 'oauth_consent',
+      component: () => import('../views/OAuthConsentView.vue'),
+    },
     {
       path: '/passkeys',
       name: 'passkeys',

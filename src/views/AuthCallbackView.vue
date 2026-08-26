@@ -32,6 +32,7 @@ import { onMounted } from 'vue'
 import { RouterLink, useRouter } from 'vue-router'
 import { useAuth } from '@/composables/useAuth'
 import { useOAuth } from '@/composables/useOAuth'
+import { takeAfterLogin } from '@/composables/useAfterLogin'
 
 const router = useRouter()
 const { login } = useAuth()
@@ -44,9 +45,11 @@ onMounted(async () => {
     return
   }
 
-  login(result.token, result.refresh_token)
+  login(result.token, result.refresh_token, result.session_key)
 
   // `replace` pour ne pas laisser le code d'autorisation dans l'historique.
-  await router.replace({ name: 'profile' })
+  // La connexion peut avoir été déclenchée par une page qui attend le retour :
+  // le consentement OAuth, dont l'URL porte les paramètres du client MCP.
+  await router.replace(takeAfterLogin() ?? { name: 'profile' })
 })
 </script>

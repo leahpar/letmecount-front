@@ -70,6 +70,20 @@ export interface PushSubscriptionDevice {
   createdAt: string
 }
 
+/**
+ * Une session ouverte : un navigateur, un téléphone, ou un client MCP autorisé.
+ * `label` est nul pour les sessions ouvertes avant l'arrivée des libellés ;
+ * elles en reçoivent un à leur prochain renouvellement.
+ */
+export interface Session {
+  '@id': string
+  id: number
+  label: string | null
+  createdAt: string | null
+  /** Repère stable de la session, à comparer à celui que l'API a rendu à la connexion. */
+  sessionKey: string | null
+}
+
 export interface CreateTagData {
   libelle: string;
   users: string[];
