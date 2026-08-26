@@ -32,3 +32,4 @@ coverage
 .editorconfig
 openapi.json
 claude_notes.md
+.certs/

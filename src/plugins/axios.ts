@@ -13,11 +13,17 @@ interface QueuedRequest {
 interface RefreshResponse {
   token: string
   refresh_token: string
+  session_key?: string
 }
 
 const instance = axios.create({
   baseURL: import.meta.env.VITE_API_URL,
 });
+
+// Pages qui gèrent elles-mêmes l'absence de session : y rediriger vers /login
+// couperait le flow en cours (échange OAuth, lien d'invitation).
+const AUTH_PAGES = ['/login_link', '/welcome', '/auth/callback'];
+const isOnAuthPage = () => AUTH_PAGES.some(path => window.location.pathname.includes(path));
 
 // Variables pour gérer le refresh de token unique
 let isRefreshing = false;
@@ -42,14 +48,17 @@ instance.interceptors.request.use(
   (config) => {
     const { getToken } = useAuth();
     const token = getToken();
-    if (token) {
+    // /auth/oauth est une route de connexion : l'appelant n'est pas authentifié.
+    // Y joindre un jeton périmé ferait échouer la requête en 401 avant le contrôleur,
+    // et brûlerait le code d'autorisation Google au passage.
+    if (token && !config.url?.startsWith('/auth/oauth')) {
       config.headers.Authorization = `Bearer ${token}`;
     }
 
-    // Les routes WebAuthn ne sont pas des ressources API Platform : elles rejettent
-    // tout ce qui n'est pas application/json. La règle est portée ici, sur l'URL,
-    // plutôt que laissée à la charge de l'appelant.
-    if (config.url?.startsWith('/auth/webauthn')) {
+    // Les routes d'authentification (WebAuthn, OAuth) ne sont pas des ressources
+    // API Platform : elles rejettent tout ce qui n'est pas application/json. La règle
+    // est portée ici, sur l'URL, plutôt que laissée à la charge de l'appelant.
+    if (config.url?.startsWith('/auth/')) {
       config.headers['Content-Type'] = 'application/json';
     } else if (config.data && !config.headers['Content-Type']) {
       // JSON-LD pour les POST/PUT, JSON MERGE PATCH pour les PATCH
@@ -99,7 +108,7 @@ instance.interceptors.response.use(
           });
 
           // Stocke le nouveau token et le nouveau refresh token via useAuth
-          setTokens(data.token, data.refresh_token);
+          setTokens(data.token, data.refresh_token, data.session_key);
 
           // Met à jour l'en-tête de la requête originale avec le nouveau token
           originalRequest.headers.Authorization = `Bearer ${data.token}`;
@@ -120,8 +129,7 @@ instance.interceptors.response.use(
           // Déconnecte l'utilisateur
           clearTokens();
 
-          // Ne pas rediriger si on est sur la page login_link ou welcome
-          if (!window.location.pathname.includes('/login_link') && !window.location.pathname.includes('/welcome')) {
+          if (!isOnAuthPage()) {
             redirectToLogin();
           }
           return Promise.reject(refreshError);
@@ -134,8 +142,7 @@ instance.interceptors.response.use(
         // Redirige vers le login
         clearTokens();
 
-        // Ne pas rediriger si on est sur la page login_link ou welcome
-        if (!window.location.pathname.includes('/login_link') && !window.location.pathname.includes('/welcome')) {
+        if (!isOnAuthPage()) {
           redirectToLogin();
         }
       }

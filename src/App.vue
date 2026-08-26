@@ -13,12 +13,21 @@ const closeMobileMenu = () => {
   isMobileMenuOpen.value = false
 }
 
+// Au chargement initial d'une page, la navigation du routeur n'est pas encore
+// résolue et route.name vaut undefined. Sans ce garde, les composants globaux se
+// montent quand même et lancent leurs requêtes authentifiées — sur une page de
+// connexion, ça part en 401 et l'intercepteur redirige avant même que la page ait
+// pu faire son travail.
+const routeIsResolved = computed(() => !!route.name)
+
 const shouldShowAddButton = computed(() => {
-  return !['create-expense', 'edit-expense', 'welcome', 'login','login_link', 'credentials', 'create-tag', 'edit-tag'].includes(route.name as string)
+  if (!routeIsResolved.value) return false
+  return !['create-expense', 'edit-expense', 'welcome', 'login','login_link', 'auth_callback', 'create-tag', 'edit-tag'].includes(route.name as string)
 })
 
 const shouldShowNavigation = computed(() => {
-  return !['welcome', 'login', 'login_link', 'credentials'].includes(route.name as string)
+  if (!routeIsResolved.value) return false
+  return !['welcome', 'login', 'login_link', 'auth_callback'].includes(route.name as string)
 })
 </script>
 

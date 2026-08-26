@@ -1,9 +1,9 @@
 <template>
   <div class="w-full">
-    <h1 class="text-2xl font-semibold text-gray-900 mb-4">Notifications</h1>
+    <h1 class="text-2xl font-semibold text-gray-900 mb-4">Activité</h1>
 
     <div v-if="loading && logs.length === 0" class="text-center py-8 text-gray-500">
-      Chargement des notifications...
+      Chargement de l'activité...
     </div>
 
     <div v-else-if="error" class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">
@@ -11,11 +11,11 @@
     </div>
 
     <div v-else-if="logs.length === 0" class="text-center py-8 text-gray-500 italic">
-      Aucune notification trouvée
+      Aucune activité trouvée
     </div>
 
     <div v-else class="">
-      <NotificationItem
+      <ActiviteItem
         v-for="log in logs"
         :key="log['@id']"
         :log="log"
@@ -23,7 +23,7 @@
     </div>
 
     <div v-if="loadingMore" class="text-center py-4 text-gray-500">Chargement...</div>
-    <div v-if="allLoaded && logs.length > 0" class="text-center py-4 text-gray-500 italic">Fin des notifications</div>
+    <div v-if="allLoaded && logs.length > 0" class="text-center py-4 text-gray-500 italic">Fin de l'activité</div>
   </div>
 </template>
 
@@ -32,7 +32,7 @@ import { onMounted, onUnmounted } from 'vue'
 import { useUsers } from '@/composables/useUsers'
 import { useTags } from '@/composables/useTags'
 import { useLogCache } from '@/composables/useLogCache'
-import NotificationItem from '@/components/NotificationItem.vue'
+import ActiviteItem from '@/components/ActiviteItem.vue'
 
 const { fetchUsers, fetchMe } = useUsers()
 const { fetchTags } = useTags()

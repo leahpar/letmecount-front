@@ -50,17 +50,38 @@ export interface ParticipantData {
   manualMontant: boolean
 }
 
-export interface UpdateCredentialsDto {
-  token: string;
-  username?: string;
-}
-
 export interface Passkey {
   '@id': string
   id: number
   name: string
   createdAt: string
   lastUsedAt: string | null
+}
+
+/**
+ * Un navigateur abonné aux notifications push. L'endpoint sert au front à
+ * reconnaître, dans la liste, l'appareil sur lequel il tourne.
+ */
+export interface PushSubscriptionDevice {
+  '@id': string
+  id: number
+  endpoint: string
+  deviceName: string
+  createdAt: string
+}
+
+/**
+ * Une session ouverte : un navigateur, un téléphone, ou un client MCP autorisé.
+ * `label` est nul pour les sessions ouvertes avant l'arrivée des libellés ;
+ * elles en reçoivent un à leur prochain renouvellement.
+ */
+export interface Session {
+  '@id': string
+  id: number
+  label: string | null
+  createdAt: string | null
+  /** Repère stable de la session, à comparer à celui que l'API a rendu à la connexion. */
+  sessionKey: string | null
 }
 
 export interface CreateTagData {

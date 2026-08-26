@@ -9,9 +9,8 @@ import ProfileView from "@/views/ProfileView.vue";
 import CreateExpenseView from "@/views/CreateExpenseView.vue";
 import ExpenseDetailView from "@/views/ExpenseDetailView.vue";
 import ParticipantsView from "@/views/ParticipantsView.vue";
-import CredentialsView from "@/views/CredentialsView.vue";
 import TagsView from "@/views/TagsView.vue";
-import NotificationsView from "@/views/NotificationsView.vue";
+import ActiviteView from "@/views/ActiviteView.vue";
 import HistoriqueView from "@/views/HistoriqueView.vue";
 
 const router = createRouter({
@@ -69,9 +68,9 @@ const router = createRouter({
       component: () => import('../views/LoginLinkView.vue'),
     },
     {
-      path: '/credentials',
-      name: 'credentials',
-      component: CredentialsView,
+      path: '/auth/callback',
+      name: 'auth_callback',
+      component: () => import('../views/AuthCallbackView.vue'),
     },
     {
       path: '/participants',
@@ -93,20 +92,38 @@ const router = createRouter({
       name: 'edit-tag',
       component: () => import('../views/CreateTagView.vue'),
     },
+    // Consentement OAuth : l'API y renvoie le navigateur au milieu du flow d'un
+    // client MCP (cf. api/doc/couche-mcp.md, M3).
+    {
+      path: '/oauth/consent',
+      name: 'oauth_consent',
+      component: () => import('../views/OAuthConsentView.vue'),
+    },
     {
       path: '/passkeys',
       name: 'passkeys',
       component: () => import('../views/PasskeysView.vue'),
     },
     {
+      path: '/activite',
+      name: 'activite',
+      component: ActiviteView,
+    },
+    // Ancienne URL de l'activité : conservée pour les PWA déjà installées et les
+    // signets, qui pointent encore dessus.
+    {
       path: '/notifications',
-      name: 'notifications',
-      component: NotificationsView,
+      redirect: { name: 'activite' },
     },
     {
       path: '/historique',
       name: 'historique',
       component: HistoriqueView,
+    },
+    // Toute URL inconnue revient à l'accueil, qui oriente selon la session.
+    {
+      path: '/:pathMatch(.*)*',
+      redirect: { name: 'home' },
     }
   ],
 })

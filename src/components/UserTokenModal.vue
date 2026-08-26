@@ -1,16 +1,19 @@
 <template>
-  <BaseModal :show="show" @close="closeModal" :title="`Code pour ${user?.username}`">
-    <div v-if="loading" class="text-center">Génération du code de connexion...</div>
+  <BaseModal :show="show" @close="closeModal" :title="`Invitation pour ${user?.username}`">
+    <div v-if="loading" class="text-center">Génération du lien d'invitation...</div>
     <div v-if="error" class="bg-red-100 border border-red-400 text-red-700 px-4 py-3" role="alert">
       {{ error }}
     </div>
-    <div v-if="generatedToken && user">
+    <div v-if="invitationUrl && user">
+      <p class="text-sm text-gray-600">
+        Envoie ce lien à {{ user.username }} : il lui permet de rattacher son compte Google ou Apple. Il ne sert qu'une fois.
+      </p>
       <div class="mt-2 p-2 bg-gray-100 rounded flex justify-center">
         <img :src="qrCodeUrl" alt="QR Code" />
       </div>
       <div class="mt-2 p-2 bg-gray-100 rounded relative text-center">
-        <code class="text-3xl font-bold break-all cursor-pointer" @click="copyToClipboard(generatedToken as string)">
-          {{ generatedToken }}
+        <code class="text-sm break-all cursor-pointer" @click="copyToClipboard(invitationUrl)">
+          {{ invitationUrl }}
         </code>
         <span v-if="copiedMessage" class="absolute right-2 top-1/2 -translate-y-1/2 text-sm text-green-600">{{ copiedMessage }}</span>
       </div>
@@ -53,12 +56,17 @@ watch(() => props.show, async (newValue) => {
   }
 })
 
-const impersonationUrl = computed(() => {
-  return import.meta.env.VITE_APP_BASE_URL || window.location.origin;
+// Le lien porte le jeton : c'est lui qui autorise la première connexion OAuth.
+const invitationUrl = computed(() => {
+  if (!generatedToken.value) {
+    return ''
+  }
+  const base = import.meta.env.VITE_APP_BASE_URL || window.location.origin
+  return `${base}/login_link?token=${encodeURIComponent(generatedToken.value)}`
 })
 
 const qrCodeUrl = computed(() => {
-  return `https://yaqrgen.com/qrcode.png?data=${encodeURIComponent(impersonationUrl.value)}`
+  return `https://yaqrgen.com/qrcode.png?data=${encodeURIComponent(invitationUrl.value)}`
 })
 
 const copyToClipboard = (text: string) => {

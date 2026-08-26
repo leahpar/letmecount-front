@@ -13,9 +13,9 @@ const props = withDefaults(defineProps<Props>(), {
 
 const { isAuthenticated, isAdmin } = useAuth()
 
-const handleLogout = () => {
-  const { logout } = useAuth()
-  logout()
+const handleLogout = async () => {
+  const { signOut } = useAuth()
+  await signOut()
   window.location.href = '/login'
 }
 
@@ -51,11 +51,11 @@ const handleClick = () => {
         Participants
       </RouterLink>
       <RouterLink
-        to="/notifications"
+        to="/activite"
         @click="handleClick"
         class="block px-3 py-2 text-base font-medium text-gray-700 hover:text-gray-900 hover:bg-gray-50 text-right"
       >
-        Notifications
+        Activité
       </RouterLink>
       <RouterLink
         to="/historique"
@@ -101,10 +101,10 @@ const handleClick = () => {
         Participants
       </RouterLink>
       <RouterLink
-        to="/notifications"
+        to="/activite"
         class="text-gray-600 hover:bg-gray-200 hover:text-gray-900 px-3 py-2 text-sm font-medium"
       >
-        Notifications
+        Activité
       </RouterLink>
       <RouterLink
         to="/historique"
