@@ -2,23 +2,26 @@ import { ref } from 'vue'
 import axios from '@/plugins/axios'
 
 /**
- * Connexion par OAuth (Google, Apple).
+ * Connexion par OAuth (Google, Apple, PocketID).
  *
  * Flow « redirect + code d'autorisation » (cf. api/doc/authentification-oauth.md, D2) :
  * on part chez le provider en navigation top-level, il nous renvoie sur
  * /auth/callback avec un code, et c'est l'API qui échange ce code en
  * serveur-à-serveur.
  *
- * Aucun scope porteur de données : `openid` seul côté Google, rien du tout côté
- * Apple. On ne demande ni l'email ni le nom, le `sub` suffit comme identité (D3).
- * Côté Apple, cette absence totale de scope est même ce qui rend ce flow
- * possible : le retour se fait alors en `query` et non en `form_post`, qu'une
- * SPA statique ne saurait recevoir.
+ * Aucun scope porteur de données : `openid` seul côté Google et PocketID, rien
+ * du tout côté Apple. On ne demande ni l'email ni le nom, le `sub` suffit comme
+ * identité (D3). Côté Apple, cette absence totale de scope est même ce qui rend
+ * ce flow possible : le retour se fait alors en `query` et non en `form_post`,
+ * qu'une SPA statique ne saurait recevoir.
+ *
+ * PocketID est PKCE (comme Google) : seul Apple, qui ne documente pas PKCE,
+ * utilise un `nonce` à la place.
  */
 
-export type OAuthProvider = 'google' | 'apple'
+export type OAuthProvider = 'google' | 'apple' | 'pocketid'
 
-const AUTH_URLS: Record<OAuthProvider, string> = {
+const FIXED_AUTH_URLS: Record<'google' | 'apple', string> = {
   google: 'https://accounts.google.com/o/oauth2/v2/auth',
   apple: 'https://appleid.apple.com/auth/authorize',
 }
@@ -26,6 +29,20 @@ const AUTH_URLS: Record<OAuthProvider, string> = {
 const LABELS: Record<OAuthProvider, string> = {
   google: 'Google',
   apple: 'Apple',
+  pocketid: 'Pocket ID',
+}
+
+/**
+ * PocketID est auto-hébergé : contrairement à Google/Apple, son URL
+ * d'autorisation n'est pas fixe, elle dépend de l'instance configurée.
+ */
+const authUrlFor = (provider: OAuthProvider): string | undefined => {
+  if (provider !== 'pocketid') {
+    return FIXED_AUTH_URLS[provider]
+  }
+
+  const base = import.meta.env.VITE_POCKETID_BASE_URL
+  return base ? `${base.replace(/\/+$/, '')}/authorize` : undefined
 }
 
 // Le sessionStorage suffit : ces valeurs ne servent qu'à l'aller-retour.
@@ -80,10 +97,16 @@ const clearSession = () => {
   }
 }
 
-const clientIdFor = (provider: OAuthProvider): string | undefined =>
-  provider === 'google'
-    ? import.meta.env.VITE_GOOGLE_CLIENT_ID
-    : import.meta.env.VITE_APPLE_SERVICES_ID
+const clientIdFor = (provider: OAuthProvider): string | undefined => {
+  switch (provider) {
+    case 'google':
+      return import.meta.env.VITE_GOOGLE_CLIENT_ID
+    case 'apple':
+      return import.meta.env.VITE_APPLE_SERVICES_ID
+    case 'pocketid':
+      return import.meta.env.VITE_POCKETID_CLIENT_ID
+  }
+}
 
 /** L'API renvoie ses messages en français, on les affiche tels quels quand ils arrivent. */
 const messageFor = (err: unknown, fallback: string, label: string): string => {
@@ -128,8 +151,9 @@ export function useOAuth() {
     const label = LABELS[provider]
     const clientId = clientIdFor(provider)
     const redirectUri = import.meta.env.VITE_OAUTH_REDIRECT_URI
+    const authUrl = authUrlFor(provider)
 
-    if (!clientId || !redirectUri) {
+    if (!clientId || !redirectUri || !authUrl) {
       error.value = `La connexion ${label} n'est pas configurée sur cette installation.`
       loading.value = false
       return
@@ -155,23 +179,24 @@ export function useOAuth() {
         state,
       })
 
-      if (provider === 'google') {
-        // PKCE : le code ne vaut rien sans le verifier resté dans cet onglet.
-        const codeVerifier = randomString(64)
-        sessionStorage.setItem(VERIFIER_KEY, codeVerifier)
-        params.set('scope', 'openid')
-        params.set('code_challenge', await codeChallengeFor(codeVerifier))
-        params.set('code_challenge_method', 'S256')
-      } else {
+      if (provider === 'apple') {
         // Apple ne documente pas PKCE : le nonce joue le même rôle, l'API le
         // compare au claim de l'id_token. Pas de `scope` : c'est ce qui laisse
         // Apple répondre en `query` plutôt qu'en `form_post`.
         const nonce = randomString(32)
         sessionStorage.setItem(NONCE_KEY, nonce)
         params.set('nonce', nonce)
+      } else {
+        // Google et PocketID font du PKCE : le code ne vaut rien sans le
+        // verifier resté dans cet onglet.
+        const codeVerifier = randomString(64)
+        sessionStorage.setItem(VERIFIER_KEY, codeVerifier)
+        params.set('scope', 'openid')
+        params.set('code_challenge', await codeChallengeFor(codeVerifier))
+        params.set('code_challenge_method', 'S256')
       }
 
-      window.location.assign(`${AUTH_URLS[provider]}?${params.toString()}`)
+      window.location.assign(`${authUrl}?${params.toString()}`)
     } catch (err: unknown) {
       console.error(`Départ vers ${label} impossible`, err)
       clearSession()
@@ -209,12 +234,12 @@ export function useOAuth() {
 
       // Sans provider en session, on ne saurait de toute façon pas quoi envoyer
       // à l'API : la demande ne vient pas de cet onglet.
-      if (!provider || !AUTH_URLS[provider]) {
+      if (!provider || !(provider in LABELS)) {
         error.value = 'Requête de connexion invalide, recommence depuis le début.'
         return null
       }
 
-      const secret = provider === 'google' ? codeVerifier : nonce
+      const secret = provider === 'apple' ? nonce : codeVerifier
       if (!code || !state || !secret) {
         error.value = `Réponse de ${label} incomplète, recommence depuis le début.`
         return null
@@ -229,7 +254,7 @@ export function useOAuth() {
       const { data } = await axios.post('/auth/oauth', {
         provider,
         code,
-        ...(provider === 'google' ? { code_verifier: secret } : { nonce: secret }),
+        ...(provider === 'apple' ? { nonce: secret } : { code_verifier: secret }),
         ...(linkToken ? { link_token: linkToken } : {}),
       })
 

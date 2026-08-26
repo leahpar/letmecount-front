@@ -30,6 +30,8 @@ jobs:
                     # on les remplace au lieu d'ajouter des doublons.
                     sed -i "s|^VITE_GOOGLE_CLIENT_ID=.*|VITE_GOOGLE_CLIENT_ID=${{ vars.VITE_GOOGLE_CLIENT_ID }}|" .env.production
                     sed -i "s|^VITE_APPLE_SERVICES_ID=.*|VITE_APPLE_SERVICES_ID=${{ vars.VITE_APPLE_SERVICES_ID }}|" .env.production
+                    sed -i "s|^VITE_POCKETID_BASE_URL=.*|VITE_POCKETID_BASE_URL=${{ vars.VITE_POCKETID_BASE_URL }}|" .env.production
+                    sed -i "s|^VITE_POCKETID_CLIENT_ID=.*|VITE_POCKETID_CLIENT_ID=${{ vars.VITE_POCKETID_CLIENT_ID }}|" .env.production
                     # Clé publique VAPID : publique elle aussi, même traitement.
                     sed -i "s|^VITE_VAPID_PUBLIC_KEY=.*|VITE_VAPID_PUBLIC_KEY=${{ vars.VITE_VAPID_PUBLIC_KEY }}|" .env.production
 
